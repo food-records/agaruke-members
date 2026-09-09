@@ -15,48 +15,56 @@ import (
 )
 
 type memberCouponDoc struct {
-	Code           string    `firestore:"code"`
-	Title          string    `firestore:"title"`
-	Description    string    `firestore:"description"`
-	DiscountAmount int       `firestore:"discount_amount"`
-	DiscountLabel  string    `firestore:"discount_label"`
-	ExpiresAt      time.Time `firestore:"expires_at"`
-	PointMilestone int       `firestore:"point_milestone"`
-	RewardID       string    `firestore:"reward_id"`
-	PointCost      int       `firestore:"point_cost"`
-	IssuedAt       time.Time `firestore:"issued_at"`
-	Used           bool      `firestore:"used"`
-	UsedAt         time.Time `firestore:"used_at"`
-	ProductURL     string    `firestore:"product_url"`
-	ImageURL       string    `firestore:"image_url"`
-	BenefitType    string    `firestore:"benefit_type"`
-	TargetType     string    `firestore:"target_type"`
-	MaxUnitPrice   int       `firestore:"max_unit_price"`
-	FreeQuantity   int       `firestore:"free_quantity"`
-	Status         string    `firestore:"status"`
+	Code                string    `firestore:"code"`
+	Title               string    `firestore:"title"`
+	Description         string    `firestore:"description"`
+	DiscountAmount      int       `firestore:"discount_amount"`
+	DiscountLabel       string    `firestore:"discount_label"`
+	ExpiresAt           time.Time `firestore:"expires_at"`
+	PointMilestone      int       `firestore:"point_milestone"`
+	RewardID            string    `firestore:"reward_id"`
+	PointCost           int       `firestore:"point_cost"`
+	IssuedAt            time.Time `firestore:"issued_at"`
+	Used                bool      `firestore:"used"`
+	UsedAt              time.Time `firestore:"used_at"`
+	ProductURL          string    `firestore:"product_url"`
+	ImageURL            string    `firestore:"image_url"`
+	BenefitType         string    `firestore:"benefit_type"`
+	TargetType          string    `firestore:"target_type"`
+	MaxUnitPrice        int       `firestore:"max_unit_price"`
+	FreeQuantity        int       `firestore:"free_quantity"`
+	Status              string    `firestore:"status"`
+	EligibleStoreIDs    []string  `firestore:"eligible_store_ids"`
+	EligibleCategoryIDs []string  `firestore:"eligible_category_ids"`
+	EligibleItemIDs     []string  `firestore:"eligible_item_ids"`
+	EligibleOptionIDs   []string  `firestore:"eligible_option_ids"`
 }
 
 type CouponResp struct {
-	ID             string `json:"id"`
-	Code           string `json:"code,omitempty"`
-	Title          string `json:"title"`
-	Description    string `json:"description,omitempty"`
-	DiscountAmount int    `json:"discount_amount,omitempty"`
-	DiscountLabel  string `json:"discount_label,omitempty"`
-	ExpiresAt      string `json:"expires_at,omitempty"`
-	PointMilestone int    `json:"point_milestone,omitempty"`
-	RewardID       string `json:"reward_id,omitempty"`
-	PointCost      int    `json:"point_cost,omitempty"`
-	IssuedAt       string `json:"issued_at"`
-	Used           bool   `json:"used"`
-	UsedAt         string `json:"used_at,omitempty"`
-	ProductURL     string `json:"product_url,omitempty"`
-	ImageURL       string `json:"image_url,omitempty"`
-	BenefitType    string `json:"benefit_type,omitempty"`
-	TargetType     string `json:"target_type,omitempty"`
-	MaxUnitPrice   int    `json:"max_unit_price,omitempty"`
-	FreeQuantity   int    `json:"free_quantity,omitempty"`
-	Status         string `json:"status,omitempty"`
+	ID                  string   `json:"id"`
+	Code                string   `json:"code,omitempty"`
+	Title               string   `json:"title"`
+	Description         string   `json:"description,omitempty"`
+	DiscountAmount      int      `json:"discount_amount,omitempty"`
+	DiscountLabel       string   `json:"discount_label,omitempty"`
+	ExpiresAt           string   `json:"expires_at,omitempty"`
+	PointMilestone      int      `json:"point_milestone,omitempty"`
+	RewardID            string   `json:"reward_id,omitempty"`
+	PointCost           int      `json:"point_cost,omitempty"`
+	IssuedAt            string   `json:"issued_at"`
+	Used                bool     `json:"used"`
+	UsedAt              string   `json:"used_at,omitempty"`
+	ProductURL          string   `json:"product_url,omitempty"`
+	ImageURL            string   `json:"image_url,omitempty"`
+	BenefitType         string   `json:"benefit_type,omitempty"`
+	TargetType          string   `json:"target_type,omitempty"`
+	MaxUnitPrice        int      `json:"max_unit_price,omitempty"`
+	FreeQuantity        int      `json:"free_quantity,omitempty"`
+	Status              string   `json:"status,omitempty"`
+	EligibleStoreIDs    []string `json:"eligible_store_ids,omitempty"`
+	EligibleCategoryIDs []string `json:"eligible_category_ids,omitempty"`
+	EligibleItemIDs     []string `json:"eligible_item_ids,omitempty"`
+	EligibleOptionIDs   []string `json:"eligible_option_ids,omitempty"`
 }
 
 type GetResp struct {
@@ -93,24 +101,28 @@ func (h handler) Get(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		resp := CouponResp{
-			ID:             doc.Ref.ID,
-			Code:           c.Code,
-			Title:          c.Title,
-			Description:    c.Description,
-			DiscountAmount: c.DiscountAmount,
-			DiscountLabel:  c.DiscountLabel,
-			PointMilestone: c.PointMilestone,
-			RewardID:       c.RewardID,
-			PointCost:      c.PointCost,
-			IssuedAt:       c.IssuedAt.Format(time.RFC3339),
-			Used:           c.Used,
-			ProductURL:     c.ProductURL,
-			ImageURL:       c.ImageURL,
-			BenefitType:    c.BenefitType,
-			TargetType:     c.TargetType,
-			MaxUnitPrice:   c.MaxUnitPrice,
-			FreeQuantity:   c.FreeQuantity,
-			Status:         c.Status,
+			ID:                  doc.Ref.ID,
+			Code:                c.Code,
+			Title:               c.Title,
+			Description:         c.Description,
+			DiscountAmount:      c.DiscountAmount,
+			DiscountLabel:       c.DiscountLabel,
+			PointMilestone:      c.PointMilestone,
+			RewardID:            c.RewardID,
+			PointCost:           c.PointCost,
+			IssuedAt:            c.IssuedAt.Format(time.RFC3339),
+			Used:                c.Used,
+			ProductURL:          c.ProductURL,
+			ImageURL:            c.ImageURL,
+			BenefitType:         c.BenefitType,
+			TargetType:          c.TargetType,
+			MaxUnitPrice:        c.MaxUnitPrice,
+			FreeQuantity:        c.FreeQuantity,
+			Status:              c.Status,
+			EligibleStoreIDs:    c.EligibleStoreIDs,
+			EligibleCategoryIDs: c.EligibleCategoryIDs,
+			EligibleItemIDs:     c.EligibleItemIDs,
+			EligibleOptionIDs:   c.EligibleOptionIDs,
 		}
 		if !c.ExpiresAt.IsZero() {
 			resp.ExpiresAt = c.ExpiresAt.Format(time.RFC3339)
