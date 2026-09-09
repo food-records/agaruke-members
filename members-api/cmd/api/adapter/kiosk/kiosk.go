@@ -25,6 +25,14 @@ import (
 
 const tokenLifetime = 5 * time.Minute
 const reservationLifetime = 10 * time.Minute
+const dailyPurchaseMinimumSubtotal = 500
+const dailyPurchasePoints = 100
+
+var japanLocation = time.FixedZone("Asia/Tokyo", 9*60*60)
+
+func dailyPurchasePointLogID(at time.Time) string {
+	return "daily_purchase_" + at.In(japanLocation).Format("2006-01-02")
+}
 
 type memberTokenDoc struct {
 	CheckoutID string    `firestore:"checkout_id"`
@@ -460,10 +468,9 @@ func (h handler) FinalizeOrder(w http.ResponseWriter, r *http.Request) {
 		presenter.BadRequest(w, "INVALID_BODY")
 		return
 	}
-	if body.Points <= 0 {
-		body.Points = 100
-	}
+	pointAwardedAt := time.Now()
 	resRef := config.DataCollection(h.fs, "kiosk_coupon_reservations").Doc(body.ReservationID)
+	awardedPoints := 0
 	err := h.fs.RunTransaction(r.Context(), func(ctx context.Context, tx *firestore.Transaction) error {
 		resSnap, err := tx.Get(resRef)
 		if err != nil {
@@ -491,16 +498,21 @@ func (h handler) FinalizeOrder(w http.ResponseWriter, r *http.Request) {
 		if err := memberSnap.DataTo(&m); err != nil {
 			return err
 		}
-		pointLog := memberRef.Collection("point_logs").Doc("kiosk_" + body.OrderUUID)
+		pointLog := memberRef.Collection("point_logs").Doc(dailyPurchasePointLogID(pointAwardedAt))
 		if _, err := tx.Get(pointLog); err != nil && status.Code(err) != codes.NotFound {
 			return err
-		} else if status.Code(err) == codes.NotFound {
-			if err := tx.Update(memberRef, []firestore.Update{{Path: "point", Value: m.Point + body.Points}, {Path: "total_earned_point", Value: m.TotalEarnedPoint + body.Points}}); err != nil {
+		} else if status.Code(err) == codes.NotFound && body.BaseAmount >= dailyPurchaseMinimumSubtotal {
+			totalEarned := m.TotalEarnedPoint
+			if totalEarned == 0 && m.Point > 0 {
+				totalEarned = m.Point
+			}
+			if err := tx.Update(memberRef, []firestore.Update{{Path: "point", Value: m.Point + dailyPurchasePoints}, {Path: "total_earned_point", Value: totalEarned + dailyPurchasePoints}, {Path: "last_accumulated_at", Value: pointAwardedAt}}); err != nil {
 				return err
 			}
-			if err := tx.Create(pointLog, map[string]interface{}{"type": "purchase", "order_uuid": body.OrderUUID, "square_order_id": body.SquareOrderID, "location_uuid": body.LocationUUID, "base_amount": body.BaseAmount, "awarded_points": body.Points, "status": "granted", "created_at": time.Now()}); err != nil {
+			if err := tx.Create(pointLog, map[string]interface{}{"type": "purchase", "source": "kiosk", "amount": dailyPurchasePoints, "accumulate": true, "order_uuid": body.OrderUUID, "square_order_id": body.SquareOrderID, "location_uuid": body.LocationUUID, "base_amount": body.BaseAmount, "awarded_points": dailyPurchasePoints, "status": "granted", "created_at": pointAwardedAt, "acquired_at": pointAwardedAt, "expires_at": pointAwardedAt.AddDate(1, 0, 0)}); err != nil {
 				return err
 			}
+			awardedPoints = dailyPurchasePoints
 		}
 		for _, cid := range res.CouponIDs {
 			coupon := memberRef.Collection("coupons").Doc(cid)
@@ -514,5 +526,5 @@ func (h handler) FinalizeOrder(w http.ResponseWriter, r *http.Request) {
 		presenter.Error(w, err)
 		return
 	}
-	presenter.EncodeWithMessage(w, map[string]interface{}{"awarded_points": body.Points})
+	presenter.EncodeWithMessage(w, map[string]interface{}{"awarded_points": awardedPoints})
 }
