@@ -133,16 +133,11 @@ func (h handler) Exchange(w http.ResponseWriter, r *http.Request) {
 
 		if candidate != nil {
 			squareCode = candidate.Code
-			if reward.SquareItemID != "" {
-				productURL = fmt.Sprintf(
-					"https://food-records.square.site/?item=%s&cc=%s",
-					reward.SquareItemID, candidate.Code,
-				)
-			}
 			if err := h.pool.ClaimInTx(tx, candidate, prof.UserID); err != nil {
 				return err
 			}
 		}
+		productURL = config.AgarukeLabMobileOrderURL
 
 		if err := tx.Update(memberRef, []firestore.Update{{Path: "point", Value: newPoint}}); err != nil {
 			return err

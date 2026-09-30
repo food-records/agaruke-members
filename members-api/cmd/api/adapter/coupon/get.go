@@ -101,18 +101,20 @@ func (h handler) Get(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		resp := CouponResp{
-			ID:                  doc.Ref.ID,
-			Code:                c.Code,
-			Title:               c.Title,
-			Description:         c.Description,
-			DiscountAmount:      c.DiscountAmount,
-			DiscountLabel:       c.DiscountLabel,
-			PointMilestone:      c.PointMilestone,
-			RewardID:            c.RewardID,
-			PointCost:           c.PointCost,
-			IssuedAt:            c.IssuedAt.Format(time.RFC3339),
-			Used:                c.Used,
-			ProductURL:          c.ProductURL,
+			ID:             doc.Ref.ID,
+			Code:           c.Code,
+			Title:          c.Title,
+			Description:    c.Description,
+			DiscountAmount: c.DiscountAmount,
+			DiscountLabel:  c.DiscountLabel,
+			PointMilestone: c.PointMilestone,
+			RewardID:       c.RewardID,
+			PointCost:      c.PointCost,
+			IssuedAt:       c.IssuedAt.Format(time.RFC3339),
+			Used:           c.Used,
+			// Existing coupons may still store their retired Square Online URL.
+			// Always return the canonical Mobile Order destination instead.
+			ProductURL:          config.AgarukeLabMobileOrderURL,
 			ImageURL:            c.ImageURL,
 			BenefitType:         c.BenefitType,
 			TargetType:          c.TargetType,

@@ -223,11 +223,9 @@ func (h handler) Get(w http.ResponseWriter, r *http.Request) {
 						logger.Error("welcome coupon: pool claim failed: " + err.Error())
 					} else if err == nil {
 						squareCode = code
-						if best.SquareItemID != "" {
-							productURL = fmt.Sprintf("https://food-records.square.site/?item=%s&cc=%s", best.SquareItemID, code)
-						}
 					}
 				}
+				productURL = config.AgarukeLabMobileOrderURL
 				now := time.Now()
 				batch.Set(memberRef.Collection("coupons").NewDoc(), couponDoc{
 					Title:               best.Title,

@@ -674,11 +674,7 @@ function openCouponModal(coupon) {
     } else {
         $('#modal-used-note').hide();
         $('#modal-store-btn').show().prop('disabled', false).text('店舗で使用する');
-        if (coupon.product_url) {
-            $('#modal-mobile-btn').show();
-        } else {
-            $('#modal-mobile-btn').hide();
-        }
+        $('#modal-mobile-btn').show();
     }
 
     $('#coupon-modal').addClass('is-open');
@@ -756,8 +752,8 @@ function useCouponInStore() {
 }
 
 function useCouponMobile() {
-    if (!currentModalCoupon || !currentModalCoupon.product_url) return;
-    var url = currentModalCoupon.product_url;
+    if (!currentModalCoupon) return;
+    var url = currentModalCoupon.product_url || 'https://liff.line.me/2000938587-UKn9iSzI/agaruke-lab?utm_source=point_card&utm_medium=liff&utm_campaign=coupon_use';
     if (liff.isInClient()) {
         liff.openWindow({ url: url, external: false });
     } else {

@@ -133,8 +133,8 @@ LINE UserID をドキュメントIDとするメンバー情報。
 | `expires_at` | timestamp | 有効期限（発行から3ヶ月） |
 | `used` | bool | 使用済みフラグ |
 | `used_at` | timestamp | 使用日時（未使用時はゼロ値） |
-| `square_discount_code` | string | Square割引コード（任意） |
-| `product_url` | string | モバイルオーダーURL（任意） |
+| `square_discount_code` | string | Square割引コード（店舗会計との互換用・任意） |
+| `product_url` | string | `agaruke-lab` の自社Mobile Order LIFF URL |
 
 ### 3.5 `reward_catalog/{rewardId}`
 
@@ -149,7 +149,7 @@ LINE UserID をドキュメントIDとするメンバー情報。
 | `image_url` | string | 画像URL |
 | `sort_order` | int | 表示順（昇順） |
 | `pricing_rule_id` | string | Square Pricing Rule ID（任意） |
-| `square_item_id` | string | Square 商品ID（任意・モバイルオーダーURL生成用） |
+| `square_item_id` | string | Square 商品ID（既存の店舗会計連携用・任意） |
 
 #### デフォルト特典カタログ
 
@@ -390,7 +390,7 @@ QRコードをスキャンしてポイントを付与する。
       "issued_at": "2026-06-01T10:00:00Z",
       "expires_at": "2026-09-01T10:00:00Z",
       "used": false,
-      "product_url": "https://food-records.square.site/?item=XXX&cc=YYY"
+      "product_url": "https://liff.line.me/{MOBILE_ORDER_LIFF_ID}/agaruke-lab?utm_source=point_card&utm_medium=liff&utm_campaign=coupon_use"
     }
   ]
 }
@@ -453,7 +453,7 @@ QRコードをスキャンしてポイントを付与する。
   "point_cost": 200,
   "new_point": 650,
   "square_discount_code": "ABC123",
-  "product_url": "https://food-records.square.site/?item=XXX&cc=ABC123"
+  "product_url": "https://liff.line.me/{MOBILE_ORDER_LIFF_ID}/agaruke-lab?utm_source=point_card&utm_medium=liff&utm_campaign=coupon_use"
 }
 ```
 
@@ -536,7 +536,7 @@ QRコードのLIFF URLは `?code=FRXXXXXXXX` を含む。`liff.state` 経由で�
 
 - 画像・タイトル・説明・有効期限を表示
 - **「店舗で使用する」**: 確認ダイアログ → `POST /coupons/{id}/use`
-- **「モバイルオーダーで使用する」**: `product_url` がある場合のみ表示。LINEアプリ内ブラウザで開く。
+- **「モバイルオーダーで使用する」**: 未使用クーポンで表示。`agaruke-lab` のMobile Order LIFFをLINE内で開く。クーポンID・会員情報はURLへ渡さず、注文時に同一OrganizationのLINE会員として解決する。
 - 交換カタログからモーダルを開いた場合は「{N}pt で交換する」ボタンを表示
 
 ### トースト一覧
@@ -623,13 +623,7 @@ GAS ではサービスアカウントJWTで OAuth2 アクセストークンを�
 
 ### product_url（モバイルオーダー連携）
 
-`reward_catalog.square_item_id` が設定されている場合、Square コード発行成功時に以下のURLを生成：
-
-```
-https://food-records.square.site/?item={square_item_id}&cc={discount_code}
-```
-
-ユーザーはモバイルオーダーURLからオンライン注文時に割引を適用できる。
+すべての未使用クーポンは、固定の`agaruke-lab` Mobile Order LIFF URLを返す。クーポンID、Square割引コード、LINEユーザーIDをURLへ含めない。Mobile Orderが同一OrganizationのLINE会員としてクーポンを取得し、対象商品・店舗・注文確定時の利用可否をサーバー側で検証する。
 
 ### 管理エンドポイント
 
