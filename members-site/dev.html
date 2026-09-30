@@ -258,6 +258,7 @@
             <div class="coupon-modal-footer">
                 <p id="modal-used-note" class="coupon-modal-used-note"></p>
                 <button id="modal-mobile-btn" class="coupon-modal-mobile-btn">モバイルオーダーで使用する</button>
+                <p id="modal-store-prep" class="coupon-modal-store-prep">セルフレジでは、QR読取後に端末で利用するクーポンを選択してください。QRを読むだけでは適用されません。</p>
                 <button id="modal-store-btn" class="coupon-modal-store-btn">セルフレジのQRコードを読み取る</button>
                 <p id="modal-store-help" class="coupon-modal-store-help">セルフレジ画面のQRコードを読み取ると、会計でこのクーポンを使用できます。</p>
                 <button id="modal-manual-use-btn" class="coupon-modal-manual-use-btn">スタッフ対応用：使用済みにする</button>
@@ -489,10 +490,11 @@
             var label = '使用済み';
             if (coupon.used_at) { var ud = new Date(coupon.used_at); label += '（' + ud.getFullYear() + '/' + (ud.getMonth() + 1) + '/' + ud.getDate() + '）'; }
             $('#modal-used-note').text(label).show();
-            $('#modal-store-btn, #modal-store-help, #modal-manual-use-btn, #modal-mobile-btn').hide();
+            $('#modal-store-btn, #modal-store-prep, #modal-store-help, #modal-manual-use-btn, #modal-mobile-btn').hide();
         } else {
             $('#modal-used-note').hide();
             $('#modal-store-btn').show().prop('disabled', false).text('セルフレジのQRコードを読み取る');
+            $('#modal-store-prep').show();
             $('#modal-store-help').show();
             $('#modal-manual-use-btn').show().prop('disabled', false).text('スタッフ対応用：使用済みにする');
             $('#modal-mobile-btn').show();

@@ -671,12 +671,14 @@ function openCouponModal(coupon) {
         }
         $('#modal-used-note').text(usedLabel).show();
         $('#modal-store-btn').hide();
+        $('#modal-store-prep').hide();
         $('#modal-store-help').hide();
         $('#modal-manual-use-btn').hide();
         $('#modal-mobile-btn').hide();
     } else {
         $('#modal-used-note').hide();
         $('#modal-store-btn').show().prop('disabled', false).text('セルフレジのQRコードを読み取る');
+        $('#modal-store-prep').show();
         $('#modal-store-help').show();
         $('#modal-manual-use-btn').show().prop('disabled', false).text('スタッフ対応用：使用済みにする');
         $('#modal-mobile-btn').show();
@@ -707,6 +709,7 @@ function openRewardModal(reward) {
     $('#modal-expiry').hide();
     $('#modal-used-note').hide();
     $('#modal-store-btn').hide();
+    $('#modal-store-prep').hide();
     $('#modal-store-help').hide();
     $('#modal-manual-use-btn').hide();
     $('#modal-mobile-btn').hide();
