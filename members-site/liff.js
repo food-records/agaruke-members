@@ -14,7 +14,8 @@ $(document).ready(function () {
     initializeLiff(window.APP_CONFIG.liffId);
 
     $('#modal-overlay, #modal-close-btn').on('click', closeCouponModal);
-    $('#modal-store-btn').on('click', useCouponInStore);
+    $('#modal-store-btn').on('click', scanKioskQRFromCoupon);
+    $('#modal-manual-use-btn').on('click', markCouponUsedManually);
     $('#modal-mobile-btn').on('click', useCouponMobile);
     $('#modal-reward-exchange-btn').on('click', function () {
         var id = $(this).data('reward-id');
@@ -670,10 +671,14 @@ function openCouponModal(coupon) {
         }
         $('#modal-used-note').text(usedLabel).show();
         $('#modal-store-btn').hide();
+        $('#modal-store-help').hide();
+        $('#modal-manual-use-btn').hide();
         $('#modal-mobile-btn').hide();
     } else {
         $('#modal-used-note').hide();
-        $('#modal-store-btn').show().prop('disabled', false).text('店舗で使用する');
+        $('#modal-store-btn').show().prop('disabled', false).text('セルフレジのQRコードを読み取る');
+        $('#modal-store-help').show();
+        $('#modal-manual-use-btn').show().prop('disabled', false).text('スタッフ対応用：使用済みにする');
         $('#modal-mobile-btn').show();
     }
 
@@ -702,6 +707,8 @@ function openRewardModal(reward) {
     $('#modal-expiry').hide();
     $('#modal-used-note').hide();
     $('#modal-store-btn').hide();
+    $('#modal-store-help').hide();
+    $('#modal-manual-use-btn').hide();
     $('#modal-mobile-btn').hide();
 
     var btnText = canAfford
@@ -723,13 +730,19 @@ function closeCouponModal() {
     $('body').removeClass('modal-open');
 }
 
-function useCouponInStore() {
+function scanKioskQRFromCoupon() {
+    if (!currentModalCoupon || currentModalCoupon.used) return;
+    closeCouponModal();
+    scanQR();
+}
+
+function markCouponUsedManually() {
     if (!currentModalCoupon || currentModalCoupon.used) return;
     showConfirm(
         'スタッフにこの画面をご確認いただいてから「OK」を押してください。\n使用済みにすると元に戻せません。',
         function () {
             var apiurl = window.APP_CONFIG.apiUrl;
-            $('#modal-store-btn').prop('disabled', true).text('処理中...');
+            $('#modal-manual-use-btn').prop('disabled', true).text('処理中...');
             $.ajax({
                 beforeSend: function (request) {
                     request.setRequestHeader('Authorization', 'Bearer ' + _couponToken);
@@ -744,7 +757,7 @@ function useCouponInStore() {
                 error: function (jqXHR) {
                     var msg = jqXHR.responseJSON && jqXHR.responseJSON.message || 'エラーが発生しました';
                     showErrorBanner(msg);
-                    $('#modal-store-btn').prop('disabled', false).text('店舗で使用する');
+                    $('#modal-manual-use-btn').prop('disabled', false).text('スタッフ対応用：使用済みにする');
                 }
             });
         }
