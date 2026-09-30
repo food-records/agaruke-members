@@ -1,5 +1,7 @@
 # agaruke-members
 
+Organization顧客台帳への会員状態投影は`LINE_PROVIDER_ID=food-records-line`を設定した場合だけ有効です。`POST /members/register`成功時に会員フラグを更新し、退会申請時に解除します。顧客台帳の失敗で会員登録・ポイント処理は取り消しません。
+
 FOOD RECORDS メンバーズ ポイントシステム
 
 ## システム概要

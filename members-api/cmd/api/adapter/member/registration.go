@@ -3,6 +3,7 @@ package member
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 
@@ -80,6 +81,10 @@ func (h handler) Register(w http.ResponseWriter, r *http.Request) {
 		if _, err := ref.Update(r.Context(), updates); err != nil {
 			presenter.Error(w, err)
 			return
+		}
+		if err := projectMember(r.Context(), h.fs, ref.ID, member.Name); err != nil {
+			// 会員登録の正本保存を顧客投影の失敗で取り消さない。
+			log.Print("customer projection update failed")
 		}
 		h.Get(w, r)
 		return

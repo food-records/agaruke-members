@@ -271,6 +271,11 @@ func (h handler) Get(w http.ResponseWriter, r *http.Request) {
 		resp.NextRankPoint = ri.NextThreshold
 	}
 
+	if _, registered := registrationConsentFromContext(ctx); registered {
+		if err := projectMember(ctx, h.fs, prof.UserID, prof.DisplayName); err != nil {
+			logger.Error("customer projection update failed: " + err.Error())
+		}
+	}
 	presenter.EncodeWithMessage(w, resp)
 }
 

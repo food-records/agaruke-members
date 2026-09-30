@@ -2,6 +2,7 @@ package member
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -55,6 +56,9 @@ func (h handler) ScheduleDeletion(w http.ResponseWriter, r *http.Request) {
 		presenter.Error(w, err)
 		return
 	}
+	if err := unprojectMember(r.Context(), h.fs, ref.ID); err != nil {
+		log.Print("customer projection deletion update failed")
+	}
 	presenter.EncodeWithMessage(w, deletionResponse{DeletedAt: now.Format(time.RFC3339), PurgeAt: purgeAt.Format(time.RFC3339)})
 }
 
@@ -67,6 +71,9 @@ func (h handler) CancelDeletion(w http.ResponseWriter, r *http.Request) {
 	if _, err := ref.Update(r.Context(), []firestore.Update{{Path: "deleted_at", Value: firestore.Delete}, {Path: "purge_at", Value: firestore.Delete}, {Path: "deletion_requested_at", Value: firestore.Delete}, {Path: "deletion_scheduled_at", Value: firestore.Delete}}); err != nil {
 		presenter.Error(w, err)
 		return
+	}
+	if err := projectMember(r.Context(), h.fs, ref.ID, ""); err != nil {
+		log.Print("customer projection restore failed")
 	}
 	presenter.Success(w)
 }
@@ -103,6 +110,9 @@ func (h handler) Restore(w http.ResponseWriter, r *http.Request) {
 	}); err != nil {
 		presenter.Error(w, err)
 		return
+	}
+	if err := projectMember(r.Context(), h.fs, ref.ID, member.Name); err != nil {
+		log.Print("customer projection restore failed")
 	}
 	presenter.Success(w)
 }
