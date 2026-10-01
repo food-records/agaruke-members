@@ -35,21 +35,23 @@ function showAlert(msg, onClose) {
     };
     $('#dialog-message').text(msg);
     $('#dialog-cancel-btn').hide();
+    $('#dialog-ok-btn').text('OK');
     $('#dialog-ok-btn').off('click').on('click', dismiss);
     $('#dialog-overlay').off('click').on('click', dismiss);
     $('#custom-dialog').addClass('is-open');
     $('body').addClass('dialog-open');
 }
 
-function showConfirm(msg, onOk, onCancel) {
+function showConfirm(msg, onOk, onCancel, options) {
+    options = options || {};
     var dismiss = function () {
         closeDialog();
         if (onCancel) onCancel();
     };
     $('#dialog-message').text(msg);
-    $('#dialog-cancel-btn').show().off('click').on('click', dismiss);
+    $('#dialog-cancel-btn').text(options.cancelLabel || 'キャンセル').show().off('click').on('click', dismiss);
     $('#dialog-overlay').off('click').on('click', dismiss);
-    $('#dialog-ok-btn').off('click').on('click', function () {
+    $('#dialog-ok-btn').text(options.okLabel || 'OK').off('click').on('click', function () {
         closeDialog();
         onOk();
     });
@@ -770,11 +772,18 @@ function markCouponUsedManually() {
 function useCouponMobile() {
     if (!currentModalCoupon) return;
     var url = currentModalCoupon.product_url || 'https://liff.line.me/2000938587-UKn9iSzI/agaruke-lab?utm_source=point_card&utm_medium=liff&utm_campaign=coupon_use';
-    if (liff.isInClient()) {
-        liff.openWindow({ url: url, external: false });
-    } else {
-        window.open(url, '_blank');
-    }
+    showConfirm(
+        'モバイルオーダーでは、この注文に利用できるクーポンが会計画面で自動的に選択・適用されます。必要に応じて会計画面で変更できます。',
+        function () {
+            if (liff.isInClient()) {
+                liff.openWindow({ url: url, external: false });
+            } else {
+                window.open(url, '_blank');
+            }
+        },
+        null,
+        { okLabel: '移動する' }
+    );
 }
 
 // ── トースト ──────────────────────────────
