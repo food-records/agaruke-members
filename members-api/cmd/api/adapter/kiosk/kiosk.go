@@ -471,6 +471,7 @@ func (h handler) FinalizeOrder(w http.ResponseWriter, r *http.Request) {
 	pointAwardedAt := time.Now()
 	resRef := config.DataCollection(h.fs, "kiosk_coupon_reservations").Doc(body.ReservationID)
 	awardedPoints := 0
+	lineUserID := ""
 	err := h.fs.RunTransaction(r.Context(), func(ctx context.Context, tx *firestore.Transaction) error {
 		resSnap, err := tx.Get(resRef)
 		if err != nil {
@@ -480,6 +481,7 @@ func (h handler) FinalizeOrder(w http.ResponseWriter, r *http.Request) {
 		if err := resSnap.DataTo(&res); err != nil {
 			return err
 		}
+		lineUserID = res.MemberID
 		if res.Status == "used" && res.OrderUUID == body.OrderUUID {
 			return nil
 		}
@@ -526,5 +528,8 @@ func (h handler) FinalizeOrder(w http.ResponseWriter, r *http.Request) {
 		presenter.Error(w, err)
 		return
 	}
-	presenter.EncodeWithMessage(w, map[string]interface{}{"awarded_points": awardedPoints})
+	// The Kiosk API uses this server-verified identity to persist a CRM order
+	// association. It must come from the reservation, never the browser's
+	// member number, which makes retries and coupon-less reservations safe.
+	presenter.EncodeWithMessage(w, map[string]interface{}{"awarded_points": awardedPoints, "line_user_id": lineUserID})
 }
