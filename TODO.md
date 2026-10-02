@@ -17,6 +17,12 @@
 - [x] Kiosk・モバイルを横断し、クーポン値引前500円以上の購入へ100ポイントを日本時間の購入日ごとに1回だけ付与する共通台帳へ統一する
 - [ ] 本番実注文でKiosk→モバイル、モバイル→Kiosk、500円未満、500円ちょうど、翌日購入を確認する
 
+## Shopify購入ポイント連携
+
+- [/] Shopify CustomerとLINE Membersを明示連携し、`orders/paid` webhookでShopify注文ごとに基礎100ptを冪等付与するMembers APIを実装した。Shopify Customer Account extension、custom appのscope／webhook登録、Secret Manager設定、テストストア／本番実注文の結合試験は未実施。
+- [ ] Shopify注文の全額返金・取消時に基礎ptを戻すか、失効済み／使用済みポイントの扱いを含めたルールを決めて実装する。
+- [ ] 商品・金額別の傾斜は基礎100ptと独立する`bonus` point logとして、判定時の商品・金額スナップショットとrule versionを保存して追加する。
+
 ## 本番Firestore統合
 
 - [ ] 本番会員カードの`fr-agaruke`とモバイルオーダーの`food-records-prod`を統合する移行方針を確定する

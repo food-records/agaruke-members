@@ -127,6 +127,24 @@ go run ./cmd/migrate-organization
 - `POST /kiosk/checkouts/resolve`: kiosk APIが連携完了を確認し、会員・利用可能クーポンを取得する。
 - クーポン予約・取消・注文確定APIを含む内部APIは`X-Members-Service-Key`で認証する。
 
+## Shopify購入ポイント連携（実装済み・外部設定前）
+
+Shopifyでは、支払済み注文ごとに基礎100ptを付与する。Kiosk／Mobileの同日上限はShopifyへ適用しない。Shopifyを直接訪問した会員も対象にするため、先に会員本人がLINE MembersとShopify Customerを明示連携する。メールアドレス・氏名の推測照合は行わない。
+
+1. Members LIFFがLINEアクセストークン付きで`POST /shopify/customer-link-sessions`を呼び、10分間有効な不透明な`link_token`を受け取る。
+2. Shopify Customer Account extensionは、Shopifyの認証済みcustomer sessionを自アプリのバックエンドで検証してから、内部API `POST /shopify/customer-links/consume`を`X-Members-Service-Key`付きで呼ぶ。本文は`link_token`と`shopify_customer_id`だけとする。
+3. Shopify custom appは`orders/paid`を`POST /shopify/webhooks/orders/paid`へ購読する。APIは生bodyの`X-Shopify-Hmac-Sha256`を検証し、既連携のShopify Customerだけを対象に、`shopify_order_<order ID>_base`のpoint logで冪等に+100ptする。
+
+必要なGit管理外設定値:
+
+| 環境変数 | 用途 |
+| --- | --- |
+| `SHOPIFY_SHOP_DOMAIN` | 許可する`*.myshopify.com`ドメイン。webhook headerと完全一致させる。 |
+| `SHOPIFY_WEBHOOK_SECRET` | Shopify app client secret。webhook HMAC検証だけに使用する。 |
+| `MEMBERS_SERVICE_KEY` | Customer Account extensionのバックエンドから内部consume APIを呼ぶ既存のサービス間秘密値。ブラウザへ渡さない。 |
+
+webhook登録、Customer Account extensionの作成、Secret Manager設定、実店注文の付与、返金時の扱いは未実施である。`orders/paid`を受け取れなかった場合に備え、導入時にはShopify Admin APIによる定期照合jobを追加する。
+
 ### ローカル API を外部公開（LIFF からのアクセス用）
 
 LIFF はブラウザから動作するため、`localhost` には直接アクセスできない。ngrok 等で公開する。

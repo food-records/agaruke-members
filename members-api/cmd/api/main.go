@@ -12,6 +12,7 @@ import (
 	"github.com/foodrecords/members-api/cmd/api/adapter/poolmonitor"
 	"github.com/foodrecords/members-api/cmd/api/adapter/qrcode"
 	"github.com/foodrecords/members-api/cmd/api/adapter/reward"
+	"github.com/foodrecords/members-api/cmd/api/adapter/shopify"
 	"github.com/foodrecords/members-api/cmd/api/adapter/squarecoupon"
 	"github.com/foodrecords/members-api/pkg/config"
 	"github.com/foodrecords/members-api/pkg/logger"
@@ -56,5 +57,6 @@ func newRouter() http.Handler {
 	r.Mount("/rewards", reward.NewRouter())
 	r.Mount("/admin/square-coupons", squarecoupon.NewRouter())
 	r.Mount("/admin/pool-monitor", poolmonitor.NewRouter())
+	r.Mount("/shopify", shopify.NewRouter())
 	return r
 }
