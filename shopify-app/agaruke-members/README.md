@@ -1,5 +1,19 @@
 # Shopify App Template - React Router
 
+## AGARUKE Members の追加構成
+
+`extensions/members-shopify-link/` はCustomer AccountのProfileページに表示する
+AGARUKE Members連携UIです。`shopify app build` と `shopify app config validate --json`
+は通過していますが、まだ`shopify app deploy`は実行していません。
+
+アプリ設定は購入ポイント付与に必要な`read_orders`だけを要求し、
+`orders/paid`を既存Members APIへ届ける定義を含みます。Webhookを実際に有効化するのは
+本番のSecret Manager設定と結合試験が完了してからです。
+
+Customer Account extensionからMembers APIへ連携を確定するには、Shopifyの署名付き
+session tokenを検証するアプリバックエンドを実装する必要があります。内部用の
+`MEMBERS_SERVICE_KEY`をブラウザやextensionへ渡してはいけません。
+
 This is a template for building a [Shopify app](https://shopify.dev/docs/apps/getting-started) using [React Router](https://reactrouter.com/). It was forked from the [Shopify Remix app template](https://github.com/Shopify/shopify-app-template-remix) and converted to React Router.
 
 Rather than cloning this repo, follow the [Quick Start steps](https://github.com/Shopify/shopify-app-template-react-router#quick-start).
