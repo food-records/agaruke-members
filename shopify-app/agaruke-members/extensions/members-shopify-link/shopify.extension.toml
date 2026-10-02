@@ -1,0 +1,14 @@
+api_version = "2026-07"
+
+[[extensions]]
+name = "AGARUKE Members連携"
+handle = "members-shopify-link"
+uid = "82082ea0-8e91-5a7f-0f1b-2b9a391f82ac862b199c"
+type = "ui_extension"
+
+[[extensions.targeting]]
+module = "./src/MembersLinkExtension.jsx"
+target = "customer-account.profile.block.render"
+
+[extensions.capabilities]
+api_access = true
