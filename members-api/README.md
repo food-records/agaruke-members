@@ -171,8 +171,8 @@ members-api/
     └── server/                   HTTP サーバー・グレースフルシャットダウン
 ```
 
-## Kiosk QR連携通知（2026-10-13、未配信）
+## Kiosk QR連携通知（2026-10-13、本番反映済み）
 
 LINEからQRをリンクするTransactionで、会員token更新と同時にroot `kiosk_member_link_signals/{sha256(token)}`へlinked=trueをmergeする。信号のauth_uidとexpires_atはorderec Kiosk APIのQR発行時に設定され、会員ID/番号/ポイント/クーポンを含めない。Kioskは本人限定信号を直接観測し、連携後のresolve/consumeは従来APIで行う。旧クライアントは従来どおりresolve APIを利用可能。
 
-現時点はローカル候補だけで、本番反映は明示許可待ち。Firestore Emulatorを設定して`go test ./...`を実行すると、abort時に通知されないこと、所有者情報を保持して会員識別子を漏らさないことを検証する。
+2026-10-13の明示承認でfr-agarukeのmembers-api-00048-hedへsource60da04c、image digest b88c31860b06…を100%配信した。Firestoreは従来どおりfood-records-prodを利用する。Firestore Emulatorを設定して`go test ./...`を実行すると、abort時に通知されないこと、所有者情報を保持して会員識別子を漏らさないことを検証する。
