@@ -237,7 +237,7 @@ func (h handler) LinkCheckout(w http.ResponseWriter, r *http.Request) {
 		if link.LinkedAt.IsZero() {
 			link.LinkedAt = time.Now()
 		}
-		return tx.Set(doc, link)
+		return writeMemberLink(tx, doc, h.fs.Collection("kiosk_member_link_signals").Doc(tokenHash(body.Token)), link)
 	})
 	if err != nil {
 		presenter.BadRequest(w, err.Error())
@@ -532,4 +532,12 @@ func (h handler) FinalizeOrder(w http.ResponseWriter, r *http.Request) {
 	// association. It must come from the reservation, never the browser's
 	// member number, which makes retries and coupon-less reservations safe.
 	presenter.EncodeWithMessage(w, map[string]interface{}{"awarded_points": awardedPoints, "line_user_id": lineUserID})
+}
+
+// Publish no member identifiers, and commit the notification atomically with linking.
+func writeMemberLink(tx *firestore.Transaction, tokenRef, signalRef *firestore.DocumentRef, link memberTokenDoc) error {
+	if err := tx.Set(tokenRef, link); err != nil {
+		return err
+	}
+	return tx.Set(signalRef, map[string]interface{}{"linked": true}, firestore.MergeAll)
 }
