@@ -176,3 +176,5 @@ members-api/
 LINEからQRをリンクするTransactionで、会員token更新と同時にroot `kiosk_member_link_signals/{sha256(token)}`へlinked=trueをmergeする。信号のauth_uidとexpires_atはorderec Kiosk APIのQR発行時に設定され、会員ID/番号/ポイント/クーポンを含めない。Kioskは本人限定信号を直接観測し、連携後のresolve/consumeは従来APIで行う。旧クライアントは従来どおりresolve APIを利用可能。
 
 2026-10-13の明示承認でfr-agarukeのmembers-api-00048-hedへsource60da04c、image digest b88c31860b06…を100%配信した。Firestoreは従来どおりfood-records-prodを利用する。Firestore Emulatorを設定して`go test ./...`を実行すると、abort時に通知されないこと、所有者情報を保持して会員識別子を漏らさないことを検証する。
+
+最終監査で初回ビルドの作業用runtime由来dirtyメタデータを検出したため、コード差分なしのclean remote6d48ef7から再ビルド。members-api-00050-bud、digest sha256:c77e7c08900d3afc5a0349ca0ed79e0347f1b46ed53e3c6ca71dc05f3c1def2a、Git label6d48ef7、vcs.modified=false、traffic100%へ差替済み。
