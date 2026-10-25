@@ -1,10 +1,10 @@
 # members-api
 
-## アンケート回答特典（配信前）
+## アンケート回答特典（テスト用1件のみ有効）
 
 `POST /members/survey-reward/claim`はLINEアクセストークンでUIDを検証し、`organizations/{organization_uuid}/point_campaigns/agaruke-2026-survey-500/eligible/{uid}`を照合する。キャンペーンが有効期間内で、会員登録と規約同意が済んでいる場合に限り、500ptを会員残高へ一回だけ加算する。ポイント履歴IDはキャンペーンIDで固定し、対象文書の`claimed_at`と同一Transactionで更新する。再送は`already_claimed`を返し、追加加算しない。特典は`total_earned_point`へ加算しない。
 
-対象者登録は`go run ./cmd/survey-reward-provision --file=<非Git管理TSV> --project=<Firestore project> --expires=<RFC3339>`で25件・テスト1件・UID重複を検査する。`--apply`で文書を作成し、`--activate`を併用すると受取可能になる。テストアカウントで本番導線を確認する場合だけ`--include-test`を付け、その対象文書に`test_account=true`を記録する。入力TSVは`UID`列と`区分`列を持つ照合シートの書き出しを使う。公開前に期限と対象を確認し、送信・本番有効化は別工程とする。
+対象者登録は`go run ./cmd/survey-reward-provision --file=<非Git管理TSV> --project=<Firestore project> --expires=<RFC3339>`で25件・テスト1件・UID重複を検査する。`--apply`で文書を作成し、`--activate`を併用すると受取可能になる。テストアカウントで本番導線を確認する場合だけ`--include-test`を付け、その対象文書に`test_account=true`を記録する。入力TSVは`UID`列と`区分`列を持つ照合シートの書き出しを使う。現在はテスト用1件のみを本番で有効化し、実回答者25件は未登録。受取期限は2026-11-24 23:59 JST。詳細はrepositoryの配信記録を参照する。
 
 FOOD RECORDS メンバーズの Go API サーバー。Cloud Run で稼働する。
 
