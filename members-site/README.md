@@ -32,6 +32,8 @@ window.APP_CONFIG = {
 LIFF は LINE アプリ内でしか動作しないため、動作確認は LINE アプリから LIFF URL を開く。
 URL に `?code=XXXXXXXX` を付与することで QRスキャンを省略できる。
 
+アンケート回答特典は`https://liff.line.me/2000938587-06YmdyJ5/?survey_reward=agaruke-2026-survey-500`を開く。共通URLにはUID・シリアルを含めず、APIがLINE認証済みUIDの対象資格を確認する。未登録者は規約同意・登録後に500pt受取を再開し、再訪時の二重加算はしない。本番配信・キャンペーン有効化・対象者への送信は未実施。
+
 既存の「QRコードを読み取る」は通常のポイントQRに加えて、Kioskが表示するLIFF URL形式の連携QRにも対応する。スマートフォン標準カメラから読み取った場合もLIFFを起動し、`kiosk_token`を使ってLINE会員を現在の会計へ紐づける。旧`AGARUKE_KIOSK:`形式も互換性のため読み取れる。
 
 初回利用者はポイントカード利用規約とプライバシーポリシーを確認し、同意チェック後に`POST /members/register`で会員登録する。`GET /members`だけでは新規会員を作成しない。

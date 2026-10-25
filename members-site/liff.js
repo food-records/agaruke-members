@@ -78,15 +78,17 @@ function initializeLiff(liffId) {
                     _couponToken = accessToken;
                     showRewards(accessToken);
                     var code = getParam('code');
+                    var surveyReward = getParam('survey_reward');
                     var kioskToken = getParam('kiosk_token');
                     // LIFF によっては ?code=xxx が liff.state に格納される場合があるためフォールバック
-                    if (!code || !kioskToken) {
+                    if (!code || !kioskToken || !surveyReward) {
                         var liffState = getParam('liff.state');
                         if (liffState) {
                             try {
                                 var decodedState = decodeURIComponent(liffState);
                                 if (!code) code = getParam('code', decodedState);
                                 if (!kioskToken) kioskToken = getParam('kiosk_token', decodedState);
+                                if (!surveyReward) surveyReward = getParam('survey_reward', decodedState);
                             } catch (e) {}
                         }
                     }
@@ -97,6 +99,7 @@ function initializeLiff(liffId) {
                     showPoint(accessToken, function () {
                         showCoupons(accessToken);
                         if (kioskToken && !wasKioskTokenLinked(kioskToken)) linkKioskCheckout(kioskToken);
+                        else if (surveyReward === 'agaruke-2026-survey-500') claimSurveyReward(accessToken);
                         else if (code) checkCode(accessToken, code);
                     });
                 }
@@ -343,6 +346,43 @@ function checkCode(token, code) {
         error: function (jqXHR) {
             var msg = jqXHR.responseJSON && jqXHR.responseJSON.message || jqXHR.statusText || 'network error (status=' + jqXHR.status + ')';
             console.error('[API] /qrcode error:', jqXHR.status, msg);
+            showAlert(msg);
+        }
+    });
+}
+
+function claimSurveyReward(token) {
+    return $.ajax({
+        beforeSend: function (request) {
+            request.setRequestHeader('Authorization', 'Bearer ' + token);
+        },
+        dataType: 'json',
+        url: window.APP_CONFIG.apiUrl + '/members/survey-reward/claim',
+        type: 'POST',
+        success: function (data) {
+            if (!data.data) return;
+            var result = data.data;
+            _currentPoint = result.point;
+            $('#point-card-balance span').text(result.point);
+            var cleanUrl = new URL(window.location.href);
+            cleanUrl.searchParams.delete('survey_reward');
+            cleanUrl.searchParams.delete('liff.state');
+            history.replaceState(null, '', cleanUrl.toString());
+            if (result.already_claimed) {
+                showAlert('アンケート特典の500ポイントは受け取り済みです。');
+            } else if (result.awarded === 500) {
+                $('#point-card-get').text('500 point get!').show();
+                showPointToast(500);
+            }
+        },
+        error: function (jqXHR) {
+            var msg = jqXHR.responseJSON && jqXHR.responseJSON.message || 'ポイントを受け取れませんでした。';
+            if (msg === 'MEMBER_REGISTRATION_REQUIRED' || msg === 'CAMPAIGN_CONSENT_REQUIRED') {
+                openRegistrationDialog(token, function () { claimSurveyReward(token); });
+                return;
+            }
+            if (msg === 'SURVEY_REWARD_NOT_ELIGIBLE') msg = 'このLINEアカウントはアンケート特典の対象ではありません。';
+            if (msg === 'SURVEY_REWARD_UNAVAILABLE') msg = 'アンケート特典の受け取り期間外です。';
             showAlert(msg);
         }
     });

@@ -1,5 +1,11 @@
 # members-api
 
+## アンケート回答特典（配信前）
+
+`POST /members/survey-reward/claim`はLINEアクセストークンでUIDを検証し、`organizations/{organization_uuid}/point_campaigns/agaruke-2026-survey-500/eligible/{uid}`を照合する。キャンペーンが有効期間内で、会員登録と規約同意が済んでいる場合に限り、500ptを会員残高へ一回だけ加算する。ポイント履歴IDはキャンペーンIDで固定し、対象文書の`claimed_at`と同一Transactionで更新する。再送は`already_claimed`を返し、追加加算しない。特典は`total_earned_point`へ加算しない。
+
+対象者登録は`go run ./cmd/survey-reward-provision --file=<非Git管理TSV> --project=<Firestore project> --expires=<RFC3339>`で25件・テスト1件・UID重複を検査する。`--apply`で文書を作成し、`--activate`を併用すると受取可能になる。入力TSVは`UID`列と`区分`列を持つ照合シートの書き出しを使う。公開前に期限と対象を確認し、送信・本番有効化は別工程とする。
+
 FOOD RECORDS メンバーズの Go API サーバー。Cloud Run で稼働する。
 
 - 本番 URL: https://members-api-438247672947.us-central1.run.app
