@@ -23,11 +23,14 @@ func TestReadEligible(t *testing.T) {
 	if err := os.WriteFile(path, []byte(data.String()), 0600); err != nil {
 		t.Fatal(err)
 	}
-	uids, err := readEligible(path)
+	uids, testUID, err := readEligible(path)
 	if err != nil || len(uids) != 25 {
 		t.Fatalf("got %d UIDs, error %v", len(uids), err)
 	}
 	if strings.Contains(strings.Join(uids, ","), fmt.Sprintf("U%032x", 1)) {
 		t.Fatal("test UID included")
+	}
+	if testUID != fmt.Sprintf("U%032x", 1) {
+		t.Fatal("test UID not identified separately")
 	}
 }
