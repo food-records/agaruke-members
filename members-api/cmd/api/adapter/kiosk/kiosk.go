@@ -16,6 +16,7 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"github.com/foodrecords/members-api/pkg/config"
+	"github.com/foodrecords/members-api/pkg/coupontext"
 	"github.com/foodrecords/members-api/pkg/lineauth"
 	"github.com/foodrecords/members-api/pkg/presenter"
 	"github.com/go-chi/chi"
@@ -323,7 +324,7 @@ func (h handler) ResolveCheckout(w http.ResponseWriter, r *http.Request) {
 		if qty <= 0 {
 			qty = 1
 		}
-		coupons = append(coupons, couponResponse{snap.Ref.ID, c.Title, c.Description, c.ExpiresAt.Format(time.RFC3339), benefit, defaultString(c.TargetType, "item_or_option"), limit, qty, c.EligibleStoreIDs, c.EligibleCategoryIDs, c.EligibleItemIDs, c.EligibleOptionIDs})
+		coupons = append(coupons, couponResponse{snap.Ref.ID, coupontext.Title(c.Title, c.TargetType, limit), coupontext.Description(c.Description, c.TargetType, limit, qty), c.ExpiresAt.Format(time.RFC3339), benefit, defaultString(c.TargetType, "item_or_option"), limit, qty, c.EligibleStoreIDs, c.EligibleCategoryIDs, c.EligibleItemIDs, c.EligibleOptionIDs})
 	}
 	sort.Slice(coupons, func(i, j int) bool { return coupons[i].MaxUnitPrice > coupons[j].MaxUnitPrice })
 	presenter.EncodeWithMessage(w, map[string]interface{}{"status": "linked", "member_session_id": tokenHash(body.Token), "member_number": member.Number, "point": member.Point, "coupons": coupons})
@@ -392,7 +393,7 @@ func (h handler) ReserveCoupons(w http.ResponseWriter, r *http.Request) {
 			if qty <= 0 {
 				qty = 1
 			}
-			selected = append(selected, couponResponse{ID: id, Title: c.Title, Description: c.Description, ExpiresAt: c.ExpiresAt.Format(time.RFC3339), BenefitType: benefit, TargetType: defaultString(c.TargetType, "item_or_option"), MaxUnitPrice: limit, FreeQuantity: qty, EligibleStoreIDs: c.EligibleStoreIDs, EligibleCategoryIDs: c.EligibleCategoryIDs, EligibleItemIDs: c.EligibleItemIDs, EligibleOptionIDs: c.EligibleOptionIDs})
+			selected = append(selected, couponResponse{ID: id, Title: coupontext.Title(c.Title, c.TargetType, limit), Description: coupontext.Description(c.Description, c.TargetType, limit, qty), ExpiresAt: c.ExpiresAt.Format(time.RFC3339), BenefitType: benefit, TargetType: defaultString(c.TargetType, "item_or_option"), MaxUnitPrice: limit, FreeQuantity: qty, EligibleStoreIDs: c.EligibleStoreIDs, EligibleCategoryIDs: c.EligibleItemIDs, EligibleOptionIDs: c.EligibleOptionIDs})
 		}
 		selectedSet := map[string]bool{}
 		for _, id := range body.CouponIDs {
