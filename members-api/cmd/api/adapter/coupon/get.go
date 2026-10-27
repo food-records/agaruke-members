@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/foodrecords/members-api/pkg/config"
+	"github.com/foodrecords/members-api/pkg/coupontext"
 	"github.com/foodrecords/members-api/pkg/logger"
 	"github.com/foodrecords/members-api/pkg/presenter"
 	"google.golang.org/grpc/codes"
@@ -71,6 +72,13 @@ type GetResp struct {
 	Coupons []CouponResp `json:"coupons"`
 }
 
+func couponLimit(maxUnitPrice, discountAmount int) int {
+	if maxUnitPrice > 0 {
+		return maxUnitPrice
+	}
+	return discountAmount
+}
+
 func (h handler) Get(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -103,8 +111,8 @@ func (h handler) Get(w http.ResponseWriter, r *http.Request) {
 		resp := CouponResp{
 			ID:             doc.Ref.ID,
 			Code:           c.Code,
-			Title:          c.Title,
-			Description:    c.Description,
+			Title:          coupontext.Title(c.Title, c.TargetType, couponLimit(c.MaxUnitPrice, c.DiscountAmount)),
+			Description:    coupontext.Description(c.Description, c.TargetType, couponLimit(c.MaxUnitPrice, c.DiscountAmount), c.FreeQuantity),
 			DiscountAmount: c.DiscountAmount,
 			DiscountLabel:  c.DiscountLabel,
 			PointMilestone: c.PointMilestone,

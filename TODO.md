@@ -42,3 +42,5 @@
 
 - [x] 会員リンクとUID限定signal更新を同一Transactionで実行し、abort/秘密なし/所有者保持をEmulator検証、Members API00048-hedへ本番配信
 - [ ] Kiosk1.0.20(21)実機で会員QR→連携・クーポン反映を業務確認する
+
+- [ ] 200円無料クーポンのAPI文言を本番反映し、既存Kiosk実機・Mobile LIFFで2商品例外の説明を確認する（コード・単体検査済み、未配信）。

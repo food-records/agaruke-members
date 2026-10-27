@@ -109,3 +109,7 @@ agaruke-members/
 ## GitHub Pages
 
 `master`へ`members-site/**`の変更をpushすると、GitHub Actionsが`members-site/`だけをPagesへ公開する。APIコード、環境変数、認証情報は公開成果物へ含めない。カスタムドメインは`members-site/CNAME`で管理する。
+
+## 200円無料クーポンの文言（2026-10-27）
+
+会員クーポンAPIとKiosk連携APIが表示用`title`・`description`を返す。上限200円の「商品」クーポンではアイスコーヒー・冷やし掛川茶を価格上限の例外として案内する。割引判定の正本はorderec APIにあり、文言はMembers APIで管理する。旧Kiosk実機の固定サブタイトルは端末更新まで残るため、旧版にも見える`title`で例外を案内する。
