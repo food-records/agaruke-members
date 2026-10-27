@@ -1,5 +1,7 @@
 # members-site
 
+2026-10-27: LIFF SDKのCDN固定パスを2.31.2へ変更。モバイルオーダーの`@line/liff`と版を統一した。公開後はLINE内ブラウザ・外部ブラウザでカード表示とログインを確認する。
+
 FOOD RECORDS メンバーズの LIFF フロントエンド。
 GitHub Pages でホスティングされ、LINE アプリ内から開く。
 
