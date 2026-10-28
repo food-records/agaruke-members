@@ -18,4 +18,6 @@ sessionStorageへ5分間、連携有無・購入準備・予定pt・試験mode�
 
 ## 検証・配信
 
-Node12件（通常ページの通信0件、カート強制照会、5分期限、別キー拒否、秘密値をcacheへ含めないこと、旧注記だけの削除と数量/他props保持、既存認証/券/暗号化）、typecheck/build、実themeのLiquid検査を実施。現時点は配信準備中。実カートとcheckoutから注記が消えること、同じカートの通常ページ遷移で再照会がないことを配信後に確認する。
+Node12件（通常ページの通信0件、カート強制照会、5分期限、別キー拒否、秘密値をcacheへ含めないこと、旧注記だけの削除と数量/他props保持、既存認証/券/暗号化）、typecheck/build、実themeのLiquid検査を実施。本番反映済み。実カートで旧注記の消去、連携済み購入特典への切替、商品2点各1・小計2,400円保持を確認。checkout遷移後にブラウザー接続がタイムアウトし、checkout画像・通常ページ遷移の実機通信確認は未完了。通常ページ通信0件は自動検査で確認済み。支払い・注文確定なし。
+
+配信元はclean remote master `e42bff0efdcd92f59f18e1aa54838ffd36d88e42`。Cloud Build `b28bcbb9-9483-4831-afc9-1dc137e9ba3d` SUCCESS、image digest `sha256:72fdfb4ab3f24d4acf843a5570253f8c38ce5fb072791f6b855f14ea251c3bba`。backend `shopify-members-00008-gow` 100%。候補root200/未署名proxy400/未認証purchase-order401を確認。公開proxyでstandard_points=0、checkout_annotation_enabled=falseを照合。Rise188803907757へasset/snippetの2ファイルだけを配信し、直前差分なし・readback完全一致。CPU0.08/256Mi維持、Members APIとアプリ版は変更なし。保護snapshotはGit外 `.runtime/shopify-display-cache-20261028/`。
