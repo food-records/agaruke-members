@@ -46,3 +46,5 @@
 ## 保持/ロールバック
 
 保護runtimeは `agaruke-members/.runtime/shopify-linked-ui-20261028/`。取得テーマやカート/認証状態をGitへ含めない。復元時はtheme-beforeの対象既存ファイルを使い、今回追加したlayout includeを外す。追加asset/snippetは参照を外せば動作しない。API/backendを戻す場合は、今回以外の後続配信SHAがあるかを確認し、別作業の本番変更を巻き戻さない。表示用propertiesは付与の根拠ではないため、復元時にもポイント台帳の補正は不要。
+
+最終照合時、別作業がAPIを `members-api-coupon-a46b18d` / SHA `a46b18d54431aeb11fa3e1cd7750c52711af41c7` / image `sha256:18008c416c04dd6f22048419b97c2f511f734fc5c6ce6602076edcb7ec375a18` へ100%切替済みだった。a46b18dは今回の6c7fde8/f7df96bを包含し、Shopify adapter部分の差分はないことを照合。こちらからその後続配信やtrafficを巻き戻していない。backendは00006-maf/6c7fde8で100%。今回のShopify API/proxy経路のERROR件数は最終照会時0。
