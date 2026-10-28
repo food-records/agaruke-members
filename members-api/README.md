@@ -194,3 +194,5 @@ LINEからQRをリンクするTransactionで、会員token更新と同時にroot
 2026-10-13の明示承認でfr-agarukeのmembers-api-00048-hedへsource60da04c、image digest b88c31860b06…を100%配信した。Firestoreは従来どおりfood-records-prodを利用する。Firestore Emulatorを設定して`go test ./...`を実行すると、abort時に通知されないこと、所有者情報を保持して会員識別子を漏らさないことを検証する。
 
 最終監査で初回ビルドの作業用runtime由来dirtyメタデータを検出したため、コード差分なしのclean remote6d48ef7から再ビルド。members-api-00050-bud、digest sha256:c77e7c08900d3afc5a0349ca0ed79e0347f1b46ed53e3c6ca71dc05f3c1def2a、Git label6d48ef7、vcs.modified=false、traffic100%へ差替済み。
+
+Shopifyの`purchase/action`内 `storefront_status` は、署名済みapp proxyのCustomerまたはカート限定tokenで状態を確認し、継続連携済みCustomerの新カートだけ購入セッションを再開できる。ヘッダー読取では新セッションを作らない。[連携済み表示仕様](../docs/SHOPIFY_LINKED_UI_RELEASE_20261028.md)。
