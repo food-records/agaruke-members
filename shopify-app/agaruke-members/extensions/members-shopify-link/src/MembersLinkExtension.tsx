@@ -6,6 +6,10 @@ export default function () { render(<Members />, document.body); }
 interface Coupon {id: string; code: string; cost: number; minimum: number; status: string; expires_at: string}
 interface State {link_test_only?: boolean; linked: boolean; point: number; member_number: string | number; coupons: Coupon[]; cart_url: string; storefront_url: string}
 interface Intent {token: string; liff_url: string; expires_at: string}
+function memberNumber(value: string | number) {
+  const raw = String(value);
+  return /^\d+$/.test(raw) ? `FR${raw.padStart(6, '0')}` : raw;
+}
 function Members() {
   const [state, setState] = useState<State | null>(null);
   const [intent, setIntent] = useState<Intent | null>(null);
@@ -16,7 +20,7 @@ function Members() {
   const [tier, setTier] = useState<number | null>(null);
   const settings = shopify.settings.value;
   async function call(action: string, fields: Record<string, unknown> = {}) {
-    const backend = String(settings.backend_url || '');
+    const backend = String(settings.backend_url || 'https://shopify-members-438247672947.us-central1.run.app');
     if (!backend || !backend.startsWith('https://')) throw new Error('現在準備中です。時間をおいてお試しください。');
     const token = await shopify.sessionToken.get();
     const res = await fetch(backend.replace(/\/$/, '') + '/api/members', {
@@ -69,7 +73,7 @@ function Members() {
             <s-button disabled={busy} onClick={() => run(async () => setCandidate(await call('intent', {token: intent!.token})))}>LINEでの確認結果を表示</s-button>
             {candidate && !candidate.ready && <s-text>LINEでの同意をお待ちしています。</s-text>}
             {candidate?.ready && <>
-              <s-text>連携する会員番号：{String(candidate.member_number)}。ご自身のカードと一致することを確認してください。</s-text>
+              <s-text>連携する会員番号：{memberNumber(candidate.member_number)}。ご自身のカードと一致することを確認してください。</s-text>
               <s-text-field label="LINEに表示された8文字の確認コード" value={confirmationCode} onInput={event => setConfirmationCode((event.currentTarget as HTMLInputElement).value)} />
               <s-button disabled={busy || confirmationCode.trim().length !== 8} onClick={() => run(confirm)}>このポイントカードと連携する</s-button>
             </>}
@@ -79,7 +83,7 @@ function Members() {
       </s-section>}
       {state?.linked && <s-section heading="連携済み">
         <s-stack gap="base">
-          <s-text>会員番号：{String(state.member_number)} ／ {state.point}pt</s-text>
+          <s-text>会員番号：{memberNumber(state.member_number)} ／ {state.point}pt</s-text>
           {state.link_test_only && <s-text>ポイントカードの連携が完了しました。現在は本人連携の結合試験中です。</s-text>}
           {!state.link_test_only && <>
           <s-text>EC専用クーポンです。店頭用クーポン・他の割引とは併用できません。条件額は税・送料を除く商品小計です。有効期限は交換から3か月です。</s-text>
