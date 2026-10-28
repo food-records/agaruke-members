@@ -32,7 +32,7 @@ test('display cache expires at five minutes and is invalid for another account o
 async function browserRun({key='scope',stored=new Map(),isCart=false,legacy=false,suffix='default'}={}) {
  const originals={document:globalThis.document,window:globalThis.window,sessionStorage:globalThis.sessionStorage,fetch:globalThis.fetch,location:globalThis.location};
  let requests=[];
- globalThis.document={getElementById:()=>({textContent:JSON.stringify({path:'/apps/members',cache_key:key,customer_present:true,is_cart:isCart,legacy_note:legacy})}),querySelectorAll:()=>[],addEventListener:()=>{}};
+ globalThis.document={documentElement:{dataset:{}},getElementById:()=>({textContent:JSON.stringify({path:'/apps/members',cache_key:key,customer_present:true,is_cart:isCart,legacy_note:legacy})}),querySelectorAll:()=>[],addEventListener:()=>{}};
  globalThis.window={Shopify:{routes:{root:'/'}},addEventListener:()=>{}};globalThis.location={pathname:isCart?'/cart':'/collections/all'};
  globalThis.sessionStorage={getItem:k=>stored.get(k)||null,setItem:(k,v)=>stored.set(k,v),removeItem:k=>stored.delete(k)};
  globalThis.fetch=async(url,options)=>{requests.push(url);if(url==='/cart.js')return Response.json({token:'cart-one',attributes:{_agaruke_purchase:'verified-cart-session'},item_count:1,total_price:120000,currency:'JPY',items:[{key:'item',quantity:1,properties:{}}]});assert.equal(url,'/apps/members');assert.equal(JSON.parse(options.body).token,'verified-cart-session');return Response.json({linked:true,ready:true,permanent:true,purchase_token:'',expected_points:0,link_test_only:true,coupon_count:0})};
@@ -46,4 +46,13 @@ test('normal page navigation uses cached display state without any network reque
 test('cart entry revalidates the server despite a valid display cache',async()=>{
  const stored=new Map([[DISPLAY_CACHE_KEY,JSON.stringify(cacheRecord({linked:true,ready:true,expected_points:100},'scope'))]]);
  const result=await browserRun({stored,isCart:true,suffix:'cart-force'});assert.ok(result.requests.includes('/apps/members'));
+});
+
+test('test coupon visibility is limited to exact issued coupon while ordinary exchange stays paused',async()=>{
+ const {isTestCoupon}=await import('../app/test-coupon.ts');
+ const c={id:'test-500-3000-20261028',cost:500,minimum:3000,status:'available'};
+ assert.equal(isTestCoupon(c),true);
+ for(const bad of [{...c,id:'normal'},{...c,status:'pending'},{...c,minimum:7000}])assert.equal(isTestCoupon(bad),false);
+ assert.equal(storefrontPresentation({linked:true,coupons:[c]},cart,true).test_coupon_count,1);
+ assert.equal(storefrontPresentation({linked:false,coupons:[c]},cart,true).test_coupon_count,0);
 });

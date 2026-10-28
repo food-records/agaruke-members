@@ -3,6 +3,7 @@ import {authenticate, unauthenticated} from '../shopify.server';
 import {cartIdentity, proxyCustomer, purchaseCall} from '../purchase.server';
 import {provisionPurchaseCoupon} from '../members.server';
 import {storefrontPresentation} from '../storefront.server';
+import {isTestCoupon} from '../test-coupon';
 import client from '../purchase-client.js?raw';
 
 const headers = {'Cache-Control':'no-store', 'Referrer-Policy':'no-referrer', 'X-Content-Type-Options':'nosniff'};
@@ -54,6 +55,6 @@ export async function action({request}: ActionFunctionArgs) {
       await provisionPurchaseCoupon(coupon, fields, admin.graphql);
       state = await purchaseCall('status',fields);
     }
-    return Response.json({...state,link_test_only:testOnly},{headers});
+    return Response.json({...state,link_test_only:testOnly,test_coupon_ids:(state.coupons||[]).filter(isTestCoupon).map((c:{id:string})=>c.id)},{headers});
   } catch {return Response.json({error:'処理できませんでした。連携状態を確認するか、LINE認証をやり直してください。'},{status:400,headers});}
 }

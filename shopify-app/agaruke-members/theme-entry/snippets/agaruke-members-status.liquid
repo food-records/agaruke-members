@@ -12,5 +12,21 @@
   {%- endfor -%}
   {%- capture members_cache_scope -%}{{ customer.id }}|{{ cart.token }}|{{ cart.item_count }}|{{ cart.total_price }}|{{ cart.currency.iso_code }}|{{ cart.attributes._agaruke_purchase }}{%- endcapture -%}
   <script id="agaruke-members-config" type="application/json">{"path":"/apps/members","cache_key":{{ members_cache_scope | sha256 | json }},"legacy_note":{{ members_legacy_note | json }},"customer_present":{% if customer %}true{% else %}false{% endif %},"is_cart":{% if template.name == 'cart' %}true{% else %}false{% endif %}}</script>
+  <style>
+    html:not([data-agaruke-members-state="unlinked"]) .shopify-section:has(.announcement-bar a[href="/apps/members"]),
+    html:not([data-agaruke-members-state="unlinked"]) .shopify-section:has(.announcement-bar a[href="https://shop.agaruke.com/apps/members"]) { display: none; }
+    html[data-agaruke-members-state="linked"] [data-members-unlinked] { display: none; }
+    html:not([data-agaruke-members-state]) [data-agaruke-member-card] { visibility: hidden; }
+  </style>
+  <script>
+    try {
+      var cfg = JSON.parse(document.getElementById('agaruke-members-config').textContent);
+      var cached = JSON.parse(sessionStorage.getItem('agaruke-members-display-v3') || 'null');
+      if (cached && cached.version === 3 && cached.key === cfg.cache_key && Number.isFinite(cached.at) && Date.now() >= cached.at && Date.now() - cached.at < 300000 && typeof cached.state.linked === 'boolean') {
+        document.documentElement.dataset.agarukeMembersState = cached.state.linked ? 'linked' : 'unlinked';
+      }
+    } catch (_) {}
+  </script>
+  <noscript><style>.shopify-section:has(.announcement-bar a[href*="/apps/members"]) { display: block !important; } [data-agaruke-member-card] { visibility: visible !important; }</style></noscript>
   <script type="module" src="{{ 'agaruke-members-status.js' | asset_url }}"></script>
 {% endunless %}

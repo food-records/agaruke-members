@@ -69,10 +69,11 @@ def prepare(directory, page_url):
         output[name] = prefix + json.dumps(data, ensure_ascii=False, indent=2) + '\n'
     layout = (directory / 'layout/theme.liquid').read_text()
     include = "{% render 'agaruke-members-status' %}"
-    if include not in layout:
-        if layout.count('</body>') != 1:
-            raise ValueError('theme layoutのbody終端を確認できないため停止')
-        layout = layout.replace('</body>', include + '\n  </body>')
+    # Resolve display state and load the hiding CSS before the header is parsed.
+    layout = layout.replace(include, '')
+    if layout.count('</head>') != 1:
+        raise ValueError('theme layoutのhead終端を確認できないため停止')
+    layout = layout.replace('</head>', include + '\n  </head>')
     output['layout/theme.liquid'] = layout
     for name in ('assets/agaruke-members-status.js', 'snippets/agaruke-members-status.liquid'):
         output[name] = (source.parent / name).read_text()

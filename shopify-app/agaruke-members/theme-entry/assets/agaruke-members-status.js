@@ -10,7 +10,7 @@ export function clearLegacyAnnotation(cart) {
 export function cacheRecord(state,key,now=Date.now()) {
   return {version:3,key,at:now,state:{linked:state.linked===true,ready:state.ready===true,permanent:state.permanent===true,
     expected_points:state.expected_points===100?100:0,link_test_only:state.link_test_only!==false,
-    coupon_count:Number.isInteger(state.coupon_count)&&state.coupon_count>0?state.coupon_count:0,coupon_url:'/apps/members'}};
+    coupon_count:Number.isInteger(state.coupon_count)&&state.coupon_count>0?state.coupon_count:0,test_coupon_count:Number.isInteger(state.test_coupon_count)&&state.test_coupon_count>0?state.test_coupon_count:0,coupon_url:'/apps/members'}};
 }
 export function readDisplayCache(storage,key,now=Date.now()) {
   try {
@@ -34,6 +34,7 @@ function initialize(config) {
     return response.json();
   }
   function show(state) {
+    document.documentElement.dataset.agarukeMembersState=state.linked?'linked':'unlinked';
     for(const anchor of document.querySelectorAll('.announcement-bar a')) {
       if(new URL(anchor.href,location.origin).pathname!==config.path)continue;
       const section=anchor.closest('.shopify-section');
@@ -48,8 +49,8 @@ function initialize(config) {
       points.textContent=state.ready?(state.link_test_only?'通常はこの注文で100ポイント。現在は連携試験中のため、今回の付与予定は0ポイントです。':`この注文の獲得予定は${state.expected_points}ポイントです。支払い完了後に付与します。`):'ポイントカードは連携済みです。購入内容を確認すると獲得予定ポイントが表示されます。';
       const coupon=card.querySelector('[data-members-coupons]');coupon.replaceChildren();
       if(state.coupon_count>0) {
-        const text=document.createElement('p');text.textContent=state.link_test_only?`ECクーポンが${state.coupon_count}枚あります。利用開始前のため、現在は確認のみできます。`:`ECクーポンが${state.coupon_count}枚あります。お支払い前に適用してください。`;coupon.append(text);
-        const link=document.createElement('a');link.className='button button--secondary';link.href=state.coupon_url;link.textContent=state.link_test_only?'クーポンを確認する':'クーポンを確認・使う';coupon.append(link);
+        const text=document.createElement('p');text.textContent=state.test_coupon_count>0?`テストクーポン：商品小計3,000円以上で500円引きを使えます。`:state.link_test_only?`ECクーポンが${state.coupon_count}枚あります。利用開始前のため、現在は確認のみできます。`:`ECクーポンが${state.coupon_count}枚あります。お支払い前に適用してください。`;coupon.append(text);
+        const link=document.createElement('a');link.className='button button--secondary';link.href=state.coupon_url;link.textContent=state.test_coupon_count>0?'テストクーポンを使う':state.link_test_only?'クーポンを確認する':'クーポンを確認・使う';coupon.append(link);
       }
     }
   }

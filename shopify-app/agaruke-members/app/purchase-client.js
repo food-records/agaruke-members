@@ -45,11 +45,15 @@
           sessionStorage.removeItem(requestKey); await refresh();
         });
       }
+    }
+    if (!state.completed) {
       for (const c of state.coupons || []) {
+        const testCoupon=(state.test_coupon_ids||[]).includes(c.id);
+        if(state.link_test_only&&!testCoupon)continue;
         if (c.status === 'pending') button(`${c.cost}円券の発行を再開`, async () => { await call('retry', {token: sessionStorage.getItem(key), cart: await cart(), coupon_id: c.id}); await refresh(); });
         else if (c.status === 'available') {
           const note = document.createElement('p'); note.textContent = 'クーポンは一回限りです。コード・適用URLを他の人へ共有しないでください。'; actions.append(note);
-          const a = document.createElement('a'); a.className = 'button'; a.textContent = `${c.cost}円券を適用してカートへ`;
+          const a = document.createElement('a'); a.className = 'button'; a.textContent = `${testCoupon?'【テスト】':''}${c.minimum.toLocaleString()}円以上で${c.cost}円引きを適用してカートへ`;
           a.href = `/discount/${encodeURIComponent(c.code)}?redirect=%2Fcart`; actions.append(a);
         }
       }
