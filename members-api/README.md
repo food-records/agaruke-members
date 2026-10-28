@@ -133,15 +133,15 @@ go run ./cmd/migrate-organization
 - `POST /kiosk/checkouts/resolve`: kiosk APIが連携完了を確認し、会員・利用可能クーポンを取得する。
 - クーポン予約・取消・注文確定APIを含む内部APIは`X-Members-Service-Key`で認証する。
 
-## Shopify直接来店・購入ポイント連携（ローカル実装・検証済み）
+## Shopify直接来店・購入ポイント連携
 
-[現行仕様と配信前設定](../docs/SHOPIFY_DIRECT_ENTRY.md)を正本とする。
+[現行仕様](../docs/SHOPIFY_DIRECT_ENTRY.md)を正本とする。LINE認証先行のログイン/ゲスト2パターンを本番反映した。実機の本人認証は未完了で、アプリの交換/paid/返金処理は連携試験モードで停止中。[配信記録](../docs/SHOPIFY_LINE_FIRST_RELEASE_20261028.md)。
 
-- LINE側`POST /shopify/link-intents/propose`、Shopify公式認証済みbackend専用`POST /shopify/customer/action`で、10分有効・一回限り・8文字確認コード・一対一の本人連携を行う。旧customer-link-sessions／customer-links/consumeの仮APIは公開しない。
-- EC専用の200/500/1,000pt交換券を既存ポイント残高から原子的に交換。同じ要求IDの再送で追加減算しない。店頭券はECへ流用しない。
-- `POST /shopify/webhooks/orders/paid`はHMAC・shop・topicを検証し、JPY・正額・支払済みの連携注文へ基礎100ptを注文単位に一度だけ付与。券消込と注文台帳を同じTransactionで保存。
-- backend専用`POST /shopify/orders/reverse`は、Shopify側で現在注文を照合した取消/全額返金の100ptを一度だけ取消。backend専用`POST /shopify/app-sessions`はAES-GCM暗号文だけを保存するOAuth sessionストア。
-- `SHOPIFY_MEMBERS_ENABLED=true`を明示するまで新機能は無効。`SHOPIFY_SHOP_DOMAIN`、`SHOPIFY_WEBHOOK_SECRET`、`SHOPIFY_LINK_LIFF_URL`、既存`MEMBERS_SERVICE_KEY`を秘密管理とともに設定する。API・backend・Shopifyアプリ・専用ページを本番反映済み。実ユーザーによる本人連携試験待ちで、交換と購入/返金webhookは未有効化。[配信記録](../docs/SHOPIFY_LINK_RELEASE_20261028.md)を参照。
+- 公開 `POST /shopify/purchase/authorize` はLINE本人と同意を検証して一回限りコードを返す。service key専用 `POST /shopify/purchase/action` で開始ブラウザのverifierと照合し、カート限定24時間セッションを作る。
+- Shopify署名で確認済みCustomerだけを継続連携する。`orders/create`のHMACで注文照合情報を保存し、購入セッションを一注文へ固定する。注文Customerだけでは本人認証とみなさない。
+- `orders/paid` は署名・shop・topic・JPY・支払済み・正額を検証し、一注文100ptを冪等付与する。ゲスト対応券の利用事実を先に冪等消込し、ポイント/注文台帳の更新をTransactionで行う。
+- 取消/全額返金はservice key専用 `/shopify/orders/reverse` へ、アプリが現在注文を再照合して依頼する。`/shopify/app-sessions` はAES-GCM暗号文だけを保存する。
+- `SHOPIFY_MEMBERS_ENABLED=true`、`SHOPIFY_LINE_FIRST_ENABLED=true`、`SHOPIFY_SHOP_DOMAIN`、`SHOPIFY_WEBHOOK_SECRET`、`SHOPIFY_LINK_LIFF_URL`、`MEMBERS_SERVICE_KEY`を使用する。秘密値はSecret Managerで管理する。旧手動コードAPIは互換性のため保持するが、現行UIからは使用しない。
 
 ### ローカル API を外部公開（LIFF からのアクセス用）
 

@@ -28,7 +28,7 @@
 
 ## Shopify購入ポイント連携
 
-- [/] Shopify CustomerとLINE Membersを明示連携し、`orders/paid` webhookでShopify注文ごとに基礎100ptを冪等付与するMembers APIを実装した。Shopify Customer Account extension、custom appのscope／webhook登録、Secret Manager設定、テストストア／本番実注文の結合試験は未実施。
+- [/] LINE認証先行のログイン/ゲスト購入連携、注文ごと100pt、アプリ/Secret/webhookを実装・配信した。試験モードを維持し、本人認証と本番実注文の結合試験は未実施。
 - [ ] Shopify注文の全額返金・取消時に基礎ptを戻すか、失効済み／使用済みポイントの扱いを含めたルールを決めて実装する。
 - [ ] 商品・金額別の傾斜は基礎100ptと独立する`bonus` point logとして、判定時の商品・金額スナップショットとrule versionを保存して追加する。
 
@@ -78,5 +78,6 @@
 - [x] LINE認証→ログイン済みなら継続連携／ゲストなら一注文だけの連携を実装し、手動の会員番号・確認コード入力を撤去する。
 - [x] チェックアウトでの初回ログインを、注文完了拡張の認証済みCustomerと署名済み注文情報で照合する。
 - [x] ゲスト対応の一回限りEC券、購入セッションからの100pt付与、二重通知・別カート・別Customer・返金のEmulator回帰検証を追加する。
-- [ ] 本番の新scope/アプリproxy/注文完了拡張/テーマ入口を照合し、本人LINE・Shopifyログインの2パターンを実機確認する。
+- [x] 本番の新scope/アプリproxy/注文完了拡張/テーマ入口を反映し、ページ表示・LINEログイン画面への遷移・remote設定readbackを確認する。
+- [ ] 本人LINE・Shopifyログインの2パターンを実機確認する。
 - [ ] 本人連携試験後、試験モードを解除してクーポン・支払い・取消/返金を結合確認する。
