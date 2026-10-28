@@ -1,14 +1,23 @@
 export const POINT_PROPERTY = '獲得予定ポイント（注文全体）';
-export function pointNotice(state) {
-  if (!state.linked || !state.ready || !state.standard_points) return '';
-  return state.link_test_only ? '0pt（連携試験中・通常100pt）' : `${state.expected_points}pt（支払い完了後に確定）`;
-}
-export function annotationChange(cart, notice) {
-  for (let i=0; i<cart.items.length; i++) {
-    const item=cart.items[i]; const value=i===0?notice:'';
-    if ((item.properties?.[POINT_PROPERTY]||'')!==value) return {id:item.key,quantity:item.quantity,properties:{...item.properties,[POINT_PROPERTY]:value}};
+export const DISPLAY_CACHE_KEY = 'agaruke-members-display-v3';
+export const DISPLAY_CACHE_TTL = 5 * 60 * 1000;
+export function clearLegacyAnnotation(cart) {
+  for (const item of cart.items) {
+    if (item.properties?.[POINT_PROPERTY]) return {id:item.key,quantity:item.quantity,properties:{...item.properties,[POINT_PROPERTY]:''}};
   }
   return null;
+}
+export function cacheRecord(state,key,now=Date.now()) {
+  return {version:3,key,at:now,state:{linked:state.linked===true,ready:state.ready===true,permanent:state.permanent===true,
+    expected_points:state.expected_points===100?100:0,link_test_only:state.link_test_only!==false,
+    coupon_count:Number.isInteger(state.coupon_count)&&state.coupon_count>0?state.coupon_count:0,coupon_url:'/apps/members'}};
+}
+export function readDisplayCache(storage,key,now=Date.now()) {
+  try {
+    const saved=JSON.parse(storage.getItem(DISPLAY_CACHE_KEY)||'null');
+    if(!key||saved?.version!==3||saved.key!==key||!Number.isFinite(saved.at)||now<saved.at||now-saved.at>=DISPLAY_CACHE_TTL)return null;
+    return cacheRecord(saved.state,key,saved.at).state;
+  } catch {return null;}
 }
 if (typeof document !== 'undefined') {
   const configNode=document.getElementById('agaruke-members-config');
@@ -17,7 +26,7 @@ if (typeof document !== 'undefined') {
 function initialize(config) {
   const storageKey='agaruke-purchase-v2';
   const root=window.Shopify?.routes?.root||'/';
-  let running=null;let scheduled=null;let again=false;
+  let running=null;let scheduled=null;let again=false;let forceAgain=false;
   const safeStorage={get(){try{return sessionStorage.getItem(storageKey)||'';}catch{return '';}},set(token){try{if(token)sessionStorage.setItem(storageKey,token);else sessionStorage.removeItem(storageKey);}catch{}}};
   async function request(url,body) {
     const response=await fetch(url,{cache:'no-store',...(body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{})});
@@ -44,16 +53,26 @@ function initialize(config) {
       }
     }
   }
-  async function refresh() {
-    if(running)return running;
+  function cachedState(){try{return readDisplayCache(sessionStorage,config.cache_key);}catch{return null;}}
+  function remember(state){try{if(config.cache_key)sessionStorage.setItem(DISPLAY_CACHE_KEY,JSON.stringify(cacheRecord(state,config.cache_key)));}catch{}}
+  async function refresh(force=false) {
+    if(running){again=true;forceAgain=forceAgain||force;return running;}
+    const cached=cachedState();
+    if(cached)show(cached);
+    if(cached&&!force&&!config.legacy_note)return;
+    const dedicated=location.pathname.replace(/\/$/,'')===config.path;
+    if(dedicated&&!config.legacy_note)return;
     running=(async()=>{
       const cart=await request(root+'cart.js');
+      if(dedicated){await cleanupLegacyNote(cart);return;}
       const token=safeStorage.get()||cart.attributes?._agaruke_purchase||'';
       if(!config.customer_present&&!token) {
         show({linked:false});
-        if(config.is_cart)await annotate(cart,'');
+        remember({linked:false});
+        if(config.is_cart||config.legacy_note)await cleanupLegacyNote(cart);
         return;
       }
+      if(cached&&!force){await cleanupLegacyNote(cart);return;}
       const state=await request(config.path,{action:'storefront_status',token,cart:cart.token||(cart.item_count===0?'empty-cart':''),item_count:cart.item_count,total_price:cart.total_price,currency:cart.currency,resume:config.is_cart});
       if(state.purchase_token) {
         safeStorage.set(state.purchase_token);
@@ -65,29 +84,32 @@ function initialize(config) {
         if(cart.attributes?._agaruke_purchase)await request(root+'cart/update.js',{attributes:{_agaruke_purchase:''}});
       }
       show(state);
-      if(config.is_cart)await annotate(await request(root+'cart.js'),pointNotice(state));
+      remember(state);
+      if(config.is_cart||config.legacy_note)await cleanupLegacyNote(await request(root+'cart.js'));
     })().catch(()=>{
       for(const message of document.querySelectorAll('[data-members-points]'))message.textContent='ポイントの状態を確認できませんでした。ページを再読み込みしてください。';
-    }).finally(()=>{running=null;if(again){again=false;schedule();}});
+    }).finally(()=>{running=null;if(again){const force=forceAgain;again=false;forceAgain=false;schedule(force);}});
     return running;
   }
-  async function annotate(cart,notice) {
-    if(!annotationChange(cart,notice))return;
+  async function cleanupLegacyNote(cart) {
+    if(!clearLegacyAnnotation(cart)){config.legacy_note=false;return;}
     const controls=[...document.querySelectorAll('cart-items input, cart-items button, button[name="checkout"]')].filter(el=>!el.disabled);
     controls.forEach(el=>el.disabled=true);
     try {
       cart=await request(root+'cart.js');
       for(let i=0;i<cart.items.length+2;i++) {
-        const change=annotationChange(cart,notice);if(!change)break;
+        const change=clearLegacyAnnotation(cart);if(!change)break;
         cart=await request(root+'cart/change.js',change);
       }
+      config.legacy_note=false;
       if(typeof publish==='function'&&typeof PUB_SUB_EVENTS!=='undefined')await publish(PUB_SUB_EVENTS.cartUpdate,{source:'agaruke-members',cartData:cart});
     } finally {controls.forEach(el=>{if(el.isConnected)el.disabled=false;});}
   }
-  function schedule(){if(running){again=true;return;}clearTimeout(scheduled);scheduled=setTimeout(refresh,180);}
-  if(typeof subscribe==='function'&&typeof PUB_SUB_EVENTS!=='undefined')subscribe(PUB_SUB_EVENTS.cartUpdate,event=>{if(event.source!=='agaruke-members')schedule();});
-  window.addEventListener('pageshow',event=>{if(event.persisted)schedule();});
+  function schedule(force=false){if(running){again=true;forceAgain=forceAgain||force;return;}clearTimeout(scheduled);scheduled=setTimeout(()=>refresh(force),180);}
+  if(typeof subscribe==='function'&&typeof PUB_SUB_EVENTS!=='undefined')subscribe(PUB_SUB_EVENTS.cartUpdate,event=>{if(event.source!=='agaruke-members')schedule(true);});
+  window.addEventListener('pageshow',event=>{if(event.persisted)schedule(config.is_cart);});
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule();});
-  document.addEventListener('shopify:section:load',schedule);
-  refresh();
+  document.addEventListener('shopify:section:load',()=>schedule());
+  window.addEventListener('agaruke:members-authenticated',()=>{try{sessionStorage.removeItem(DISPLAY_CACHE_KEY);}catch{}show({linked:true});});
+  refresh(config.is_cart);
 }

@@ -5,6 +5,7 @@
   const actions = document.getElementById('members-actions');
   const key = 'agaruke-purchase-v2';
   const proofKey = 'agaruke-line-proof-v2';
+  function invalidateDisplay(){try{sessionStorage.removeItem('agaruke-members-display-v3');}catch{}}
   let state = null;
   function say(text) { message.textContent = text; }
   async function cart() {
@@ -28,6 +29,7 @@
   }
   async function refresh() {
     state = await call('status', {token: sessionStorage.getItem(key), cart: await cart()});
+    invalidateDisplay(); window.dispatchEvent(new Event('agaruke:members-authenticated'));
     actions.replaceChildren();
     say(`会員番号 FR${String(state.member_number).padStart(6, '0')} ／ ${state.point}ポイント。${state.permanent ? 'Shopifyアカウントと連携済みです。' : '今回のお買い物にポイントカードを設定しました。'}`);
     if (state.link_test_only) {
@@ -60,6 +62,7 @@
     button('LINE認証をやり直す', start);
   }
   async function start() {
+    invalidateDisplay();
     const bytes = crypto.getRandomValues(new Uint8Array(32));
     const verifier = Array.from(bytes, x => x.toString(16).padStart(2, '0')).join('');
     const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier));
@@ -76,7 +79,7 @@
       if (!proof || proof.token !== hash.get('grant') || Date.now() - proof.at > 600000) throw new Error('認証を始めたブラウザでショップを開き、LINE認証をやり直してください。');
       const currentCart = await cart();
       const data = await call('consume', {token: proof.token, verifier: proof.verifier, code: hash.get('code'), cart: currentCart});
-      sessionStorage.setItem(key, data.token); localStorage.removeItem(proofKey);
+      sessionStorage.setItem(key, data.token); invalidateDisplay(); localStorage.removeItem(proofKey);
       const updated = await fetch('/cart/update.js', {method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({attributes: {_agaruke_purchase: data.token}})});
       if (!updated.ok) throw new Error('カートへの設定に失敗しました。LINE認証をやり直してください。');
     }

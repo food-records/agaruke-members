@@ -1,7 +1,16 @@
 {% doc %}
-  購入前の会員連携状態を確認し、ヘッダー・カート・注文特典を表示する。
+  会員連携の表示状態を短時間保持し、ヘッダー・カートの購入特典を案内する。
 {% enddoc %}
 {% unless request.design_mode %}
-  <script id="agaruke-members-config" type="application/json">{"path":"/apps/members","customer_present":{% if customer %}true{% else %}false{% endif %},"is_cart":{% if template.name == 'cart' %}true{% else %}false{% endif %}}</script>
+  {%- assign members_legacy_note = false -%}
+  {%- assign members_note_key = '獲得予定ポイント（注文全体）' -%}
+  {%- for item in cart.items -%}
+    {%- if item.properties[members_note_key] != blank -%}
+      {%- assign members_legacy_note = true -%}
+      {%- break -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- capture members_cache_scope -%}{{ customer.id }}|{{ cart.token }}|{{ cart.item_count }}|{{ cart.total_price }}|{{ cart.currency.iso_code }}|{{ cart.attributes._agaruke_purchase }}{%- endcapture -%}
+  <script id="agaruke-members-config" type="application/json">{"path":"/apps/members","cache_key":{{ members_cache_scope | sha256 | json }},"legacy_note":{{ members_legacy_note | json }},"customer_present":{% if customer %}true{% else %}false{% endif %},"is_cart":{% if template.name == 'cart' %}true{% else %}false{% endif %}}</script>
   <script type="module" src="{{ 'agaruke-members-status.js' | asset_url }}"></script>
 {% endunless %}
