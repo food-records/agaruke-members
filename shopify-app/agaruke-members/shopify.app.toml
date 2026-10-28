@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "8ce868e1bc1ba44e2b07896c89c05631"
-application_url = "https://example.com"
+application_url = "https://shopify-members-438247672947.us-central1.run.app"
 embedded = true
 name = "AGARUKE Members"
 
@@ -20,17 +20,11 @@ api_version = "2026-07"
   uri = "/webhooks/app/scopes_update"
   topics = [ "app/scopes_update" ]
 
-  [[webhooks.subscriptions]]
-  uri = "https://members-api-438247672947.us-central1.run.app/shopify/webhooks/orders/paid"
-  topics = [ "orders/paid" ]
-
-  [[webhooks.subscriptions]]
-  uri = "/webhooks/orders/adjustments"
-  topics = [ "refunds/create", "orders/cancelled" ]
+# 購入・返金webhookは本人連携の結合試験後に有効化する。
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = [ "https://shopify-members-438247672947.us-central1.run.app/auth/callback" ]
 
 [build]
 include_config_on_deploy = true
-automatically_update_urls_on_dev = true
+automatically_update_urls_on_dev = false

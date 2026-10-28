@@ -4,7 +4,7 @@ import {useEffect, useState} from 'preact/hooks';
 
 export default function () { render(<Members />, document.body); }
 interface Coupon {id: string; code: string; cost: number; minimum: number; status: string; expires_at: string}
-interface State {linked: boolean; point: number; member_number: string | number; coupons: Coupon[]; cart_url: string; storefront_url: string}
+interface State {link_test_only?: boolean; linked: boolean; point: number; member_number: string | number; coupons: Coupon[]; cart_url: string; storefront_url: string}
 interface Intent {token: string; liff_url: string; expires_at: string}
 function Members() {
   const [state, setState] = useState<State | null>(null);
@@ -60,7 +60,7 @@ function Members() {
       {!state && <s-text>連携状態を確認しています。</s-text>}
       {state && !state.linked && <s-section heading="購入前にポイントカードを連携">
         <s-stack gap="base">
-          <s-text>連携すると、今回のお買い物でクーポンを利用でき、支払完了後に100ptが貯まります。</s-text>
+          <s-text>{state.link_test_only ? "オンラインショップとLINEポイントカードの本人連携を確認します。" : "連携すると、今回のお買い物でクーポンを利用でき、支払完了後に100ptが貯まります。"}</s-text>
           {!intent && <s-button disabled={busy} onClick={() => run(start)}>LINEとの連携を始める</s-button>}
           {intent && <>
             <s-link href={intent.liff_url} target="_blank">LINEでポイントカードを確認する</s-link>
@@ -80,6 +80,8 @@ function Members() {
       {state?.linked && <s-section heading="連携済み">
         <s-stack gap="base">
           <s-text>会員番号：{String(state.member_number)} ／ {state.point}pt</s-text>
+          {state.link_test_only && <s-text>ポイントカードの連携が完了しました。現在は本人連携の結合試験中です。</s-text>}
+          {!state.link_test_only && <>
           <s-text>EC専用クーポンです。店頭用クーポン・他の割引とは併用できません。条件額は税・送料を除く商品小計です。有効期限は交換から3か月です。</s-text>
           {[{cost:200,min:4000},{cost:500,min:7000},{cost:1000,min:12000}].map(t => <s-button key={t.cost} disabled={busy || state.point < t.cost} onClick={() => setTier(t.cost)}>{t.cost}pt → {t.min.toLocaleString()}円以上で{t.cost}円OFF</s-button>)}
           {tier && <s-box padding="base" border="base">
@@ -93,6 +95,7 @@ function Members() {
               ? <s-button disabled={busy} onClick={() => run(async () => { const next = await call('retry', {coupon_id:c.id}); await shopify.storage.delete('members-exchange-' + c.cost); setState(next); })}>発行を再開</s-button>
               : <s-link href={`${state.storefront_url}/discount/${encodeURIComponent(c.code)}?redirect=%2Fcart`}>このクーポンを適用してカートへ戻る</s-link>}
           </s-box>)}
+          </>}
         </s-stack>
       </s-section>}
       <s-button disabled={busy} onClick={() => run(refresh)}>連携状態・残高を更新</s-button>

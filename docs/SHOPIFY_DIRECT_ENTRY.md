@@ -89,3 +89,9 @@ shopify app build
 ```
 
 Shopify AI ToolkitによるGraphQL操作・割引input・Customer Account画面・Liquid blockのschema検証も実施。実ストアを変更する開発サーバーの起動や本番E2Eは、このローカル検証には含まれない。
+
+## 本番連携試験の準備（2026-10-28・ユーザー承認）
+
+ユーザーから顧客未公開のため本番反映し、本人連携の結合試験を先行する指示を受けた。Cloud Run専用backendの追加も、最小0/最大1、CPU 0.08/256MiB、通常増分月0〜200円・10倍利用/遅延/再試行時月約3,000円、1USD=150円仮定・税別、無料枠なしでも試算という条件で承認された。
+
+初回は`SHOPIFY_LINK_TEST_ONLY=true`で交換操作をサーバー側で拒否し、専用ページの交換UIを隠す。`shopify.app.toml`では購入/返金webhookを登録しない。本人連携成功後に、それぞれの試験へ進む。Shopify app URL候補は`https://shopify-members-438247672947.us-central1.run.app`。実サービスURLとの一致を配信時に検証する。
