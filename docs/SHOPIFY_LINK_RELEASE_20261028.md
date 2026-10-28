@@ -9,7 +9,7 @@
 - 公開URLからAGARUKEのログイン画面へ遷移することを確認。
 - `SHOPIFY_LINK_TEST_ONLY=true`。クーポン交換はUIを隠し、APIも403で拒否。
 - 購入・返金webhookは未登録。注文ポイント・クーポン利用の本番試験は本人連携の確認後に進める。
-- 専用アカウントページを作成・保存し、`backend_url`を本番URLへ設定。メニューへのnative app page追加は保存後の反映を確認できなかったため、今回の試験入口は上記の専用URLとする。商品/カートのテーマblockは未配置。顧客向け導線の配置は連携試験後に確認する。
+- 専用アカウントページを作成・保存し、`backend_url`を本番URLへ設定。メニューへのnative app page追加は保存後の反映を確認できなかったため、今回の試験入口は上記の専用URLとする。トップを含む各ページ上部・商品購入ボタン直前・カート会計前に、連携ページへの入口を本番配置済み。アプリblockとは別にRiseの既存案内バーとcustom-liquid設定を使用した。
 
 ## 配信照合
 
@@ -19,7 +19,7 @@
 | --- | --- | --- |
 | Members API | `847d1d15624dec4b8f9a797415b3434c1c8fb069` | `members-api-00054-soq`、us-central1、100% |
 | Shopify backend | `43c4eecfcd0101c9bbf34086f8ff9b908facb69c` | `shopify-members-00001-f9h`、us-central1、100% |
-| Shopify拡張 | `33d287326cc4fc690487b8f02ee1c0ca59092b8b` | `members-link-33d2873`、version `1184551305217` |
+| Shopify拡張・購入前入口 | `e04b6d316e11850f59f8132aa78f75a644773260` | `members-link-e04b6d3`、version `1184565166081`、Rise theme `188803907757` |
 | Members site | `847d1d15624dec4b8f9a797415b3434c1c8fb069` | GitHub Pages workflow SUCCESS |
 
 - API image: `gcr.io/fr-agaruke/members-api@sha256:7b4ebe7f88952b30935244f2b66790f5bf24aa03c51eec8bbe4f181a5204a24b`
@@ -59,6 +59,20 @@
 
 ## 保留・復旧
 
-- 実ユーザーの本人連携試験、注文/クーポン/返金試験と運用条件、storefront入口配置、メニュー保存反映確認が残る。
+- 実ユーザーの本人連携試験、注文/クーポン/返金試験と運用条件、アカウントメニュー保存反映確認が残る。storefront入口の配置は完了。
 - API復旧先は旧`members-api-00052-bor`。旧APIへ戻すと新アプリの連携/session保存は使えなくなるため、Shopify試験を停止してからtrafficを戻す。会員・ポイントデータの削除はしない。
 - ローカル認証設定・証跡はGit管理外の保護runtimeへ保持。Secretary eventのDrive公開は未承認のまま。
+
+## 購入前の連携入口の補正
+
+ユーザーからトップページから購入までの導線に入口が見当たらないとの確認を受け、専用URLだけだった不足を修正した。公開テーマRise（188803907757）の3設定だけを変更。
+
+- `sections/header-group.json`: 未編集の標準「Welcome to our store」を「LINEポイントカードを連携する」リンクへ置換。各ページ上部に表示。
+- `templates/product.json`: custom_liquidの連携案内をbuy_buttons直前へ配置。
+- `templates/cart.json`: custom-liquid sectionをmain-cart-footer直前へ配置。
+- 実テーマ設定はGitへ複製せず、保護runtimeのoriginal/live/readbackとSHA256 manifestへ保持。Gitには再利用可能なpatch scriptとLiquid snippetを保存した。
+- 適用前にremoteを再取得して元データとの一致を確認。3ファイルだけを`--allow-live --nodelete --only`でpushし、再取得したJSONがcandidateと一致することを照合。
+- patchの再実行で差分なし、Liquid schema 2件成功、トップ・実商品・既存1商品のカートで表示と順序を確認。連携CTAからAGARUKEのShopifyログインへ遷移することも確認。カート・決済・注文は変更していない。
+- 試験中のため、入口には購入ポイントやクーポンが開始済みという文言を出さない。実Shopify/LINE本人認証・8文字コードのE2Eは本人操作待ち。
+
+適用コード: `shopify-app/agaruke-members/tools/theme-members-entry.py`。案内snippet: `theme-entry/members-entry.liquid`。現行版を取得したjob-local directoryへ実行し、dry runを確認してから`--apply`する。外部送信はscript自身では行わない。

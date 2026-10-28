@@ -67,7 +67,8 @@
 - [x] API00054-soq、backend00001-f9h、Shopify app version members-link-33d2873を配信し、Secret・scope・SHA/digest・traffic・認証境界を照合。アプリ導入と専用ページ保存を確認。
 - [x] backend→Members API→Firestoreの読取接続、試験modeでの交換403、ERROR記録0件を確認。
 - [ ] 実ユーザーのShopifyログイン→LINE同意→8文字確認コード→連携確定・再訪を確認。
-- [ ] アカウントメニューの保存反映・商品/カートの入口配置を試験後に確認する。今回は専用URLから試験する。
+- [x] トップ上部・商品購入直前・カート会計前の連携入口を本番配置し、表示/順序/遷移とremote readbackを確認する。
+- [ ] アカウントメニューの保存反映を追加確認する。現在はショップ上部・商品・カートから連携へ進める。
 - [ ] 本人連携確認後に交換・paid/取消/返金webhookを段階的に有効化して注文試験を行う。
 
 詳細は[本番配信・本人試験手順](docs/SHOPIFY_LINK_RELEASE_20261028.md)。
