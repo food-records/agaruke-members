@@ -16,7 +16,14 @@ func Title(stored, target string, limit int) string {
 // Description supplies the customer-facing coupon rule from the API.
 func Description(stored, target string, limit, quantity int) string {
 	if limit == 200 && target != "option" {
-		return "200円以下の商品1点無料。アイスコーヒー・冷やし掛川茶も対象です。"
+		object := "商品・オプション"
+		if target == "item" {
+			object = "商品"
+		}
+		if quantity <= 0 {
+			quantity = 1
+		}
+		return fmt.Sprintf("200円以下の%s%d点無料。アイスコーヒー・冷やし掛川茶も対象です。", object, quantity)
 	}
 	if stored != "" {
 		return stored
