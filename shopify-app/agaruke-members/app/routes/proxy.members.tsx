@@ -2,6 +2,7 @@ import type {ActionFunctionArgs, LoaderFunctionArgs} from 'react-router';
 import {authenticate, unauthenticated} from '../shopify.server';
 import {cartIdentity, proxyCustomer, purchaseCall} from '../purchase.server';
 import {provisionPurchaseCoupon} from '../members.server';
+import {storefrontPresentation} from '../storefront.server';
 import client from '../purchase-client.js?raw';
 
 const headers = {'Cache-Control':'no-store', 'Referrer-Policy':'no-referrer', 'X-Content-Type-Options':'nosniff'};
@@ -31,6 +32,13 @@ export async function action({request}: ActionFunctionArgs) {
     const body = JSON.parse(raw);
     if (body.action === 'start') return Response.json(await purchaseCall('start',{challenge:body.challenge}),{headers});
     const cart = cartIdentity(body.cart);
+    if(body.action==='storefront_status') {
+      const customer=proxyCustomer(url);
+      const cartData={item_count:Number(body.item_count),total_price:Number(body.total_price),currency:String(body.currency)};
+      if(!Number.isInteger(cartData.item_count)||cartData.item_count<0||!Number.isFinite(cartData.total_price)||cartData.total_price<0)throw new Error('INVALID_CART');
+      const state=await purchaseCall('storefront_status',{token:body.token,cart,customer,resume:body.resume===true&&cartData.item_count>0});
+      return Response.json(storefrontPresentation(state,cartData,process.env.SHOPIFY_LINK_TEST_ONLY==='true'),{headers});
+    }
     if (body.action === 'consume') return Response.json(await purchaseCall('consume',{token:body.token,code:body.code,verifier:body.verifier,cart}),{headers});
     if (!['status','exchange','retry'].includes(body.action))return new Response(null,{status:400});
     const fields = {token:body.token,cart};

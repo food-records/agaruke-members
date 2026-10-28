@@ -113,3 +113,5 @@ agaruke-members/
 ## Shopify直接来店連携（2026-10-28）
 
 [現行仕様](docs/SHOPIFY_DIRECT_ENTRY.md)。LINE認証を共通の入口とし、Shopifyログインを確認できた場合は継続連携、ゲスト購入は今回の注文だけの連携にする。会員番号・手動確認コードの入力を廃止。ゲスト対応EC専用クーポン、一注文100pt、返金取消のコードと回帰検証を追加した。[配信状態・実機試験](docs/SHOPIFY_LINE_FIRST_RELEASE_20261028.md)。LINEからショップを直接開く入口は次段階。
+
+連携済みのお客様向けのヘッダー/カート/チェックアウト表示は[表示仕様・配信記録](docs/SHOPIFY_LINKED_UI_RELEASE_20261028.md)を参照。Basicプランの標準商品補足欄で注文全体の予定ptを案内する。

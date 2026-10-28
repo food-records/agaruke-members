@@ -94,6 +94,7 @@ func (h handler) PurchaseAuthorize(w http.ResponseWriter, r *http.Request) {
 // Shopify backend after verifying a Shopify-signed authenticated context.
 func (h handler) PurchaseAction(w http.ResponseWriter, r *http.Request) {
 	var b struct {
+		Resume     bool   `json:"resume"`
 		Action     string `json:"action"`
 		Token      string `json:"token"`
 		Code       string `json:"code"`
@@ -112,6 +113,10 @@ func (h handler) PurchaseAction(w http.ResponseWriter, r *http.Request) {
 	}
 	now := time.Now()
 	ctx := r.Context()
+	if b.Action == "storefront_status" {
+		h.storefrontState(w, r, b.Token, b.Cart, customerID(b.Customer), b.Resume, now)
+		return
+	}
 	if b.Action == "start" {
 		if !secureToken.MatchString(b.Challenge) {
 			presenter.BadRequest(w, "INVALID_CHALLENGE")
@@ -277,7 +282,7 @@ func (h handler) PurchaseAction(w http.ResponseWriter, r *http.Request) {
 		coupons := []ecCoupon{}
 		for _, doc := range docs {
 			var c ecCoupon
-			if doc.DataTo(&c) == nil && c.Purchase != "" && c.ExpiresAt.After(now) && (c.Status == "available" || c.Status == "pending") {
+			if doc.DataTo(&c) == nil && (c.Purchase != "" || (p.Customer != "" && c.Customer == p.Customer)) && c.ExpiresAt.After(now) && (c.Status == "available" || c.Status == "pending") {
 				coupons = append(coupons, c)
 			}
 		}

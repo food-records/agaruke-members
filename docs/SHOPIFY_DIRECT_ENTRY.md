@@ -47,3 +47,7 @@
 Go全packageのFirestore Emulator `go test -race ./...` / `go vet ./...`、Nodeの認証・クーポン・暗号化テスト、app/両UI拡張の型検査とbuild、Shopify configとUI/Liquid schema検査を実施する。
 
 旧Shopify先行・手動コード方式の履歴は[旧配信記録](SHOPIFY_LINK_RELEASE_20261028.md)に保持する。現行顧客導線では使用しない。
+
+## 連携済み表示（2026-10-28追記）
+
+[表示とチェックアウト対応](SHOPIFY_LINKED_UI_RELEASE_20261028.md)。連携済みでは上部の連携案内とカートの再連携ボタンを隠し、予定pt/所有EC券の案内に切り替える。Basicプランのため、チェックアウトは標準の商品補足欄に注文全体で一度の予定ptを記載する。試験中は0pt/通常100ptと明示し、予定100ptの確約と誤認させない。継続連携済みCustomerの次のカートでは購入セッションを自動準備する。

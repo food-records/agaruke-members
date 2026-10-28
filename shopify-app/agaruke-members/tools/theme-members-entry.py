@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 from urllib.parse import urlparse
 
-TARGETS = ('sections/header-group.json', 'templates/product.json', 'templates/cart.json')
+TARGETS = ('sections/header-group.json', 'templates/product.json', 'templates/cart.json', 'layout/theme.liquid')
 
 
 def read_config(path):
@@ -23,7 +23,7 @@ def prepare(directory, page_url):
     source = Path(__file__).resolve().parents[1] / 'theme-entry/members-entry.liquid'
     snippet = source.read_text().split('{% enddoc %}', 1)[1].strip()
     snippet = snippet.replace('{{ members_link | escape }}', html.escape(page_url, quote=True))
-    configs = {name: read_config(directory / name) for name in TARGETS}
+    configs = {name: read_config(directory / name) for name in TARGETS if name.endswith(".json")}
     output = {}
     for name, (prefix, original) in configs.items():
         data = copy.deepcopy(original)
@@ -67,6 +67,15 @@ def prepare(directory, page_url):
             before = next((i for i, key in enumerate(order) if sections[key]['type'] == 'main-cart-footer'), len(order))
             data['order'] = order[:before] + [section_id] + order[before:]
         output[name] = prefix + json.dumps(data, ensure_ascii=False, indent=2) + '\n'
+    layout = (directory / 'layout/theme.liquid').read_text()
+    include = "{% render 'agaruke-members-status' %}"
+    if include not in layout:
+        if layout.count('</body>') != 1:
+            raise ValueError('theme layoutのbody終端を確認できないため停止')
+        layout = layout.replace('</body>', include + '\n  </body>')
+    output['layout/theme.liquid'] = layout
+    for name in ('assets/agaruke-members-status.js', 'snippets/agaruke-members-status.liquid'):
+        output[name] = (source.parent / name).read_text()
     return output
 
 
@@ -79,7 +88,8 @@ def main():
     changes = prepare(args.theme_directory, args.page_url)
     for name, content in changes.items():
         path = args.theme_directory / name
-        if path.read_text() == content:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if path.exists() and path.read_text() == content:
             print(name + ': 変更なし')
         elif args.apply:
             temporary = path.with_suffix(path.suffix + '.members-tmp')

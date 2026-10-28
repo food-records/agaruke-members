@@ -1,0 +1,7 @@
+{% doc %}
+  購入前の会員連携状態を確認し、ヘッダー・カート・注文特典を表示する。
+{% enddoc %}
+{% unless request.design_mode %}
+  <script id="agaruke-members-config" type="application/json">{"path":"/apps/members","customer_present":{% if customer %}true{% else %}false{% endif %},"is_cart":{% if template.name == 'cart' %}true{% else %}false{% endif %}}</script>
+  <script type="module" src="{{ 'agaruke-members-status.js' | asset_url }}"></script>
+{% endunless %}

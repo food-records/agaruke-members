@@ -1,9 +1,16 @@
 {% doc %}
-  購入前のLINEポイントカード連携を案内する。
+  購入前のLINEポイントカード連携と購入特典を案内する。
   @param {string} members_link - 購入用LINE認証ページURL
 {% enddoc %}
-<div class="agaruke-members-entry" style="padding: 20px; border: 1px solid rgba(var(--color-foreground), 0.2); border-radius: 8px; margin: 16px 0;">
-  <h2 class="h4" style="margin: 0 0 8px;">LINEポイントカード</h2>
-  <p style="margin: 0 0 16px;">LINEでポイントカードを確認して、ご購入に使えます。Shopifyへのログインは後から選べます。</p>
-  <a class="button button--secondary" style="max-width: 100%;" href="{{ members_link | escape }}">LINEでポイントカードを使う</a>
+<div class="agaruke-members-entry" data-agaruke-member-card style="padding: 20px; border: 1px solid rgba(var(--color-foreground), 0.2); border-radius: 8px; margin: 16px 0;">
+  <div data-members-unlinked>
+    <h2 class="h4" style="margin: 0 0 8px;">LINEポイントカード</h2>
+    <p style="margin: 0 0 16px;">LINEでポイントカードを確認して、ご購入に使えます。Shopifyへのログインは後から選べます。</p>
+    <a class="button button--secondary" style="max-width: 100%;" href="{{ members_link | escape }}">LINEでポイントカードを使う</a>
+  </div>
+  <div data-members-linked hidden>
+    <h2 class="h4" style="margin: 0 0 8px;">購入特典</h2>
+    <p data-members-points role="status"></p>
+    <div data-members-coupons></div>
+  </div>
 </div>
