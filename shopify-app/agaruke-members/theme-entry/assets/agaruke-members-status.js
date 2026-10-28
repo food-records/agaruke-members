@@ -54,7 +54,7 @@ function initialize(config) {
         if(config.is_cart)await annotate(cart,'');
         return;
       }
-      const state=await request(config.path,{action:'storefront_status',token,cart:cart.token,item_count:cart.item_count,total_price:cart.total_price,currency:cart.currency,resume:config.is_cart});
+      const state=await request(config.path,{action:'storefront_status',token,cart:cart.token||(cart.item_count===0?'empty-cart':''),item_count:cart.item_count,total_price:cart.total_price,currency:cart.currency,resume:config.is_cart});
       if(state.purchase_token) {
         safeStorage.set(state.purchase_token);
         await request(root+'cart/update.js',{attributes:{_agaruke_purchase:state.purchase_token}});
