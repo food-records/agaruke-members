@@ -203,7 +203,7 @@ func (h handler) applyPaidOrder(ctx context.Context, order paidOrder, customer s
 			if e = s.DataTo(&p); e != nil {
 				return e
 			}
-			if order.CreatedAt.IsZero() || order.CreatedAt.Before(p.CreatedAt) || order.CreatedAt.After(p.ExpiresAt) || p.CartHash != tokenHash(order.CartToken) || (p.OrderID != "" && p.OrderID != orderID) {
+			if order.CreatedAt.IsZero() || order.CreatedAt.Before(p.CreatedAt.Truncate(time.Second)) || order.CreatedAt.After(p.ExpiresAt) || p.CartHash != tokenHash(order.CartToken) || (p.OrderID != "" && p.OrderID != orderID) {
 				return nil
 			}
 			if p.Customer != "" && p.Customer != customer {

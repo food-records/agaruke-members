@@ -322,14 +322,48 @@ func (h handler) OrdersCreated(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var p purchaseSession
-	if s.DataTo(&p) != nil || order.CreatedAt.IsZero() || order.CreatedAt.Before(p.CreatedAt) || order.CreatedAt.After(p.ExpiresAt) || p.CartHash != tokenHash(order.CartToken) {
+	if s.DataTo(&p) != nil || order.CreatedAt.IsZero() || order.CreatedAt.Before(p.CreatedAt.Truncate(time.Second)) || order.CreatedAt.After(p.ExpiresAt) || p.CartHash != tokenHash(order.CartToken) {
 		presenter.EncodeWithMessage(w, map[string]any{"recorded": false})
 		return
 	}
-	_, e = purchaseOrderRef(h.fs, stringID(order.ID)).Create(r.Context(), purchaseOrderContext{Customer: customerID(stringID(order.Customer.ID)), Purchase: tokenHash(token), CartHash: p.CartHash})
-	if e != nil && status.Code(e) != codes.AlreadyExists {
+	orderID := stringID(order.ID)
+	e = h.fs.RunTransaction(r.Context(), func(ctx context.Context, tx *firestore.Transaction) error {
+		snap, e := tx.Get(purchaseRef(h.fs, token))
+		if e != nil {
+			return e
+		}
+		var current purchaseSession
+		if e = snap.DataTo(&current); e != nil {
+			return e
+		}
+		if current.OrderID != "" && current.OrderID != orderID {
+			return errors.New("PURCHASE_ALREADY_USED")
+		}
+		ref := purchaseOrderRef(h.fs, orderID)
+		old, e := tx.Get(ref)
+		if e != nil && status.Code(e) != codes.NotFound {
+			return e
+		}
+		if e == nil {
+			var oldContext purchaseOrderContext
+			if old.DataTo(&oldContext) != nil || oldContext.Purchase != tokenHash(token) {
+				return errors.New("ORDER_CONTEXT_CONFLICT")
+			}
+			return nil
+		}
+		if e = tx.Create(ref, purchaseOrderContext{Customer: customerID(stringID(order.Customer.ID)), Purchase: tokenHash(token), CartHash: p.CartHash}); e != nil {
+			return e
+		}
+		return tx.Update(purchaseRef(h.fs, token), []firestore.Update{{Path: "order_id", Value: orderID}})
+	})
+	if e != nil {
+		if e.Error() == "PURCHASE_ALREADY_USED" {
+			presenter.EncodeWithMessage(w, map[string]any{"recorded": false})
+			return
+		}
 		presenter.Error(w, e)
 		return
 	}
+
 	presenter.EncodeWithMessage(w, map[string]any{"recorded": true})
 }

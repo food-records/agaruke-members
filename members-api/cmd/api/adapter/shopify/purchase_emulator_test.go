@@ -106,6 +106,10 @@ func TestGuestPurchaseEmulator(t *testing.T) {
 		Code string `json:"code"`
 	}{c["code"].(string)})
 	recordPurchaseOrder(t, h, order)
+	recordPurchaseOrder(t, h, purchaseOrder(token, "7004", "cart-original"))
+	if _, e := purchaseOrderRef(h.fs, "7004").Get(ctx); e == nil {
+		t.Fatal("purchase reserved twice")
+	}
 	wrong := purchaseOrder(token, "7002", "wrong-cart")
 	if n, e := h.applyPaidOrder(ctx, wrong, "123", time.Now()); e != nil || n != 0 {
 		t.Fatal(n, e)
@@ -172,4 +176,19 @@ func signatureForTest(raw []byte) string {
 	m := hmac.New(sha256.New, []byte("test-secret"))
 	m.Write(raw)
 	return base64.StdEncoding.EncodeToString(m.Sum(nil))
+}
+
+func TestGuestCustomerProfileDoesNotAuthenticateEmulator(t *testing.T) {
+	h, ctx := emulator(t)
+	t.Setenv("SHOPIFY_LINE_FIRST_ENABLED", "true")
+	_, uid := purchaseFixture(t, h, ctx)
+	_, e := linkRef(h.fs, "123").Set(ctx, customerLinkDoc{LineUserID: uid, ShopifyCustomer: "123", ShopDomain: configuredShop()})
+	if e != nil {
+		t.Fatal(e)
+	}
+	order := purchaseOrder("", "9001", "cart-original")
+	order.NoteAttributes = nil
+	if n, e := h.applyPaidOrder(ctx, order, "123", time.Now()); e != nil || n != 0 {
+		t.Fatal("guest email treated as authentication", n, e)
+	}
 }
