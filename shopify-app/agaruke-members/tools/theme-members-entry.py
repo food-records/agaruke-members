@@ -77,6 +77,12 @@ def prepare(directory, page_url):
     output['layout/theme.liquid'] = layout
     for name in ('assets/agaruke-members-status.js', 'snippets/agaruke-members-status.liquid'):
         output[name] = (source.parent / name).read_text()
+    for name in ('sections/main-cart-footer.liquid', 'sections/main-cart-items.liquid'):
+        text=(directory / name).read_text()
+        text=text.replace('{{ discount.title | escape }}', "{% render 'agaruke-discount-label', title: discount.title %}")
+        text=text.replace('{{ discount.discount_application.title | escape }}', "{% render 'agaruke-discount-label', title: discount.discount_application.title %}")
+        output[name]=text
+    output['snippets/agaruke-discount-label.liquid']=(source.parent/'snippets/agaruke-discount-label.liquid').read_text()
     return output
 
 

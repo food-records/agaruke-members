@@ -1,5 +1,11 @@
 export const POINT_PROPERTY = '獲得予定ポイント（注文全体）';
 export const DISPLAY_CACHE_KEY = 'agaruke-members-display-v3';
+export function automaticDiscount(cart,code) {
+  if(typeof code!=='string'||!/^AMTEST[A-F0-9]{32}$/.test(code))return null;
+  const existing=cart.discount_codes||[];
+  if(existing.length||(cart.cart_level_discount_applications||[]).length)return null;
+  return {discount:code};
+}
 export const DISPLAY_CACHE_TTL = 5 * 60 * 1000;
 export function clearLegacyAnnotation(cart) {
   for (const item of cart.items) {
@@ -49,7 +55,8 @@ function initialize(config) {
       points.textContent=state.ready?(state.link_test_only?'通常はこの注文で100ポイント。現在は連携試験中のため、今回の付与予定は0ポイントです。':`この注文の獲得予定は${state.expected_points}ポイントです。支払い完了後に付与します。`):'ポイントカードは連携済みです。購入内容を確認すると獲得予定ポイントが表示されます。';
       const coupon=card.querySelector('[data-members-coupons]');coupon.replaceChildren();
       if(state.coupon_count>0) {
-        const text=document.createElement('p');text.textContent=state.test_coupon_count>0?`テストクーポン：商品小計3,000円以上で500円引きを使えます。`:state.link_test_only?`ECクーポンが${state.coupon_count}枚あります。利用開始前のため、現在は確認のみできます。`:`ECクーポンが${state.coupon_count}枚あります。お支払い前に適用してください。`;coupon.append(text);
+        const text=document.createElement('p');text.textContent=state.test_coupon_count>0?`テストクーポン：商品小計3,000円以上で500円引きが自動適用されます。`:state.link_test_only?`ECクーポンが${state.coupon_count}枚あります。利用開始前のため、現在は確認のみできます。`:`ECクーポンが${state.coupon_count}枚あります。お支払い前に適用してください。`;coupon.append(text);
+        if(state.test_coupon_count>0)continue;
         const link=document.createElement('a');link.className='button button--secondary';link.href=state.coupon_url;link.textContent=state.test_coupon_count>0?'テストクーポンを使う':state.link_test_only?'クーポンを確認する':'クーポンを確認・使う';coupon.append(link);
       }
     }
@@ -83,6 +90,20 @@ function initialize(config) {
       } else if(!state.linked) {
         safeStorage.set('');
         if(cart.attributes?._agaruke_purchase)await request(root+'cart/update.js',{attributes:{_agaruke_purchase:''}});
+      }
+      if(config.is_cart&&state.automatic_coupon) {
+        const fresh=await request(root+'cart.js');
+        const change=automaticDiscount(fresh,state.automatic_coupon);
+        if(change) {
+          const footer=document.getElementById('main-cart-footer');
+          const section=footer?.dataset.id;
+          const updated=await request(root+'cart/update.js',{...change,...(section?{sections:[section],sections_url:location.pathname}:{})});
+          if(section&&updated.sections?.[section]) {
+            const parsed=new DOMParser().parseFromString(updated.sections[section],'text/html');
+            const target=footer.querySelector('.js-contents');const source=parsed.querySelector('.js-contents');
+            if(target&&source)target.innerHTML=source.innerHTML;
+          }
+        }
       }
       show(state);
       remember(state);

@@ -1,0 +1,10 @@
+{% doc %}
+  割引コードを顧客向けの名称へ変換する。他の割引は元の表示を維持する。
+  @param {string} title - Shopifyが返す割引表示名
+{% enddoc %}
+{%- assign members_discount_prefix = title | slice: 0, 6 -%}
+{%- if members_discount_prefix == 'AMTEST' and title.size == 38 -%}
+  テストクーポン：500円引き
+{%- else -%}
+  {{- title | escape -}}
+{%- endif -%}
