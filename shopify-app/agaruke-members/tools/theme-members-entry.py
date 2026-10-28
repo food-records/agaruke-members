@@ -4,6 +4,7 @@ import argparse
 import copy
 import html
 import json
+import re
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -70,7 +71,7 @@ def prepare(directory, page_url):
     layout = (directory / 'layout/theme.liquid').read_text()
     include = "{% render 'agaruke-members-status' %}"
     # Resolve display state and load the hiding CSS before the header is parsed.
-    layout = layout.replace(include, '')
+    layout = re.sub(r'^[ \t]*' + re.escape(include) + r'[ \t]*\n?', '', layout, flags=re.MULTILINE)
     if layout.count('</head>') != 1:
         raise ValueError('theme layoutのhead終端を確認できないため停止')
     layout = layout.replace('</head>', include + '\n  </head>')
