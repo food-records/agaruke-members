@@ -1,5 +1,11 @@
 # members-api
 
+## アンケート回答特典（テスト用1件のみ有効）
+
+`POST /members/survey-reward/claim`はLINEアクセストークンでUIDを検証し、`organizations/{organization_uuid}/point_campaigns/agaruke-2026-survey-500/eligible/{uid}`を照合する。キャンペーンが有効期間内で、会員登録と規約同意が済んでいる場合に限り、500ptを会員残高へ一回だけ加算する。ポイント履歴IDはキャンペーンIDで固定し、対象文書の`claimed_at`と同一Transactionで更新する。再送は`already_claimed`を返し、追加加算しない。特典は`total_earned_point`へ加算しない。
+
+対象者登録は`go run ./cmd/survey-reward-provision --file=<非Git管理TSV> --project=<Firestore project> --expires=<RFC3339>`で25件・テスト1件・UID重複を検査する。`--apply`で文書を作成し、`--activate`を併用すると受取可能になる。テストアカウントで本番導線を確認する場合だけ`--include-test`を付け、その対象文書に`test_account=true`を記録する。入力TSVは`UID`列と`区分`列を持つ照合シートの書き出しを使う。現在はテスト用1件のみを本番で有効化し、実回答者25件は未登録。受取期限は2026-11-24 23:59 JST。詳細はrepositoryの配信記録を参照する。
+
 FOOD RECORDS メンバーズの Go API サーバー。Cloud Run で稼働する。
 
 - 本番 URL: https://members-api-438247672947.us-central1.run.app
@@ -188,3 +194,11 @@ members-api/
     ├── presenter/                JSON レスポンス生成
     └── server/                   HTTP サーバー・グレースフルシャットダウン
 ```
+
+## Kiosk QR連携通知（2026-10-13、本番反映済み）
+
+LINEからQRをリンクするTransactionで、会員token更新と同時にroot `kiosk_member_link_signals/{sha256(token)}`へlinked=trueをmergeする。信号のauth_uidとexpires_atはorderec Kiosk APIのQR発行時に設定され、会員ID/番号/ポイント/クーポンを含めない。Kioskは本人限定信号を直接観測し、連携後のresolve/consumeは従来APIで行う。旧クライアントは従来どおりresolve APIを利用可能。
+
+2026-10-13の明示承認でfr-agarukeのmembers-api-00048-hedへsource60da04c、image digest b88c31860b06…を100%配信した。Firestoreは従来どおりfood-records-prodを利用する。Firestore Emulatorを設定して`go test ./...`を実行すると、abort時に通知されないこと、所有者情報を保持して会員識別子を漏らさないことを検証する。
+
+最終監査で初回ビルドの作業用runtime由来dirtyメタデータを検出したため、コード差分なしのclean remote6d48ef7から再ビルド。members-api-00050-bud、digest sha256:c77e7c08900d3afc5a0349ca0ed79e0347f1b46ed53e3c6ca71dc05f3c1def2a、Git label6d48ef7、vcs.modified=false、traffic100%へ差替済み。

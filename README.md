@@ -4,6 +4,14 @@ Organization顧客台帳への会員状態投影は`LINE_PROVIDER_ID=food-record
 
 FOOD RECORDS メンバーズ ポイントシステム
 
+## 2026年アンケート回答特典（配信前）
+
+回答者向け500ptは、共通LIFF URL `https://liff.line.me/2000938587-06YmdyJ5/?survey_reward=agaruke-2026-survey-500` から受け取る設計。LIFF認証後、未登録者と同意履歴のない既存会員は規約同意を経て登録する。APIは検証済みLINE UIDを、organization配下の`point_campaigns/agaruke-2026-survey-500/eligible/{uid}`と照合する。本人だけが受け取れ、会員残高・ポイント履歴・受取時刻をFirestore Transactionで一度に更新する。特典は累積ランク対象外。共通リンクにUIDやシリアルを含めない。
+
+運用データはGitへ入れない。`members-api/cmd/survey-reward-provision`は照合シートのTSVを検査し、実回答者25件とテスト用1件を区別する。`--include-test`を付けた場合だけテスト用UIDを別扱いの対象文書として追加する。`--apply`なしでは読取検査のみ。`--apply`でキャンペーンと対象文書を作成し、`--activate`を付けた場合だけ受取を有効にする。有効期限は`--expires`で明示する。既存キャンペーンへの再投入は失敗し、受取済み記録を上書きしない。
+
+2026-10-25にAPIとサイトを本番配信し、テスト用UIDの対象文書1件だけを有効化した。実回答者25件の受取対象登録・一斉配信は未実施。指定テストUIDへのリンク1通はLINE APIで受理されたが、実端末表示と受取操作は未確認。詳細は[配信記録](docs/SURVEY_REWARD_RELEASE_20261025.md)を参照する。
+
 ## システム概要
 
 LINEミニアプリ（LIFF）を使ったQRコード型ポイント付与システム。

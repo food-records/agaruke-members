@@ -1,5 +1,7 @@
 # members-site
 
+2026-10-27: LIFF SDKのCDN固定パスを2.31.2へ変更。モバイルオーダーの`@line/liff`と版を統一した。公開後はLINE内ブラウザ・外部ブラウザでカード表示とログインを確認する。
+
 FOOD RECORDS メンバーズの LIFF フロントエンド。
 GitHub Pages でホスティングされ、LINE アプリ内から開く。
 
@@ -31,6 +33,8 @@ window.APP_CONFIG = {
 
 LIFF は LINE アプリ内でしか動作しないため、動作確認は LINE アプリから LIFF URL を開く。
 URL に `?code=XXXXXXXX` を付与することで QRスキャンを省略できる。
+
+アンケート回答特典は`https://liff.line.me/2000938587-06YmdyJ5/?survey_reward=agaruke-2026-survey-500`を開く。共通URLにはUID・シリアルを含めず、APIがLINE認証済みUIDの対象資格を確認する。未登録者は規約同意・登録後に500pt受取を再開し、再訪時の二重加算はしない。2026-10-25に本番配信し、指定テストUIDのみ受取対象としてリンク1通をPushした。実回答者への配信は未実施。
 
 既存の「QRコードを読み取る」は通常のポイントQRに加えて、Kioskが表示するLIFF URL形式の連携QRにも対応する。スマートフォン標準カメラから読み取った場合もLIFFを起動し、`kiosk_token`を使ってLINE会員を現在の会計へ紐づける。旧`AGARUKE_KIOSK:`形式も互換性のため読み取れる。
 

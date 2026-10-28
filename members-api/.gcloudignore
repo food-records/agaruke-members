@@ -12,6 +12,7 @@
 # below:
 .git
 .gitignore
+#!include:.gitignore
 
 # Binaries for programs and plugins
 *.exe

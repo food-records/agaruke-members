@@ -1,0 +1,12 @@
+.git
+.gitignore
+.gcloudignore
+.env
+.env.*
+.gitconfig
+key.json
+key.json.*
+key.*.json
+id_rsa
+testdata/db.json
+*.test
