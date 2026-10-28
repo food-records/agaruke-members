@@ -43,13 +43,19 @@ type customerLinkDoc struct {
 }
 
 type paidOrder struct {
-	ID              json.RawMessage `json:"id"`
-	Currency        string          `json:"currency"`
-	Subtotal        string          `json:"subtotal_price"`
-	TotalPrice      string          `json:"total_price"`
-	FinancialStatus string          `json:"financial_status"`
-	CancelledAt     *time.Time      `json:"cancelled_at"`
-	Test            bool            `json:"test"`
+	ID             json.RawMessage `json:"id"`
+	CartToken      string          `json:"cart_token"`
+	CreatedAt      time.Time       `json:"created_at"`
+	NoteAttributes []struct {
+		Name  string `json:"name"`
+		Value string `json:"value"`
+	} `json:"note_attributes"`
+	Currency        string     `json:"currency"`
+	Subtotal        string     `json:"subtotal_price"`
+	TotalPrice      string     `json:"total_price"`
+	FinancialStatus string     `json:"financial_status"`
+	CancelledAt     *time.Time `json:"cancelled_at"`
+	Test            bool       `json:"test"`
 	DiscountCodes   []struct {
 		Code string `json:"code"`
 	} `json:"discount_codes"`
@@ -148,11 +154,15 @@ func (h handler) OrdersPaid(w http.ResponseWriter, r *http.Request) {
 		presenter.EncodeWithMessage(w, map[string]any{"awarded_points": 0, "reason": "INELIGIBLE_ORDER"})
 		return
 	}
+	if err := h.consumeBearerCoupons(r.Context(), order); err != nil {
+		presenter.Error(w, errors.New("COUPON_PROCESSING_FAILED"))
+		return
+	}
 	id := ""
 	if order.Customer != nil {
 		id = customerID(stringID(order.Customer.ID))
 	}
-	if id == "" {
+	if id == "" && purchaseToken(order) == "" {
 		presenter.EncodeWithMessage(w, map[string]any{"awarded_points": 0, "reason": "MEMBER_NOT_LINKED"})
 		return
 	}
@@ -175,16 +185,43 @@ func (h handler) applyPaidOrder(ctx context.Context, order paidOrder, customer s
 		} else if status.Code(e) != codes.NotFound {
 			return e
 		}
-		s, e := tx.Get(linkRef(h.fs, customer))
-		if status.Code(e) == codes.NotFound {
+		var link customerLinkDoc
+		var purchase *purchaseSession
+		token := purchaseToken(order)
+		if token == "" && os.Getenv("SHOPIFY_LINE_FIRST_ENABLED") == "true" {
 			return nil
 		}
-		if e != nil {
-			return e
-		}
-		var link customerLinkDoc
-		if e = s.DataTo(&link); e != nil {
-			return e
+		if token != "" {
+			s, e := tx.Get(purchaseRef(h.fs, token))
+			if status.Code(e) == codes.NotFound {
+				return nil
+			}
+			if e != nil {
+				return e
+			}
+			var p purchaseSession
+			if e = s.DataTo(&p); e != nil {
+				return e
+			}
+			if order.CreatedAt.IsZero() || order.CreatedAt.Before(p.CreatedAt) || order.CreatedAt.After(p.ExpiresAt) || p.CartHash != tokenHash(order.CartToken) || (p.OrderID != "" && p.OrderID != orderID) {
+				return nil
+			}
+			if p.Customer != "" && p.Customer != customer {
+				return errors.New("PURCHASE_CUSTOMER_CONFLICT")
+			}
+			link.LineUserID = p.UID
+			purchase = &p
+		} else {
+			s, e := tx.Get(linkRef(h.fs, customer))
+			if status.Code(e) == codes.NotFound {
+				return nil
+			}
+			if e != nil {
+				return e
+			}
+			if e = s.DataTo(&link); e != nil {
+				return e
+			}
 		}
 		memberRef := config.DataCollection(h.fs, "members").Doc(link.LineUserID)
 		m, e := activeMember(tx, memberRef)
@@ -207,7 +244,7 @@ func (h handler) applyPaidOrder(ctx context.Context, order paidOrder, customer s
 			if e = s.DataTo(&c); e != nil {
 				return e
 			}
-			if c.Customer != customer || c.UID != link.LineUserID || (c.Status != "available" && c.Status != "pending") || (c.OrderID != "" && c.OrderID != orderID) {
+			if (c.Purchase == "" && (c.Customer != customer || c.UID != link.LineUserID)) || (c.Status != "available" && c.Status != "pending" && !(c.Status == "used" && c.OrderID == orderID)) || (c.OrderID != "" && c.OrderID != orderID) {
 				return errors.New("COUPON_ORDER_CONFLICT")
 			}
 			coupons = append(coupons, c)
@@ -232,7 +269,12 @@ func (h handler) applyPaidOrder(ctx context.Context, order paidOrder, customer s
 			if e = tx.Set(ecRef(h.fs, c.Code), c); e != nil {
 				return e
 			}
-			if e = tx.Set(memberRef.Collection("shopify_coupons").Doc(c.ID), c); e != nil {
+			if e = tx.Set(config.DataCollection(h.fs, "members").Doc(c.UID).Collection("shopify_coupons").Doc(c.ID), c); e != nil {
+				return e
+			}
+		}
+		if purchase != nil {
+			if e = tx.Update(purchaseRef(h.fs, token), []firestore.Update{{Path: "order_id", Value: orderID}}); e != nil {
 				return e
 			}
 		}
@@ -243,4 +285,63 @@ func (h handler) applyPaidOrder(ctx context.Context, order paidOrder, customer s
 		return nil
 	})
 	return awarded, err
+}
+
+func purchaseToken(order paidOrder) string {
+	token := ""
+	for _, a := range order.NoteAttributes {
+		if a.Name == "_agaruke_purchase" {
+			if token != "" || !secureToken.MatchString(a.Value) {
+				return "invalid"
+			}
+			token = a.Value
+		}
+	}
+	return token
+}
+
+// A guest-compatible code is a bearer voucher. Its actual Shopify redemption
+// consumes the original owner's voucher even when the code was shared.
+func (h handler) consumeBearerCoupons(ctx context.Context, order paidOrder) error {
+	return h.fs.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
+		coupons := []ecCoupon{}
+		id := stringID(order.ID)
+		for _, d := range order.DiscountCodes {
+			if !ecCodePattern.MatchString(d.Code) {
+				continue
+			}
+			s, e := tx.Get(ecRef(h.fs, d.Code))
+			if status.Code(e) == codes.NotFound {
+				continue
+			}
+			if e != nil {
+				return e
+			}
+			var c ecCoupon
+			if e = s.DataTo(&c); e != nil {
+				return e
+			}
+			if c.Purchase == "" {
+				continue
+			}
+			if c.OrderID != "" && c.OrderID != id {
+				return errors.New("COUPON_ORDER_CONFLICT")
+			}
+			if c.Status == "void" || c.Status == "used" {
+				continue
+			}
+			c.Status = "used"
+			c.OrderID = id
+			coupons = append(coupons, c)
+		}
+		for _, c := range coupons {
+			if e := tx.Set(ecRef(h.fs, c.Code), c); e != nil {
+				return e
+			}
+			if e := tx.Set(config.DataCollection(h.fs, "members").Doc(c.UID).Collection("shopify_coupons").Doc(c.ID), c); e != nil {
+				return e
+			}
+		}
+		return nil
+	})
 }

@@ -26,11 +26,14 @@ func NewRouter() http.Handler {
 		})
 	})
 	r.Post("/webhooks/orders/paid", h.OrdersPaid)
+	r.Post("/webhooks/orders/create", h.OrdersCreated)
 
 	r.Post("/link-intents/propose", h.ProposeLink)
+	r.Post("/purchase/authorize", h.PurchaseAuthorize)
 	r.Group(func(internal chi.Router) {
 		internal.Use(h.serviceAuth)
 		internal.Post("/customer/action", h.CustomerAction)
+		internal.Post("/purchase/action", h.PurchaseAction)
 		internal.Post("/orders/reverse", h.ReverseOrder)
 		internal.Post("/app-sessions", h.SessionStorage)
 	})

@@ -36,3 +36,12 @@ test('OAuth session ciphertext survives reload and detects tampering or the wron
  assert.throws(()=>openSession(sealed,'foreign.myshopify.com'));
  const changed=Buffer.from(sealed,'base64');changed[30]^=1;assert.throws(()=>openSession(changed.toString('base64'),shop));
 });
+
+test('guest coupon keeps one use and threshold without requiring a Shopify customer',()=>{
+ const input=discountInput(coupon,'');assert.deepEqual(input.context,{all:'ALL'});assert.equal(input.usageLimit,1);assert.equal(input.minimumRequirement.subtotal.greaterThanOrEqualToSubtotal,'4000');
+});
+test('cart identity strips private cart key and rejects arbitrary object input',async()=>{
+ const {cartIdentity,proxyCustomer}=await import('../app/purchase.server.ts');
+ assert.equal(cartIdentity('cart123?key=private'),'cart123');assert.throws(()=>cartIdentity({token:'anything'}));
+ assert.equal(proxyCustomer(new URL('https://app.test?logged_in_customer_id=123')),'123');assert.throws(()=>proxyCustomer(new URL('https://app.test?logged_in_customer_id=abc')));
+});

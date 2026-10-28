@@ -112,4 +112,4 @@ agaruke-members/
 
 ## Shopify直接来店連携（2026-10-28）
 
-[現行仕様・配信前手順](docs/SHOPIFY_DIRECT_ENTRY.md)。`stxmu0-ef.myshopify.com`から直接来店し、Shopifyログイン→LINE同意と確認コード→会員連携→EC専用券の交換・適用→支払済み注文100ptのコードを実装。Firestore Emulatorの並行・再送・取消検査とShopify画面/API schema検査を実施した。API・Shopify backend・アプリと専用ページ、トップ/商品/カートの購入前連携入口を本番反映済み。本人連携の結合試験専用モードで、実ユーザーの認証操作待ち。購入/返金webhookと交換は停止中。[配信・試験手順](docs/SHOPIFY_LINK_RELEASE_20261028.md)。LINEからShopifyを直接開く購入フローは次段階。
+[現行仕様](docs/SHOPIFY_DIRECT_ENTRY.md)。LINE認証を共通の入口とし、Shopifyログインを確認できた場合は継続連携、ゲスト購入は今回の注文だけの連携にする。会員番号・手動確認コードの入力を廃止。ゲスト対応EC専用クーポン、一注文100pt、返金取消のコードと回帰検証を追加した。[配信状態・実機試験](docs/SHOPIFY_LINE_FIRST_RELEASE_20261028.md)。LINEからショップを直接開く入口は次段階。

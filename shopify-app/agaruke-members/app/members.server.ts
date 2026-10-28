@@ -1,3 +1,4 @@
+import {purchaseCall} from "./purchase.server.ts";
 import type {JwtPayload} from "@shopify/shopify-api";
 
 export function customerContext(token: Pick<JwtPayload, "sub" | "dest" | "aud">, shop: string, apiKey: string) {
@@ -28,7 +29,7 @@ export interface Coupon {id: string; code: string; cost: number; minimum: number
 export function discountInput(c: Coupon, customer: string) {
   return {
     title: `AGARUKE Members ${c.cost}円券 ${c.id}`, code: c.code,
-    context: {customers: {add: [`gid://shopify/Customer/${customer}`]}},
+    context: customer ? {customers: {add: [`gid://shopify/Customer/${customer}`]}} : {all: "ALL"},
     customerGets: {value: {discountAmount: {amount: String(c.cost), appliesOnEachItem: false}}, items: {all: true}},
     minimumRequirement: {subtotal: {greaterThanOrEqualToSubtotal: String(c.minimum)}},
     startsAt: new Date(Date.now() - 60000).toISOString(), endsAt: c.expires_at,
@@ -42,6 +43,12 @@ query FindMembersDiscount($code: String!) { codeDiscountNodeByCode(code: $code) 
 const createDiscount = `#graphql
 mutation CreateMembersDiscount($input: DiscountCodeBasicInput!) { discountCodeBasicCreate(basicCodeDiscount: $input) { codeDiscountNode { id } userErrors { field message code } } }`;
 export async function provisionCoupon(coupon: Coupon, customer: string, graphql: GraphQL) {
+ return provision(coupon,customer,graphql,(code,id)=>membersCall(customer,"activate",{code,discount_id:id}));
+}
+export async function provisionPurchaseCoupon(coupon: Coupon, fields: {token:string;cart:string}, graphql: GraphQL) {
+ return provision(coupon,"",graphql,(code,id)=>purchaseCall("activate",{...fields,code,discount_id:id}));
+}
+async function provision(coupon: Coupon, customer: string, graphql: GraphQL, activate: (code:string,id:string)=>Promise<unknown>) {
   if (coupon.status !== "pending") return;
   const lookup = async () => {
     const body = await (await graphql(findDiscount, {variables: {code: coupon.code}})).json();
@@ -57,5 +64,5 @@ export async function provisionCoupon(coupon: Coupon, customer: string, graphql:
     if (!id) id = await lookup();
     if (!id) throw new Error("DISCOUNT_CREATE_FAILED");
   }
-  await membersCall(customer, "activate", {code: coupon.code, discount_id: id});
+  await activate(coupon.code,id);
 }

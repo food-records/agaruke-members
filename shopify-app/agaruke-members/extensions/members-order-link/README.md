@@ -1,0 +1,5 @@
+# 購入時のLINE連携
+
+Shopify公式CLI checkout_ui scaffoldから生成し、purchase.thank-you.block.render向けに変更した。注文完了ページに配置する。Shopify署名付きsession tokenのsubがないゲストでは継続連携しない。注文IDは署名済みorders/create通知のCustomer・購入トークン・カートと照合する。通知が未到着なら再確認ボタンで再試行する。
+
+バックエンドURLはmerchant設定か既定のAGARUKE backendを使用。ポイント付与はこの画面から行わず、orders/paidで行う。

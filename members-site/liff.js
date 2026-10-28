@@ -80,9 +80,10 @@ function initializeLiff(liffId) {
                     var code = getParam('code');
                     var surveyReward = getParam('survey_reward');
                     var shopifyLink = getParam('shopify_link');
+                    var shopifyPurchase = getParam('shopify_purchase');
                     var kioskToken = getParam('kiosk_token');
                     // LIFF によっては ?code=xxx が liff.state に格納される場合があるためフォールバック
-                    if (!code || !kioskToken || !surveyReward || !shopifyLink) {
+                    if (!code || !kioskToken || !surveyReward || !shopifyLink || !shopifyPurchase) {
                         var liffState = getParam('liff.state');
                         if (liffState) {
                             try {
@@ -91,6 +92,7 @@ function initializeLiff(liffId) {
                                 if (!kioskToken) kioskToken = getParam('kiosk_token', decodedState);
                                 if (!surveyReward) surveyReward = getParam('survey_reward', decodedState);
                                 if (!shopifyLink) shopifyLink = getParam('shopify_link', decodedState);
+                                if (!shopifyPurchase) shopifyPurchase = getParam('shopify_purchase', decodedState);
                             } catch (e) {}
                         }
                     }
@@ -100,7 +102,8 @@ function initializeLiff(liffId) {
                     // point=100 の POST 結果を上書きするレースコンディションが発生する。
                     showPoint(accessToken, function () {
                         showCoupons(accessToken);
-                        if (shopifyLink) proposeShopifyLink(accessToken, shopifyLink);
+                        if (shopifyPurchase) authorizeShopifyPurchase(accessToken, shopifyPurchase);
+                        else if (shopifyLink) proposeShopifyLink(accessToken, shopifyLink);
                         else if (kioskToken && !wasKioskTokenLinked(kioskToken)) linkKioskCheckout(kioskToken);
                         else if (surveyReward === 'agaruke-2026-survey-500') claimSurveyReward(accessToken);
                         else if (code) checkCode(accessToken, code);
@@ -1015,4 +1018,21 @@ function proposeShopifyLink(accessToken, token) {
             error: function () { showAlert('連携できませんでした。10分以内に、ショップから連携をやり直してください。'); }
         });
     }, null, {okLabel: '同意して進む'});
+}
+
+function authorizeShopifyPurchase(accessToken, token) {
+    if (!/^[a-f0-9]{64}$/.test(token)) { showAlert('購入認証リンクが正しくありません。ショップからやり直してください。'); return; }
+    showConfirm('AGARUKEの今回のお買い物で、このポイントカードを使います。Shopifyにログインして購入する場合はアカウントも連携します。ご自身でショップから始めた場合だけ同意してください。', function () {
+        $.ajax({
+            url: window.APP_CONFIG.apiUrl + '/shopify/purchase/authorize',
+            type: 'POST', dataType: 'json', contentType: 'application/json',
+            headers: {Authorization: 'Bearer ' + accessToken},
+            data: JSON.stringify({token: token, consent: true}),
+            success: function (result) {
+                if (!/^[a-f0-9]{64}$/.test(result.data.code)) { showAlert('認証結果を確認できませんでした。'); return; }
+                location.replace('https://shop.agaruke.com/apps/members#grant=' + token + '&code=' + result.data.code);
+            },
+            error: function () { showAlert('認証できませんでした。ショップからLINE認証をやり直してください。'); }
+        });
+    }, null, {okLabel: '同意してショップへ戻る'});
 }

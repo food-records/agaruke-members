@@ -4,6 +4,7 @@ export async function action({request}: ActionFunctionArgs) {
   const {topic, shop, payload, admin} = await authenticate.webhook(request);
   if (shop !== process.env.SHOPIFY_SHOP_DOMAIN || !["REFUNDS_CREATE", "ORDERS_CANCELLED"].includes(topic)) return new Response(null, {status: 403});
   if (process.env.SHOPIFY_MEMBERS_ENABLED !== "true" || !admin) return new Response(null, {status: 503});
+  if (process.env.SHOPIFY_LINK_TEST_ONLY === "true") return new Response(null, {status: 200});
   const id = topic === "REFUNDS_CREATE" ? String(payload.order_id) : String(payload.id);
   if (!/^[1-9][0-9]*$/.test(id)) return new Response(null, {status: 400});
   try {

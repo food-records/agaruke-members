@@ -1,0 +1,16 @@
+api_version = "2026-07"
+[[extensions]]
+name = "AGARUKE 購入時のLINE連携"
+handle = "members-order-link"
+type = "ui_extension"
+uid = "4bcd5b81-c905-1a48-5676-e93e3d92ec5cfed33e6c"
+[[extensions.targeting]]
+module = "./src/Checkout.tsx"
+target = "purchase.thank-you.block.render"
+[extensions.capabilities]
+network_access = true
+[extensions.settings]
+[[extensions.settings.fields]]
+key = "backend_url"
+type = "single_line_text_field"
+name = "連携APIのURL"

@@ -51,6 +51,7 @@ type linkIntent struct {
 }
 type ecCoupon struct {
 	ID         string    `firestore:"id" json:"id"`
+	Purchase   string    `firestore:"purchase,omitempty" json:"-"`
 	Code       string    `firestore:"code" json:"code"`
 	Customer   string    `firestore:"customer" json:"-"`
 	UID        string    `firestore:"uid" json:"-"`
@@ -80,21 +81,24 @@ func activeMember(tx *firestore.Transaction, ref *firestore.DocumentRef) (member
 	return m, e
 }
 
+type customerActionRequest struct {
+	Purchase         string `json:"-"`
+	ConfirmationCode string `json:"confirmation_code"`
+	Action           string `json:"action"`
+	Customer         string `json:"customer"`
+	Token            string `json:"token"`
+	RequestID        string `json:"request_id"`
+	Cost             int    `json:"cost"`
+	Code             string `json:"code"`
+	DiscountID       string `json:"discount_id"`
+}
+
 // CustomerAction is called only by the app backend after Shopify's official
 // library verifies a fully authenticated Customer Account session. Browser IDs
 // are never trusted. Every response is private and never cached.
 func (h handler) CustomerAction(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-store")
-	var b struct {
-		ConfirmationCode string `json:"confirmation_code"`
-		Action           string `json:"action"`
-		Customer         string `json:"customer"`
-		Token            string `json:"token"`
-		RequestID        string `json:"request_id"`
-		Cost             int    `json:"cost"`
-		Code             string `json:"code"`
-		DiscountID       string `json:"discount_id"`
-	}
+	var b customerActionRequest
 	if json.NewDecoder(io.LimitReader(r.Body, 16384)).Decode(&b) != nil || customerID(b.Customer) == "" || configuredShop() == "" {
 		presenter.BadRequest(w, "INVALID_REQUEST")
 		return
@@ -209,7 +213,16 @@ func (h handler) CustomerAction(w http.ResponseWriter, r *http.Request) {
 		presenter.Error(w, e)
 		return
 	}
-	memberRef := config.DataCollection(h.fs, "members").Doc(link.LineUserID)
+	h.memberAction(w, r, b, link.LineUserID, now)
+}
+
+func (h handler) memberAction(w http.ResponseWriter, r *http.Request, b customerActionRequest, uid string, now time.Time) {
+	ctx := r.Context()
+	scope := b.Customer
+	if b.Purchase != "" {
+		scope = "purchase:" + b.Purchase
+	}
+	memberRef := config.DataCollection(h.fs, "members").Doc(uid)
 	if b.Action == "exchange" {
 		if ecTiers[b.Cost] == 0 || !requestID.MatchString(b.RequestID) {
 			presenter.BadRequest(w, "INVALID_EXCHANGE")
@@ -217,7 +230,7 @@ func (h handler) CustomerAction(w http.ResponseWriter, r *http.Request) {
 		}
 		// A stable request ID recovers the same coupon after timeouts. It never
 		// refunds points on an ambiguous Admin API result and never creates a second code.
-		id := tokenHash(configuredShop() + ":" + b.Customer + ":" + b.RequestID)
+		id := tokenHash(configuredShop() + ":" + scope + ":" + b.RequestID)
 		codeToken, e := randomToken()
 		if e != nil {
 			presenter.Error(w, e)
@@ -226,6 +239,19 @@ func (h handler) CustomerAction(w http.ResponseWriter, r *http.Request) {
 		code := "AM" + strings.ToUpper(codeToken)
 		var coupon ecCoupon
 		e = h.fs.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
+			if b.Purchase != "" {
+				s, e := tx.Get(config.DataCollection(h.fs, "shopify_purchase_sessions").Doc(b.Purchase))
+				if e != nil {
+					return e
+				}
+				var p purchaseSession
+				if e = s.DataTo(&p); e != nil {
+					return e
+				}
+				if p.UID != uid || !p.ExpiresAt.After(now) || p.OrderID != "" {
+					return errors.New("PURCHASE_NOT_AVAILABLE")
+				}
+			}
 			m, e := activeMember(tx, memberRef)
 			if e != nil {
 				return e
@@ -236,7 +262,7 @@ func (h handler) CustomerAction(w http.ResponseWriter, r *http.Request) {
 				if e = old.DataTo(&coupon); e != nil {
 					return e
 				}
-				if coupon.Cost != b.Cost || coupon.Customer != b.Customer {
+				if coupon.Cost != b.Cost || coupon.Customer != b.Customer || coupon.Purchase != b.Purchase {
 					return errors.New("REQUEST_CONFLICT")
 				}
 				return nil
@@ -247,7 +273,7 @@ func (h handler) CustomerAction(w http.ResponseWriter, r *http.Request) {
 			if m.Point < b.Cost {
 				return errors.New("INSUFFICIENT_POINTS")
 			}
-			coupon = ecCoupon{ID: id, Code: code, Customer: b.Customer, UID: link.LineUserID, Cost: b.Cost, Minimum: ecTiers[b.Cost], Status: "pending", ExpiresAt: now.AddDate(0, 3, 0)}
+			coupon = ecCoupon{ID: id, Code: code, Customer: b.Customer, Purchase: b.Purchase, UID: uid, Cost: b.Cost, Minimum: ecTiers[b.Cost], Status: "pending", ExpiresAt: now.AddDate(0, 3, 0)}
 			if e = tx.Create(ref, coupon); e != nil {
 				return e
 			}
@@ -267,7 +293,7 @@ func (h handler) CustomerAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if b.Action == "activate" {
-		e = h.fs.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
+		e := h.fs.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
 			if _, e := activeMember(tx, memberRef); e != nil {
 				return e
 			}
@@ -280,7 +306,7 @@ func (h handler) CustomerAction(w http.ResponseWriter, r *http.Request) {
 			if e = s.DataTo(&c); e != nil {
 				return e
 			}
-			if c.Customer != b.Customer || c.UID != link.LineUserID || !c.ExpiresAt.After(now) || (c.Status != "pending" && c.Status != "available") || !strings.HasPrefix(b.DiscountID, "gid://shopify/DiscountCodeNode/") {
+			if c.Customer != b.Customer || (c.Purchase=="") != (b.Purchase=="") || c.UID != uid || !c.ExpiresAt.After(now) || (c.Status != "pending" && c.Status != "available") || !strings.HasPrefix(b.DiscountID, "gid://shopify/DiscountCodeNode/") {
 				return errors.New("INVALID_COUPON")
 			}
 			if c.DiscountID != "" && c.DiscountID != b.DiscountID {
@@ -326,7 +352,7 @@ func (h handler) CustomerAction(w http.ResponseWriter, r *http.Request) {
 	coupons := []ecCoupon{}
 	for _, d := range docs {
 		var c ecCoupon
-		if d.DataTo(&c) == nil && c.Customer == b.Customer && c.ExpiresAt.After(now) && (c.Status == "pending" || c.Status == "available") {
+		if d.DataTo(&c) == nil && c.Customer == b.Customer && c.Purchase == b.Purchase && c.ExpiresAt.After(now) && (c.Status == "pending" || c.Status == "available") {
 			coupons = append(coupons, c)
 		}
 	}

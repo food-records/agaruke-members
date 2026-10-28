@@ -657,4 +657,4 @@ GAS ではサービスアカウントJWTで OAuth2 アクセストークンを�
 
 ## Shopify直接来店・EC専用券
 
-2026-10-28の現行設計は[Shopify直接来店仕様](docs/SHOPIFY_DIRECT_ENTRY.md)。10/2の基盤に、購入前の双方向本人確認、EC専用のポイント交換券、Customer Account専用ページ、テーマ入口、支払済み注文/取消台帳を追加した。API・backend・Shopifyアプリと専用ページを本番反映し、本人連携の結合試験専用モードで稼働。実ユーザーの認証操作待ち。現在状態は[配信記録](docs/SHOPIFY_LINK_RELEASE_20261028.md)を参照。
+2026-10-28の現行設計は[Shopify直接来店仕様](docs/SHOPIFY_DIRECT_ENTRY.md)。LINE認証を先に行い、認証済みShopify Customerを確認できた場合は継続連携、ゲストなら一注文だけの購入セッションにする。手動の会員番号・確認コードは不要。EC専用交換券は一回限りのゲスト対応コード。支払い通知で一注文100ptを付与し、全額返金/取消を冪等処理する。現在の配信状態と未実施の実機試験は[新導線の配信記録](docs/SHOPIFY_LINE_FIRST_RELEASE_20261028.md)を参照。

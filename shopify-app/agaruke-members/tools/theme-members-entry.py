@@ -18,8 +18,8 @@ def read_config(path):
 
 def prepare(directory, page_url):
     parsed = urlparse(page_url)
-    if parsed.scheme != 'https' or parsed.hostname != 'shopify.com' or not parsed.path.startswith('/83950534829/account/pages/') or parsed.query or parsed.fragment:
-        raise ValueError('対象AGARUKEの公開アカウントページURLを指定してください')
+    if parsed.scheme != 'https' or parsed.hostname != 'shop.agaruke.com' or parsed.path != '/apps/members' or parsed.query or parsed.fragment:
+        raise ValueError('AGARUKEの購入用LINE認証URLを指定してください')
     source = Path(__file__).resolve().parents[1] / 'theme-entry/members-entry.liquid'
     snippet = source.read_text().split('{% enddoc %}', 1)[1].strip()
     snippet = snippet.replace('{{ members_link | escape }}', html.escape(page_url, quote=True))
@@ -38,7 +38,7 @@ def prepare(directory, page_url):
                 block_id = 'agaruke_members_link'
             # Reuse the theme's unedited default welcome block when present.
             # A retry also recognizes the previously managed link.
-            matching = next((key for key, block in blocks.items() if block.get('settings', {}).get('text') == 'LINEポイントカードを連携する' and block.get('settings', {}).get('link') == page_url), None)
+            matching = next((key for key, block in blocks.items() if block.get('settings', {}).get('text') == 'LINEポイントカードを連携する' and block.get('settings', {}).get('link') in (page_url, 'https://shopify.com/83950534829/account/pages/01a180f6-0c09-7f88-b2c5-4b366055735b')), None)
             block_id = matching or block_id
             if block_id not in blocks and len(blocks) >= 12:
                 raise ValueError('announcement-barの上限に達しているため停止')

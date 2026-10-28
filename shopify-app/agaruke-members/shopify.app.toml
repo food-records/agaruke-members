@@ -7,7 +7,7 @@ name = "AGARUKE Members"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_orders,read_customers,read_discounts,write_discounts"
+scopes = "read_orders,read_customers,read_discounts,write_discounts,write_app_proxy"
 
 [webhooks]
 api_version = "2026-07"
@@ -20,10 +20,23 @@ api_version = "2026-07"
   uri = "/webhooks/app/scopes_update"
   topics = [ "app/scopes_update" ]
 
-# 購入・返金webhookは本人連携の結合試験後に有効化する。
+# 購入ポイント/交換はruntimeのSHOPIFY_LINK_TEST_ONLYで段階的に有効化する。
 
 [auth]
 redirect_urls = [ "https://shopify-members-438247672947.us-central1.run.app/auth/callback" ]
 
 [build]
 automatically_update_urls_on_dev = false
+
+[app_proxy]
+url = "/proxy/members"
+prefix = "apps"
+subpath = "members"
+
+[[webhooks.subscriptions]]
+uri = "/webhooks/orders/purchase"
+topics = ["orders/create", "orders/paid"]
+
+[[webhooks.subscriptions]]
+uri = "/webhooks/orders/adjustments"
+topics = ["orders/cancelled", "refunds/create"]

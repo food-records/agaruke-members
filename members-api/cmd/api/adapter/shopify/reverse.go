@@ -87,7 +87,7 @@ func (h handler) reverseOrder(ctx context.Context, id, customer string, discount
 			if e = cs.DataTo(&c); e != nil {
 				return e
 			}
-			if c.Customer != customer || (c.OrderID != "" && c.OrderID != id) {
+			if (c.Purchase == "" && c.Customer != customer) || (c.OrderID != "" && c.OrderID != id) {
 				return errors.New("COUPON_ORDER_CONFLICT")
 			}
 			coupons = append(coupons, c)
