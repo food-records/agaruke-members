@@ -24,4 +24,9 @@ UID/券コード/復旧plan/発行結果/独立検証結果/theme snapshot・SHA
 
 カートのAMTEST個別コードを「テストクーポン：500円引き」へ置換するLiquid snippetを追加。対象prefix/長さだけを変換し、他の割引名は維持。checkoutの標準コードと既存discount/台帳は変更しない。
 
-試験券の適用ボタンをカートと会員ページから撤去し、カートの本人確認済み応答だけに自動設定用の券コードを返す。Ajax cart/update.js discountで設定し、最低金額/顧客/有効期限/回数はShopifyで判定する。別のコード/自動割引がある場合は上書きせず、登録済みコードは再送しない。コードは表示cacheに保持しない。通常ページでは従来どおり追加照会なし。Node14件/型/buildを確認、配信・実画面確認は進行中。
+試験券の適用ボタンをカートと会員ページから撤去し、カートの本人確認済み応答だけに自動設定用の券コードを返す。Ajax cart/update.js discountで設定し、最低金額/顧客/有効期限/回数はShopifyで判定する。別のコード/自動割引がある場合は上書きせず、登録済みコードは再送しない。コードは表示cacheに保持しない。通常ページでは従来どおり追加照会なし。Node14件/型/buildを確認、本番反映・現行カートと会員ページの実確認完了。
+
+
+配信完了：clean remote master `c1c9de9e5faf67772949a43e410629f6f3d5f2c8`、Cloud Build `55dd6a3b-d769-4406-9128-6a775b8bb365` SUCCESS、digest `sha256:813eb03260f50a8ad80098b4e57fac3fa342fe14e7fe8be0f44bfbb0f091707f`、backend `shopify-members-00012-vun` 100%。候補root200/未署名proxy400/未認証purchase-order401、Git label/digest照合済み。CPU0.08/256Miなど既存構成と試験modeを維持。themeのasset/割引名snippet/cartの2section計4ファイルを配信し、直前一致・readback一致。head初期化layoutは変更せず、準備ツールの再実行で空白が増える問題も修正。
+
+実カートで表示名「テストクーポン：500円引き」、適用ボタン0件、500円引き/合計3,100円を確認。会員ページも自動適用の説明のみで適用リンク0件。開始時のミートボール1・カレー2を保持し、注文確定/支払いなし。未設定カートへの設定・登録済みの再送防止・別割引保持・code非cacheを自動検査し、別カートの本人実機試験は未実施。保護runtime `shopify-auto-coupon-20261028/` にtheme snapshots/SHA256 manifest/コードが映らないcart画像を保持。
