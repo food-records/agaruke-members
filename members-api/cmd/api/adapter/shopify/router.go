@@ -2,29 +2,37 @@ package shopify
 
 import (
 	"net/http"
+	"os"
 
 	"cloud.google.com/go/firestore"
 	"github.com/foodrecords/members-api/pkg/config"
 	"github.com/go-chi/chi"
 )
 
-// NewRouter exposes only two public Shopify-facing boundaries:
-//
-//   - the Orders paid webhook, authenticated by Shopify's HMAC signature
-//   - a short-lived linking-session endpoint, authenticated by LINE
-//
-// Customer-account extensions must validate their Shopify customer session on
-// their own app backend, then call the internal consume endpoint.  This keeps
-// Shopify app credentials out of the LIFF/browser and keeps LINE IDs out of
-// Shopify cart/order attributes.
+// NewRouter keeps the Shopify business feature disabled until explicitly
+// enabled. Public LINE consent and HMAC webhooks are separate from service-key
+// protected Shopify backend operations; browsers never receive the service key.
 func NewRouter() http.Handler {
 	r := chi.NewRouter()
 	h := handler{fs: config.FS}
+	r.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Cache-Control", "no-store")
+			if os.Getenv("SHOPIFY_MEMBERS_ENABLED") != "true" {
+				http.Error(w, "SHOPIFY_MEMBERS_DISABLED", http.StatusServiceUnavailable)
+				return
+			}
+			next.ServeHTTP(w, r)
+		})
+	})
 	r.Post("/webhooks/orders/paid", h.OrdersPaid)
-	r.Post("/customer-link-sessions", h.CreateCustomerLinkSession)
+
+	r.Post("/link-intents/propose", h.ProposeLink)
 	r.Group(func(internal chi.Router) {
 		internal.Use(h.serviceAuth)
-		internal.Post("/customer-links/consume", h.ConsumeCustomerLink)
+		internal.Post("/customer/action", h.CustomerAction)
+		internal.Post("/orders/reverse", h.ReverseOrder)
+		internal.Post("/app-sessions", h.SessionStorage)
 	})
 	return r
 }

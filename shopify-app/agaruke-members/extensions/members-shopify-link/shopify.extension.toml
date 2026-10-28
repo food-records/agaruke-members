@@ -7,8 +7,16 @@ uid = "82082ea0-8e91-5a7f-0f1b-2b9a391f82ac862b199c"
 type = "ui_extension"
 
 [[extensions.targeting]]
-module = "./src/MembersLinkExtension.jsx"
-target = "customer-account.profile.block.render"
+module = "./src/MembersLinkExtension.tsx"
+target = "customer-account.page.render"
 
 [extensions.capabilities]
 api_access = true
+network_access = true
+
+[extensions.settings]
+[[extensions.settings.fields]]
+key = "backend_url"
+type = "single_line_text_field"
+name = "連携APIのURL"
+description = "ShopifyアプリのHTTPS公開URLを設定します"

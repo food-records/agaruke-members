@@ -1,3 +1,10 @@
-.cache
-build
 node_modules
+build
+.cache
+.git
+.env
+.env.*
+.shopify
+prisma
+*.log
+key*.json

@@ -1,0 +1,7 @@
+#!include:.gitignore
+.git
+.env
+.env.*
+key*.json
+node_modules
+build

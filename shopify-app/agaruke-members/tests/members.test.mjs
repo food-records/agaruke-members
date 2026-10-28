@@ -1,0 +1,38 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {customerContext, discountInput, provisionCoupon} from '../app/members.server.ts';
+const shop='stxmu0-ef.myshopify.com';
+test('Shopify signed context still requires the correct audience, shop and logged-in customer',()=>{
+ const good={sub:'gid://shopify/Customer/123',dest:shop,aud:'test-app'};
+ assert.equal(customerContext(good,shop,'test-app'),'123');
+ for(const bad of [{...good,sub:undefined},{...good,sub:'123'},{...good,dest:'foreign.myshopify.com'},{...good,aud:'another-app'}]) assert.throws(()=>customerContext(bad,shop,'test-app'));
+});
+const coupon={id:'test-coupon',code:'AMTEST',cost:200,minimum:4000,status:'pending',expires_at:'2027-01-01T00:00:00Z'};
+test('discount is one-use, customer-restricted, has the correct threshold and cannot combine',()=>{
+ const input=discountInput(coupon,'123');
+ assert.deepEqual(input.context,{customers:{add:['gid://shopify/Customer/123']}});
+ assert.equal(input.usageLimit,1);assert.equal(input.customerGets.value.discountAmount.amount,'200');
+ assert.equal(input.minimumRequirement.subtotal.greaterThanOrEqualToSubtotal,'4000');
+ assert.deepEqual(input.combinesWith,{orderDiscounts:false,productDiscounts:false,shippingDiscounts:false});
+});
+test('retry finds an already-created code and activates the same coupon without a second mutation',async()=>{
+ process.env.MEMBERS_API_URL='https://members.example.test';process.env.MEMBERS_SERVICE_KEY='test-only';
+ const original=globalThis.fetch;let calls=0;
+ globalThis.fetch=async(url,options)=>{calls++;assert.equal(url,'https://members.example.test/shopify/customer/action');const b=JSON.parse(options.body);assert.equal(b.action,'activate');assert.equal(b.code,coupon.code);assert.equal(b.customer,'123');return Response.json({message:'success',data:{active:true}})};
+ try {await provisionCoupon(coupon,'123',async(query)=>{assert.match(query,/query FindMembersDiscount/);return Response.json({data:{codeDiscountNodeByCode:{id:'gid://shopify/DiscountCodeNode/1'}}})});assert.equal(calls,1)} finally {globalThis.fetch=original}
+});
+test('failed Admin mutation leaves the deducted coupon pending for recovery',async()=>{
+ const original=globalThis.fetch;globalThis.fetch=async()=>{throw new Error('must not activate')};
+ try {await assert.rejects(()=>provisionCoupon(coupon,'123',async(query)=>Response.json(query.includes('mutation')?{data:{discountCodeBasicCreate:{userErrors:[{message:'failed'}]}}}:{data:{codeDiscountNodeByCode:null}})),/DISCOUNT_CREATE_FAILED/)}finally{globalThis.fetch=original}
+});
+
+test('OAuth session ciphertext survives reload and detects tampering or the wrong shop',async()=>{
+ const {Session}=await import('@shopify/shopify-api');
+ const {sealSession,openSession}=await import('../app/session-storage.server.ts');
+ process.env.SHOPIFY_SESSION_ENCRYPTION_KEY=Buffer.alloc(32,7).toString('base64');
+ const session=new Session({id:'offline_test',shop,state:'test-state',isOnline:false,accessToken:'test-secret-token',scope:'read_orders',expires:new Date('2027-01-01T00:00:00Z'),refreshToken:'test-refresh-token',refreshTokenExpires:new Date('2027-02-01T00:00:00Z')});
+ const sealed=sealSession(session);assert.ok(!sealed.includes('test-secret-token'));
+ const loaded=openSession(sealed,shop);assert.equal(loaded.accessToken,'test-secret-token');assert.equal(loaded.refreshToken,'test-refresh-token');assert.equal(loaded.expires.toISOString(),session.expires.toISOString());
+ assert.throws(()=>openSession(sealed,'foreign.myshopify.com'));
+ const changed=Buffer.from(sealed,'base64');changed[30]^=1;assert.throws(()=>openSession(changed.toString('base64'),shop));
+});

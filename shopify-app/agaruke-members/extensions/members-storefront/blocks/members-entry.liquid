@@ -1,0 +1,18 @@
+{% assign account_parts = routes.account_url | split: '?' %}
+{% assign account_base = account_parts | first %}
+<div {{ block.shopify_attributes }}>
+  <h2>LINEポイントカード</h2>
+  <p>購入前に連携すると、ポイント交換クーポンが使え、支払完了後に100ptが貯まります。</p>
+  {% if block.settings.page_id != blank %}
+    <a href="{{ account_base }}/pages/{{ block.settings.page_id | url_encode }}{% if account_parts.size > 1 %}?{{ account_parts.last | escape }}{% endif %}">連携状態を確認・クーポンを使う</a>
+  {% elsif request.design_mode %}
+    <p>公開したポイントカードページのIDを設定してください。</p>
+  {% endif %}
+</div>
+{% schema %}
+{
+  "name": "LINEポイントカード",
+  "target": "section",
+  "settings": [{"type":"text","id":"page_id","label":"ポイントカードページID","info":"公開したCustomer Account拡張ページURLの /pages/ 以降のID"}]
+}
+{% endschema %}

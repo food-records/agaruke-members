@@ -109,3 +109,7 @@ agaruke-members/
 ## GitHub Pages
 
 `master`へ`members-site/**`の変更をpushすると、GitHub Actionsが`members-site/`だけをPagesへ公開する。APIコード、環境変数、認証情報は公開成果物へ含めない。カスタムドメインは`members-site/CNAME`で管理する。
+
+## Shopify直接来店連携（2026-10-28）
+
+[現行仕様・配信前手順](docs/SHOPIFY_DIRECT_ENTRY.md)。`stxmu0-ef.myshopify.com`から直接来店し、Shopifyログイン→LINE同意と確認コード→会員連携→EC専用券の交換・適用→支払済み注文100ptのコードを実装。Firestore Emulatorの並行・再送・取消検査とShopify画面/API schema検査を実施した。ストアへのアプリ導入・Secret・本番配信・実ストア結合確認は未実施。LINEからShopifyを直接開く購入フローは次段階。

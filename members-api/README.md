@@ -133,23 +133,15 @@ go run ./cmd/migrate-organization
 - `POST /kiosk/checkouts/resolve`: kiosk APIが連携完了を確認し、会員・利用可能クーポンを取得する。
 - クーポン予約・取消・注文確定APIを含む内部APIは`X-Members-Service-Key`で認証する。
 
-## Shopify購入ポイント連携（実装済み・外部設定前）
+## Shopify直接来店・購入ポイント連携（ローカル実装・検証済み）
 
-Shopifyでは、支払済み注文ごとに基礎100ptを付与する。Kiosk／Mobileの同日上限はShopifyへ適用しない。Shopifyを直接訪問した会員も対象にするため、先に会員本人がLINE MembersとShopify Customerを明示連携する。メールアドレス・氏名の推測照合は行わない。
+[現行仕様と配信前設定](../docs/SHOPIFY_DIRECT_ENTRY.md)を正本とする。
 
-1. Members LIFFがLINEアクセストークン付きで`POST /shopify/customer-link-sessions`を呼び、10分間有効な不透明な`link_token`を受け取る。
-2. Shopify Customer Account extensionは、Shopifyの認証済みcustomer sessionを自アプリのバックエンドで検証してから、内部API `POST /shopify/customer-links/consume`を`X-Members-Service-Key`付きで呼ぶ。本文は`link_token`と`shopify_customer_id`だけとする。
-3. Shopify custom appは`orders/paid`を`POST /shopify/webhooks/orders/paid`へ購読する。APIは生bodyの`X-Shopify-Hmac-Sha256`を検証し、既連携のShopify Customerだけを対象に、`shopify_order_<order ID>_base`のpoint logで冪等に+100ptする。
-
-必要なGit管理外設定値:
-
-| 環境変数 | 用途 |
-| --- | --- |
-| `SHOPIFY_SHOP_DOMAIN` | 許可する`*.myshopify.com`ドメイン。webhook headerと完全一致させる。 |
-| `SHOPIFY_WEBHOOK_SECRET` | Shopify app client secret。webhook HMAC検証だけに使用する。 |
-| `MEMBERS_SERVICE_KEY` | Customer Account extensionのバックエンドから内部consume APIを呼ぶ既存のサービス間秘密値。ブラウザへ渡さない。 |
-
-webhook登録、Customer Account extensionの作成、Secret Manager設定、実店注文の付与、返金時の扱いは未実施である。`orders/paid`を受け取れなかった場合に備え、導入時にはShopify Admin APIによる定期照合jobを追加する。
+- LINE側`POST /shopify/link-intents/propose`、Shopify公式認証済みbackend専用`POST /shopify/customer/action`で、10分有効・一回限り・8文字確認コード・一対一の本人連携を行う。旧customer-link-sessions／customer-links/consumeの仮APIは公開しない。
+- EC専用の200/500/1,000pt交換券を既存ポイント残高から原子的に交換。同じ要求IDの再送で追加減算しない。店頭券はECへ流用しない。
+- `POST /shopify/webhooks/orders/paid`はHMAC・shop・topicを検証し、JPY・正額・支払済みの連携注文へ基礎100ptを注文単位に一度だけ付与。券消込と注文台帳を同じTransactionで保存。
+- backend専用`POST /shopify/orders/reverse`は、Shopify側で現在注文を照合した取消/全額返金の100ptを一度だけ取消。backend専用`POST /shopify/app-sessions`はAES-GCM暗号文だけを保存するOAuth sessionストア。
+- `SHOPIFY_MEMBERS_ENABLED=true`を明示するまで新機能は無効。`SHOPIFY_SHOP_DOMAIN`、`SHOPIFY_WEBHOOK_SECRET`、`SHOPIFY_LINK_LIFF_URL`、既存`MEMBERS_SERVICE_KEY`を秘密管理とともに設定する。アプリ導入・本番配信・外部設定・実ストア結合試験は未実施。
 
 ### ローカル API を外部公開（LIFF からのアクセス用）
 

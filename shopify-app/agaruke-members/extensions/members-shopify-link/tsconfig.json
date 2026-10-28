@@ -6,9 +6,16 @@
     "checkJs": true,
     "allowJs": true,
     "moduleResolution": "node",
-    "ignoreDeprecations": "6.0",
     "esModuleInterop": true,
     "noEmit": true,
     "skipLibCheck": true
-  }
+  },
+  "include": [
+    "src/**/*.tsx",
+    "shopify.d.ts"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
 }

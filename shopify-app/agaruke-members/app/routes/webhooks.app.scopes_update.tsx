@@ -1,21 +1,8 @@
-import type { ActionFunctionArgs } from "react-router";
-import { authenticate } from "../shopify.server";
-import db from "../db.server";
-
-export const action = async ({ request }: ActionFunctionArgs) => {
-    const { payload, session, topic, shop } = await authenticate.webhook(request);
-    console.log(`Received ${topic} webhook for ${shop}`);
-
-    const current = payload.current as string[];
-    if (session) {
-        await db.session.update({
-            where: {
-                id: session.id
-            },
-            data: {
-                scope: current.toString(),
-            },
-        });
-    }
-    return new Response();
-};
+import type {ActionFunctionArgs} from "react-router";
+import {authenticate, sessionStorage} from "../shopify.server";
+export async function action({request}: ActionFunctionArgs) {
+  const {payload, session, shop} = await authenticate.webhook(request);
+  if (shop !== process.env.SHOPIFY_SHOP_DOMAIN) return new Response(null, {status: 403});
+  if (session) { session.scope = (payload.current as string[]).join(","); await sessionStorage.storeSession(session); }
+  return new Response(null, {status: 200});
+}

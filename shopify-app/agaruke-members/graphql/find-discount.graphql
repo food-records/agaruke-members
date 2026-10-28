@@ -1,0 +1,1 @@
+query FindMembersDiscount($code: String!) { codeDiscountNodeByCode(code: $code) { id } }
