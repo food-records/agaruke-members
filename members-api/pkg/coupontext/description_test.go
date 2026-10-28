@@ -3,10 +3,13 @@ package coupontext
 import "testing"
 
 func TestDescription(t *testing.T) {
-	if got := Description("old wording", "item", 200, 1); got != "200円以下の商品1点無料。アイスコーヒー・冷やし掛川茶も対象です。" {
+	if got := Title("基本トッピングチケット", "item_or_option", 200); got != "基本トッピングチケット" {
+		t.Fatalf("special coupon title: %q", got)
+	}
+	if got := Description("old wording", "item", 200, 1); got != "200円以下の商品または指定ドリンク1点無料。" {
 		t.Fatalf("special coupon description: %q", got)
 	}
-	if got := Description("old wording", "item_or_option", 200, 1); got != "200円以下の商品・オプション1点無料。アイスコーヒー・冷やし掛川茶も対象です。" {
+	if got := Description("old wording", "item_or_option", 200, 1); got != "200円以下の商品・オプションまたは指定ドリンク1点無料。" {
 		t.Fatalf("special mixed coupon description: %q", got)
 	}
 	if got := Description("custom wording", "item", 300, 1); got != "custom wording" {
