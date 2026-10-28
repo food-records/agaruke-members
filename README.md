@@ -117,4 +117,4 @@ agaruke-members/
 連携済みのお客様向けのヘッダー/カート/チェックアウト表示は[表示仕様・配信記録](docs/SHOPIFY_LINKED_UI_RELEASE_20261028.md)を参照。Basicプランの標準商品補足欄で注文全体の予定ptを案内する。
 ## 200円無料クーポンの文言（2026-10-27）
 
-会員クーポンAPIとKiosk連携APIが表示用`title`・`description`を返す。上限200円の「商品」クーポンではアイスコーヒー・冷やし掛川茶を価格上限の例外として案内する。割引判定の正本はorderec APIにあり、文言はMembers APIで管理する。旧Kiosk実機の固定サブタイトルは端末更新まで残るため、旧版にも見える`title`で例外を案内する。
+会員クーポンAPIとKiosk連携APIが表示用`title`・`description`を返す。上限200円の「商品」クーポンではアイスコーヒー・冷やし掛川茶を価格上限の例外として案内する。割引判定の正本はorderec APIにあり、文言はMembers APIで管理する。旧Kiosk実機の固定サブタイトルは端末更新まで残るため、旧版にも見える`title`で例外を案内する。2026-10-28に`a46b18d`をrevision `members-api-coupon-a46b18d`へ100%配信した。
