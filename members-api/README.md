@@ -135,7 +135,7 @@ go run ./cmd/migrate-organization
 
 ## Shopify直接来店・購入ポイント連携
 
-[現行仕様](../docs/SHOPIFY_DIRECT_ENTRY.md)を正本とする。LINE認証先行のログイン/ゲスト2パターンを本番反映した。実機の本人認証は未完了で、アプリの交換/paid/返金処理は連携試験モードで停止中。[配信記録](../docs/SHOPIFY_LINE_FIRST_RELEASE_20261028.md)。
+[現行仕様](../docs/SHOPIFY_DIRECT_ENTRY.md)を正本とする。LINE認証先行のログイン/ゲスト2パターンを本番反映した。本人LINE認証後のログイン分岐の連携保存を確認済み。ゲスト・注文は未確認で、アプリの交換/paid/返金処理は連携試験モードで停止中。[配信記録](../docs/SHOPIFY_LINE_FIRST_RELEASE_20261028.md)。
 
 - 公開 `POST /shopify/purchase/authorize` はLINE本人と同意を検証して一回限りコードを返す。service key専用 `POST /shopify/purchase/action` で開始ブラウザのverifierと照合し、カート限定24時間セッションを作る。
 - Shopify署名で確認済みCustomerだけを継続連携する。`orders/create`のHMACで注文照合情報を保存し、購入セッションを一注文へ固定する。注文Customerだけでは本人認証とみなさない。

@@ -2,7 +2,7 @@
 
 ## 現在状態
 
-LINE認証後、Shopifyログインを確認できた場合は継続連携、ゲスト購入なら一注文だけの連携とするユーザー指示で、現行仕様を更新した。旧8文字コードUIを撤去し、既存サービス内へ実装。本番反映と技術smoke testを完了。本人の実機認証は未実施。
+LINE認証後、Shopifyログインを確認できた場合は継続連携、ゲスト購入なら一注文だけの連携とするユーザー指示で、現行仕様を更新した。旧8文字コードUIを撤去し、既存サービス内へ実装。本番反映と技術smoke testを完了。本人のログイン分岐は15:52 JSTの認証と双方向連携保存を確認済み。ゲスト分岐・実注文は未確認。
 
 追加scopeは `write_app_proxy`。既存 `read_customers/read_orders/read_discounts/write_discounts` を維持する。proxyは `/apps/members` → backend `/proxy/members`。ユーザーから追加権限の更新承認を取得し、Shopifyの更新画面で確定済み。注文完了ページへ `members-order-link` を追加し、backend URLを設定して保存。再読込後の「追加済み2」と保存無効状態を確認した。
 

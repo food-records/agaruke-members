@@ -1,6 +1,6 @@
 # AGARUKE Members Shopifyアプリ
 
-LINE認証を先に行い、Shopifyログイン時は継続連携、ゲスト購入時は一注文だけの連携を行う。会員番号・確認コード入力は不要。2026-10-28に本番反映し、本人連携の試験モードで稼働。実LINE本人操作は未完了。[配信記録](../../docs/SHOPIFY_LINE_FIRST_RELEASE_20261028.md)。
+LINE認証を先に行い、Shopifyログイン時は継続連携、ゲスト購入時は一注文だけの連携を行う。会員番号・確認コード入力は不要。2026-10-28に本番反映し、本人連携の試験モードで稼働。本人のLINE認証とログイン分岐の連携保存を確認済み。ゲスト・注文の実機試験は未完了。[配信記録](../../docs/SHOPIFY_LINE_FIRST_RELEASE_20261028.md)。
 
 対象は`stxmu0-ef.myshopify.com`／`https://shop.agaruke.com`。現行仕様は[SHOPIFY_DIRECT_ENTRY.md](../../docs/SHOPIFY_DIRECT_ENTRY.md)、envは`runtime.env.example`を参照する。
 
