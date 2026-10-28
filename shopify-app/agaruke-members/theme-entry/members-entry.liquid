@@ -1,0 +1,9 @@
+{% doc %}
+  購入前のLINEポイントカード連携を案内する。
+  @param {string} members_link - 公開済みの本人連携ページURL
+{% enddoc %}
+<div class="agaruke-members-entry" style="padding: 20px; border: 1px solid rgba(var(--color-foreground), 0.2); border-radius: 8px; margin: 16px 0;">
+  <h2 class="h4" style="margin: 0 0 8px;">LINEポイントカード</h2>
+  <p style="margin: 0 0 16px;">ポイントカードをお持ちの方は、ご購入前にLINEと連携できます。</p>
+  <a class="button button--secondary" style="max-width: 100%;" href="{{ members_link | escape }}">LINEポイントカードを連携する</a>
+</div>
