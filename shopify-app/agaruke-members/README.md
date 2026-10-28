@@ -1,10 +1,10 @@
 # AGARUKE Members Shopifyアプリ
 
-Shopifyへの直接来店から、LINEポイントカードの本人連携、EC専用券のポイント交換・適用、支払済み注文100ptをつなぐアプリ。2026-10-28時点はローカル実装・検証済み、実ストアへの導入・本番配信は未実施。
+Shopifyへの直接来店から、LINEポイントカードの本人連携、EC専用券のポイント交換・適用、支払済み注文100ptをつなぐアプリ。2026-10-28に本番へ反映し、本人連携の結合試験専用モードで稼働。実ユーザーによる認証操作待ち。[配信記録](../../docs/SHOPIFY_LINK_RELEASE_20261028.md)を参照。
 
 対象: `stxmu0-ef.myshopify.com`、公開先 `https://shop.agaruke.com`。新しいお客様アカウントを利用する。
 
-詳細な[現行仕様・設定・検証手順](../../docs/SHOPIFY_DIRECT_ENTRY.md)を正本とする。環境変数名は`runtime.env.example`。`shopify.app.toml`の配信先URLは未確定のため、仮URLのままdeployしない。
+詳細な[現行仕様・設定・検証手順](../../docs/SHOPIFY_DIRECT_ENTRY.md)を正本とする。環境変数名は`runtime.env.example`。`shopify.app.toml`の配信先URLは本番backendへ設定済み。購入・返金webhookは本人連携の結合試験後に登録する。
 
 - Customer Accountの専用ページ: `extensions/members-shopify-link`。
 - 商品／カートの入口block: `extensions/members-storefront`。

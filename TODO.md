@@ -61,3 +61,13 @@
 
 - [x] 本番反映と専用backend追加費用の承認を取得（2026-10-28）。本人連携だけを先行する`SHOPIFY_LINK_TEST_ONLY`とwebhook段階反映を準備。
 - [ ] 初回本番反映のrevision・SHA・URL・権限を照合し、実Shopifyログイン→LINE同意→確認コードで本人連携を試験する。
+
+## 本番本人連携試験の反映（2026-10-28）
+
+- [x] API00054-soq、backend00001-f9h、Shopify app version members-link-33d2873を配信し、Secret・scope・SHA/digest・traffic・認証境界を照合。アプリ導入と専用ページ保存を確認。
+- [x] backend→Members API→Firestoreの読取接続、試験modeでの交換403、ERROR記録0件を確認。
+- [ ] 実ユーザーのShopifyログイン→LINE同意→8文字確認コード→連携確定・再訪を確認。
+- [ ] アカウントメニューの保存反映・商品/カートの入口配置を試験後に確認する。今回は専用URLから試験する。
+- [ ] 本人連携確認後に交換・paid/取消/返金webhookを段階的に有効化して注文試験を行う。
+
+詳細は[本番配信・本人試験手順](docs/SHOPIFY_LINK_RELEASE_20261028.md)。
