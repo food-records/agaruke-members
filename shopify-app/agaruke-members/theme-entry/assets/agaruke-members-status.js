@@ -58,6 +58,8 @@ function initialize(config) {
       if(state.purchase_token) {
         safeStorage.set(state.purchase_token);
         await request(root+'cart/update.js',{attributes:{_agaruke_purchase:state.purchase_token}});
+      } else if(state.linked&&state.ready&&token) {
+        safeStorage.set(token);
       } else if(!state.linked) {
         safeStorage.set('');
         if(cart.attributes?._agaruke_purchase)await request(root+'cart/update.js',{attributes:{_agaruke_purchase:''}});
