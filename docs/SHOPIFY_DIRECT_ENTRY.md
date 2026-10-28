@@ -62,13 +62,13 @@ LINEから戻ったことだけでは連携を確定しない。期限10分・�
 1. アプリの配信先HTTPS URL、実ストアと開発ストア、Secret Manager、最小権限service accountを確定する。アプリruntimeの環境変数例は`shopify-app/agaruke-members/runtime.env.example`。値入りenvはGit・image・ログへ入れない。
 2. Go側に`SHOPIFY_MEMBERS_ENABLED`・`SHOPIFY_SHOP_DOMAIN`・`SHOPIFY_WEBHOOK_SECRET`（アプリsecret）・`SHOPIFY_LINK_LIFF_URL`・既存`MEMBERS_SERVICE_KEY`を設定。アプリとMembers APIのshop・service keyを一致させる。
 3. Shopifyアプリ側は`read_orders,read_customers,read_discounts,write_discounts`、保護対象顧客データのCustomer ID利用を設定。アプリインストール／権限追加／deploy／webhook作成は明示承認の対象。
-4. `shopify.app.toml`の`application_url`と`auth.redirect_urls`は現時点で仮URL。配信先決定後に置換する。確定前のdeployは禁止。
+4. `shopify.app.toml`の`application_url`と`auth.redirect_urls`は本番backend URLと`/auth/callback`へ設定し、Shopifyの公開versionで一致を確認済み。今後の変更時も実runtime URLと照合する。
 5. 専用アカウントページを有効化し、extension設定`backend_url`へアプリURLを設定。メニューとテーマblockの`page_id`には実際に発行されたページIDを入れる。handleやuidをページIDと推測しない。
 6. 商品ページ／カートに案内blockを配置。「今すぐ購入」・カートdrawer等の迂回経路も実テーマで確認。チェックアウト途中のblock追加は今回行わない。
 7. テストストアで本人連携・新規同意・再訪・他人への付替え拒否・端末を跨ぐ確認コード・クーポン発行/適用/Customer制限/期限/最低額/他割引/並行交換・決済失敗・paid再送・取消/一部/全額返金を結合確認。
 8. 本番配信は現行base branchへ統合したclean commit・remote SHA一致・既配信SHA包含・回帰検査後。shopify app devもストアへの外部変更を伴うため、コマンドと対象を提示して承認後に行う。
 
-新規常時稼働・min instances・Cloud SQL・AI API・定期スキャンは追加しない構成。実行先サービスの追加、利用量・料金・負荷上限は本番設定前に見積もる。今回は有料検証・クラウド構成変更を行っていない。
+常時稼働・min instances・Cloud SQL・AI API・定期スキャンは追加しない構成。初回ローカル実装後、2026-10-28にユーザーの本番反映・費用承認を得て専用backendを追加した。実際の配信・リソース・試算条件は配信記録を参照。
 
 ## ローカル検証
 

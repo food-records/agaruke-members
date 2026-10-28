@@ -141,7 +141,7 @@ go run ./cmd/migrate-organization
 - EC専用の200/500/1,000pt交換券を既存ポイント残高から原子的に交換。同じ要求IDの再送で追加減算しない。店頭券はECへ流用しない。
 - `POST /shopify/webhooks/orders/paid`はHMAC・shop・topicを検証し、JPY・正額・支払済みの連携注文へ基礎100ptを注文単位に一度だけ付与。券消込と注文台帳を同じTransactionで保存。
 - backend専用`POST /shopify/orders/reverse`は、Shopify側で現在注文を照合した取消/全額返金の100ptを一度だけ取消。backend専用`POST /shopify/app-sessions`はAES-GCM暗号文だけを保存するOAuth sessionストア。
-- `SHOPIFY_MEMBERS_ENABLED=true`を明示するまで新機能は無効。`SHOPIFY_SHOP_DOMAIN`、`SHOPIFY_WEBHOOK_SECRET`、`SHOPIFY_LINK_LIFF_URL`、既存`MEMBERS_SERVICE_KEY`を秘密管理とともに設定する。アプリ導入・本番配信・外部設定・実ストア結合試験は未実施。
+- `SHOPIFY_MEMBERS_ENABLED=true`を明示するまで新機能は無効。`SHOPIFY_SHOP_DOMAIN`、`SHOPIFY_WEBHOOK_SECRET`、`SHOPIFY_LINK_LIFF_URL`、既存`MEMBERS_SERVICE_KEY`を秘密管理とともに設定する。API・backend・Shopifyアプリ・専用ページを本番反映済み。実ユーザーによる本人連携試験待ちで、交換と購入/返金webhookは未有効化。[配信記録](../docs/SHOPIFY_LINK_RELEASE_20261028.md)を参照。
 
 ### ローカル API を外部公開（LIFF からのアクセス用）
 
