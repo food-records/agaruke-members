@@ -19,7 +19,7 @@ export async function loader({request}: LoaderFunctionArgs) {
   const path = url.searchParams.get('path_prefix') || '/apps/members';
   if (!/^\/(apps|a|tools|community)\/[a-z0-9_-]+$/.test(path)) return new Response(null,{status:400});
   const config = JSON.stringify({path}).replace(/</g,'\\u003c');
-  return new Response(`<section id="members-purchase" style="max-width:680px;margin:32px auto;padding:24px"><h1>LINEポイントカード</h1><p id="members-message" role="status">確認しています…</p><div id="members-actions" style="display:grid;gap:16px"></div></section><script id="members-purchase-config" type="application/json">${config}</script><script>${client}</script>`,{headers:{...headers,'Content-Type':'application/liquid'}});
+  return new Response(`<section id="members-purchase" style="max-width:680px;margin:32px auto;padding:24px"><h1>LINEポイントカード</h1><p id="members-message" role="status">確認しています…</p><div id="members-actions" style="display:grid;gap:16px"></div></section><script id="members-purchase-config" type="application/json">${config}</script><script>{% raw %}${client}{% endraw %}</script>`,{headers:{...headers,'Content-Type':'application/liquid'}});
 }
 export async function action({request}: ActionFunctionArgs) {
   const url = await context(request);
