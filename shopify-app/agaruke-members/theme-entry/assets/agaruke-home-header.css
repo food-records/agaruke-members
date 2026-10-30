@@ -1,0 +1,17 @@
+/* Only overlay a real first image banner; other pages keep Dawn's normal header. */
+body.agaruke-home-banner:has(#MainContent > .shopify-section:first-child .banner__media img) .section-header {
+  position: absolute;
+  inset-inline: 0;
+  width: 100%;
+  z-index: 30;
+}
+body.agaruke-home-banner:has(#MainContent > .shopify-section:first-child .banner__media img) .section-header:not(.scrolled-past-header):not(:has(details[open])) .header-wrapper {
+  background: transparent;
+  background-image: none;
+  border-bottom: 0;
+}
+/* Dawn's scroll-up sticky behavior returns a solid, readable header. */
+body.agaruke-home-banner:has(#MainContent > .shopify-section:first-child .banner__media img) .section-header.shopify-section-header-sticky {
+  position: fixed;
+  top: 0;
+}

@@ -1,0 +1,6 @@
+{% doc %}
+  トップページでのみDawnのヘッダーを画像バナーに重ねる。
+{% enddoc %}
+{%- if request.page_type == 'index' -%}
+  {{ 'agaruke-home-header.css' | asset_url | stylesheet_tag }}
+{%- endif -%}
