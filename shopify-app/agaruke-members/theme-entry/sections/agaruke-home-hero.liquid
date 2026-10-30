@@ -9,7 +9,10 @@
     </div>
     {% if section.settings.image != blank %}
       <div class="banner__media ag-hero-photo">
+        <picture>
+        {% if section.settings.mobile_product.featured_image != blank %}<source media="(max-width: 749px)" srcset="{{ section.settings.mobile_product.featured_image | image_url: width: 900 }}">{% endif %}
         {{ section.settings.image | image_url: width: 1800 | image_tag: widths: '600, 900, 1200, 1800', sizes: '(min-width: 750px) 55vw, 100vw', loading: 'eager', fetchpriority: 'high', alt: 'AGARUKEのチキンオーバースパイスカレー' }}
+        </picture>
       </div>
     {% endif %}
   </div>
@@ -27,6 +30,7 @@
   "enabled_on": {"templates": ["index"]},
   "settings": [
     {"type": "image_picker", "id": "image", "label": "既存の料理バナー画像"},
+    {"type": "product", "id": "mobile_product", "label": "スマートフォンの料理写真"},
     {"type": "textarea", "id": "heading", "label": "見出し", "default": "気分があがる、\n一皿。"},
     {"type": "textarea", "id": "description", "label": "紹介文", "default": "温めて、盛りつけて。\n自分のための、おいしい時間。"}
   ],

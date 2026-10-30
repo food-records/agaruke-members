@@ -16,10 +16,10 @@ def prepare(directory):
     curry='チキンオーバースパイスカレー-chicken-over-spice-curry'
     meat='肉汁ミートボール-トマトソース-meatball-with-tomato-sauce'
     data={'sections':{
-      'agaruke_hero':{'type':'agaruke-home-hero','settings':{'image':image,'heading':'気分があがる、\n一皿。','description':'温めて、盛りつけて。\n自分のための、おいしい時間。'}},
+      'agaruke_hero':{'type':'agaruke-home-hero','settings':{'image':image,'mobile_product':curry,'heading':'気分があがる、\n一皿。','description':'温めて、盛りつけて。\n自分のための、おいしい時間。'}},
       'agaruke_content':{'type':'agaruke-home-content','settings':{'feature_product':curry,'moment_product':meat,'contact_url':'shopify://pages/contact'},'blocks':{
-        'curry':{'type':'product','settings':{'product':curry,'title':'チキンオーバースパイスカレー','description':'スパイスチキンに、まろやかなホワイトソース。紫キャベツのピクルスが彩る、香り豊かな一皿。'}},
-        'meatball':{'type':'product','settings':{'product':meat,'title':'肉汁ミートボール トマトソース','description':'肉の旨みを楽しむミートボールと、酸味とコクのトマトソース。マッシュポテトとブロッコリーを添えて。'}}
+        'curry':{'type':'product','settings':{'product':curry,'title':'チキンオーバー\nスパイスカレー','description':'スパイスチキンに、まろやかなホワイトソース。紫キャベツのピクルスが彩る、香り豊かな一皿。'}},
+        'meatball':{'type':'product','settings':{'product':meat,'title':'肉汁ミートボール\nトマトソース','description':'肉の旨みを楽しむミートボールと、酸味とコクのトマトソース。マッシュポテトとブロッコリーを添えて。'}}
       },'block_order':['curry','meatball']}
     },'order':['agaruke_hero','agaruke_content']}
     p.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n')

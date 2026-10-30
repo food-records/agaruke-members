@@ -6,3 +6,6 @@
 
 /* Crop out the lettering baked into the existing banner; preserve card aspect ratios. */
 .ag-home-hero .banner__media img{transform:scale(1.2);transform-origin:right center}.ag-about-image img,.ag-product-image img{height:auto}
+
+.ag-hero-photo picture{display:block;width:100%;height:100%}
+@media(max-width:749px){.ag-home-hero .banner__media img{object-position:center 35%!important;transform:none}}

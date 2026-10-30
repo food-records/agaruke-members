@@ -38,7 +38,7 @@
             <a class="ag-product-image" href="{{ item.url }}" aria-label="{{ item.title | escape }}の詳細を見る">
               {% if item.featured_image != blank %}{{ item.featured_image | image_url: width: 1000 | image_tag: widths: '350, 600, 1000', sizes: '(min-width: 990px) 27vw, (min-width: 750px) 45vw, 100vw', loading: 'lazy', alt: item.title }}{% endif %}
             </a>
-            <div class="ag-product-copy"><h3><a href="{{ item.url }}">{{ block.settings.title | default: item.title | escape }}</a></h3><p>{{ block.settings.description | escape }}</p><p class="ag-product-price">{{ item.price | money }}{% if cart.taxes_included %}<span>（税込）</span>{% endif %}</p><a class="ag-button ag-button-small" href="{{ item.url }}">詳しく見る <span aria-hidden="true">↗</span></a></div>
+            <div class="ag-product-copy"><h3><a href="{{ item.url }}">{{ block.settings.title | default: item.title | escape | newline_to_br }}</a></h3><p>{{ block.settings.description | escape }}</p><p class="ag-product-price">{{ item.price | money }}{% if cart.taxes_included %}<span>（税込）</span>{% endif %}</p><a class="ag-button ag-button-small" href="{{ item.url }}">詳しく見る <span aria-hidden="true">↗</span></a></div>
           </article>
         {% endif %}
       {% endfor %}
@@ -75,7 +75,7 @@
   ],
   "blocks": [{"type": "product", "name": "おすすめ商品", "limit": 4, "settings": [
     {"type": "product", "id": "product", "label": "商品"},
-    {"type": "text", "id": "title", "label": "表示名"},
+    {"type": "textarea", "id": "title", "label": "表示名"},
     {"type": "textarea", "id": "description", "label": "短い紹介文"}
   ]}],
   "max_blocks": 4,
