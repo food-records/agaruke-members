@@ -1,0 +1,35 @@
+{{ 'agaruke-home-content.css' | asset_url | stylesheet_tag }}
+<div class="ag-home">
+  <div class="ag-home-hero">
+    <div class="ag-hero-copy">
+      <p class="ag-eyebrow">A LITTLE JOY, ON YOUR PLATE.</p>
+      <h1>{{ section.settings.heading | escape | newline_to_br }}</h1>
+      <p class="ag-hero-lead">{{ section.settings.description | escape | newline_to_br }}</p>
+      <a class="ag-button" href="#ag-products">商品を見る <span aria-hidden="true">↗</span></a>
+    </div>
+    {% if section.settings.image != blank %}
+      <div class="banner__media ag-hero-photo">
+        {{ section.settings.image | image_url: width: 1800 | image_tag: widths: '600, 900, 1200, 1800', sizes: '(min-width: 750px) 55vw, 100vw', loading: 'eager', fetchpriority: 'high', alt: 'AGARUKEのチキンオーバースパイスカレー' }}
+      </div>
+    {% endif %}
+  </div>
+  <div class="ag-promise-bar" aria-label="AGARUKEのお届けと楽しみ方">
+    <p><span aria-hidden="true">❄</span> 冷凍でお届け</p>
+    <p><span aria-hidden="true">◷</span> 温めて、盛りつけ</p>
+    <p><span aria-hidden="true">♡</span> 自分のための一皿に</p>
+  </div>
+</div>
+{% schema %}
+{
+  "name": "AGARUKE メインビジュアル",
+  "tag": "section",
+  "class": "ag-hero-section",
+  "enabled_on": {"templates": ["index"]},
+  "settings": [
+    {"type": "image_picker", "id": "image", "label": "既存の料理バナー画像"},
+    {"type": "textarea", "id": "heading", "label": "見出し", "default": "気分があがる、\n一皿。"},
+    {"type": "textarea", "id": "description", "label": "紹介文", "default": "温めて、盛りつけて。\n自分のための、おいしい時間。"}
+  ],
+  "presets": [{"name": "AGARUKE メインビジュアル"}]
+}
+{% endschema %}
