@@ -6,4 +6,14 @@
 
 変更はhome用2section/1CSS/index JSONのみ。既存のheader・Members状態asset/snippet・商品/カート/checkout・API/台帳/試験modeは変更しない。旧home2sectionだけを認識するローカル準備toolを追加し、想定外構成で停止する。
 
-Liquid4ファイル＋CSS改訂検査、全theme check error0（上流warning9）、既存Node14件、変更範囲4ファイルの検査を実施。未公開previewでPC/mobile幅を確認してから公開する。全snapshot/生成theme/公開商品データ/画面はGit外保護runtime `shopify-home-content-20261030/`。進行中。
+Liquid4ファイル＋CSS改訂検査、全theme check error0（上流warning9）、既存Node14件、変更範囲4ファイルの検査を実施。未公開previewでPC/mobile幅を確認してから公開する。全snapshot/生成theme/公開商品データ/画面はGit外保護runtime `shopify-home-content-20261030/`。公開反映・確認完了。
+
+## 配信と確認結果
+
+配信元clean remote master `12c36e45e307713a0f1958158da882ef509d3ddf`（7132d66、64ad136、1e7e37b、12c36e4）。旧Dawn189911072941の全snapshotを公開直前に再取得し変更0を確認。未公開Dawn189917102253でpreviewし、role guard/source guard後に公開。旧DawnとRiseは未公開で復元用に保持。新テーマ353ファイルをreadbackしcandidateと意味一致、保護runtimeへmanifestを保存した。バックエンド/アプリ/台帳の配信・変更はなし。
+
+PC/390px幅でhero、紹介、step、2商品、FAQ/LINE案内の表示を確認。hero内CTAから商品エリアへ移動、FAQ開閉、mobile menu開閉、横幅390/390（横はみ出しなし）、画像5件の読込を確認。mobile heroは実商品の写真をpicture sourceで使用し、desktopは既存ワイド写真のロゴが入り込まない切り取りを使用。商品表示名は読みやすく改行し、アンカーはsticky header下に余白を確保。
+
+プレビューのカートでも連携済み・試験中0pt/通常100pt・テスト券500円引き/合計3,100円、数量ミートボール1/カレー2を保持。商品追加/決済/注文確定は行っていない。通常公開URLへ戻しpreviewを終了、viewportを元へ戻してトップtabを保持。PC/mobile/全体の公開画面を保護runtimeに保存。
+
+正確な加熱方法、発送目安、賞味期限/アレルゲン詳細、配送/返品/法定表記の整備は商品・運用情報の確定後に別途対応する。今回それらを推測で埋めていない。顧客への通知送信なし、既存の追加課金構成なし。
