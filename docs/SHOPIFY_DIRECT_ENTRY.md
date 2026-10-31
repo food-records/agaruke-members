@@ -296,3 +296,5 @@ EC購入には「商品500円以上」という独自の最低購入額は実装
 
 解除の本番反映: 8b13f5eをorigin/masterへpushしclean/remote一致と直前API cc6cc7b・Node aa326a8包含を確認。API build fa65cab6-1a0e-4d40-9e1c-10011dc2af9f、digest sha256:6c17f3c2484037627437d7741cf3e758d576f74b481bacbe335d79341323577e。Node build c80059cb-25a1-43fb-acfa-4700c066e974、digest sha256:c7d9580ff99958b4bb7a20f69fc6c2a2413e2d064d8662adfbb36af54459521c。上記revisionへ各100%、git-shaラベル・従来リソース構成・有効flagsを照合。Dawnのagaruke-coupons.js / agaruke-members-status.jsだけを配信し2/2 byte一致。
 候補・公開の合成未連携status200、不正unlink400、未連携exchange400。対象revision ERROR標本0。実ブラウザーは購入tokenなしのログイン済み状態でアカウント情報・再認証/解除ボタン・解除確認画面を表示できた。解除の確定は行わない。確認dialogは最後の照合でno longer activeだったが、以後の画面取得がブラウザー操作側でタイムアウトしたためキャンセル後の画面再確認・スクリーンショットは未取得。本番の解除→再連携→注文/決済はユーザー受入として残す。実ポイント変更・発券・注文・LINE配信なし。Secretary orderec、Driveイベント公開未承認保留。.work追加削除なし。
+
+2026-10-31購入導線: 商品ページのbuy_buttons.show_dynamic_checkoutをfalseにして「今すぐ購入」を非表示にし、カートを経由する導線へ統一する。テーマ再生成時にも同設定を適用。Shopify未ログイン・LINE連携済みの恒常入口は、Shopifyアカウントのログインと分離したメニュー「ポイントカード・クーポン」→/apps/membersを推奨。後者は提案で未実装。

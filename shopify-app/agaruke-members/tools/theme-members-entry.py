@@ -51,6 +51,9 @@ def prepare(directory, page_url):
                 raise ValueError('main-productの構成を確認できないため停止')
             section = sections[0]
             blocks = section.setdefault('blocks', {})
+            for block in blocks.values():
+                if block['type'] == 'buy_buttons':
+                    block.setdefault('settings', {})['show_dynamic_checkout'] = False
             block_id = 'agaruke_members_entry'
             if block_id in blocks and blocks[block_id]['type'] != 'custom_liquid':
                 raise ValueError('既存block IDと競合')
