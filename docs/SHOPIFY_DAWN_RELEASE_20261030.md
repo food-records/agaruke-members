@@ -19,3 +19,10 @@
 mobileは既存ワイド画像のブランド文字を切らないよう左寄せ。トップの先頭画像がなくなればCSS条件が外れ通常headerへ戻る。その他のページは背景付きの通常header。PC/mobile/cartの個人情報や券コードが映らない画像を保護runtimeへ保存。
 
 rollbackは保持したRise188803907757の再publish。バックエンド/API/アプリ版/checkout extension/試験mode/台帳は今回操作していない。支払い後のポイント付与とゲスト実注文など前回までの未完了結合試験は継続する。
+
+
+## Companyの別タブ化（2026-10-31）
+
+ユーザー指示でCompany（現行メニューURL http://food-records.com/）だけをtarget=_blank/rel=noopener noreferrerにする。https表記にも対応。トップ階層のCompanyリンクに限定し、Home/Itemなどの内部導線を維持。dropdown/mega/drawerの3snippetsをローカルpatch tool theme-company-link.pyで更新。取得テーマと生成物は保護runtime shopify-company-tab-20261031。
+
+公開189917102253、clean remote master6b36d0aa655c0e031f1a97db925f4cbfea6ec9f9、直前配信60234c7包含guardを確認し3件のみ配信。Liquid3件成功（drawerのsection参照warningは既存）。日英の公開DOMでdesktop/drawerに属性があること、Home/Itemにないことを確認。英語ページのCompanyをクリックし、FOOD RECORDSの新しいタブが開いて元のshop/enが残ることを実確認。現行メニューはhttpで、最初のhttps限定条件では一致せず、公開検証で検出して最終条件へ修正。デザイン/日英編集欄/商品/LINE/カート/backend/台帳に変更なし。

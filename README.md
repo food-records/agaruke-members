@@ -164,4 +164,4 @@ agaruke-members/
 
 2026-10-31: 日英のトップ編集欄を公開テーマへ反映しreadback・公開表示確認済み。管理画面iframeの読込停滞によりUI保存操作のみ未確認。両言語は同じテーマ画面の各入力欄で管理。[詳細](docs/SHOPIFY_EDITABLE_CONTENT_20261031.md)。
 
-2026-10-31: ヘッダーCompany（food-records.com）をPC/dropdown/megaとmobile drawer共通で別タブ化するローカルpatch toolを追加。公開反映を確認する。
+2026-10-31: ヘッダーCompany（food-records.com）をPC/dropdown/megaとmobile drawer共通で別タブ化するローカルpatch toolを追加。公開Dawn189917102253へ反映済み。日英のPC/drawer属性と英語クリックで別タブが開き元画面が残ることを確認。
