@@ -17,3 +17,9 @@
 - LINEカードの外部LIFF/会員認証ページと既存カート状態文言は日本語のまま。今回の商品対応をそれらの翻訳完了と扱わない。
 
 証跡・snapshot・CSVは保護runtimeに保持。外部送信・注文操作・新しい課金構成はなし。翻訳CSVは商品内容のみ。
+
+## 続報
+
+ユーザーがChrome file URL access有効化。CSV6件のupload/preview/importは完了したが英語商品ページへ反映されず、言語設定は「翻訳なし」のまま。標準翻訳CSVの識別子は通常の商品IDと一致すると仮定できないため推測で再送しない。正式な商品限定・英語CSVを標準exportし、管理者メールからのdownload済みファイル名/パスをユーザーへ依頼。英語は公開済み、Japanで両言語を継承、Dawnのヘッダー/フッター言語切替は有効。商品英訳は未完了。
+
+トップsection2件はclean remote master `d37bafd40e037dc40ae6e90553253c5a4211ac0b`、release guard（既配信23ac619包含）成功後にテーマ189917102253へ反映。2件readback一致。標準日本語タイトルを両言語の商品カードへ表示し、英語では翻訳済み商品descriptionを使う。merchant index/3商品選択/短文は変更なし。既存LINE/カートJSは維持。
