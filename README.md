@@ -195,3 +195,5 @@ agaruke-members/
 2026-10-31: クーポンの適用状況をヘッダーのバナーへ移し、現在選択/所持券/折りたたみ交換のUIへ再設計。[状態](docs/SHOPIFY_COUPON_UI_RELEASE_20261031.md)。
 
 2026-10-31: YOUR OWN LITTLE TREATにユーザー指定me-time-wide.pngを設定し、トップの最終デザインをレビュー。[現行仕様/確認](docs/SHOPIFY_TASTE_MOBILE_20261031.md)。
+
+2026-10-31公開確認: クーポンのヘッダーバナーとカード型選択画面を反映。backend coupon-ui-cbd14ac、theme最終ce2ec58。PC/スマホ・選択解除・検索へ戻る・トップ重なりなしを実確認。200円券適用と残高を維持、LINE配信なし。[記録](docs/SHOPIFY_COUPON_UI_RELEASE_20261031.md)。
