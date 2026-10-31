@@ -31,3 +31,5 @@ craft写真の本番反映: clean remote master189fffc90cd23d93b045959eb1059a446
 ## craft配置余白の見直し（2026-10-31）
 
 ユーザー指摘の見出し周囲の空白を解消するため、見出しを上段に独立させ、下段は写真左（最大460px）/3理由を縦に右へ並べる2列へ変更。写真と説明の上端を揃え、上下paddingを96→72px、スマホ48pxへ調整。989px以下は写真→理由の1列とし、写真全体と既存文章を保持。画像なしは従来の3理由グリッド。変更はsection/CSSのみでschema/設定値/画像/日英コピー/他セクションを維持する。
+
+余白修正の本番反映: clean remote master6e757665ebfa1a63b32f1a03a8a48a12bef0e084から公開Dawn189917102253へsection/CSS2件のみ配信。remote fetch/SHA一致・既配信189fffc/d5af54a包含guard成功、直前差分なし、2件readback一致、index変更なし、Liquid2件成功。公開1352pxで写真/説明の上端267.3px一致、PC72px/スマホ48px padding、390pxの1列・日英文章/写真/横はみ出しなしを確認しviewport復元。証跡spacing-pc.pngは保護runtime shopify-craft-spacing-20261031へ保存。注文/決済操作なし。
