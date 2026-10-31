@@ -67,3 +67,7 @@ PC1352pxで写真とセクション高431.9px一致、スマホ390pxの写真245
 ユーザー指摘により、木目へ文字が埋もれるスマホCTAを改善。写真内左24/下24pxを維持し、アイボリー96%の背景/細い枠、文字13px・weight600・字間.16em、矢印1.3px、48px以上の操作高/左右20px余白を設定。PCの装飾なしCTA、ヘッダー、他要素は変更しない。CSS1件のみ。
 
 CTA視認性の本番反映: clean remote master3cc7c2b910e1cbd0a334f435def30e43288d1eb4から公開Dawn189917102253へcontent CSS1件。fetch/remote一致・既配信4ff7b4a/ce2ec58包含guard成功、直前差分なし、Liquid1件/readback一致。公開390pxでCTA199.4×48px・文字13px/600・アイボリー背景、木目と分離して読めること、CTA→商品欄を確認。viewportを通常幅へ復元しPCは背景透明/13px/500を維持。証跡mobile-cta.pngは保護runtime shopify-mobile-cta-20261031。商品/カート/クーポン操作なし。
+
+## PCメイン画像を横幅100%で全体表示（2026-10-31）
+
+ユーザー指摘の狭いPC幅で画像内ロゴが切れる問題を修正。750px以上のhero固定560px高とcoverを解除し、写真/pictureを通常フロー、画像width100%/height auto・containへ変更。画面横幅に応じて画像の自然な縦横比で高さも変わる。透明ヘッダー/VIEW ITEMの重ね配置、スマホ専用画像/CTA背景、他セクション/設定は保持。CSS1件のみ。

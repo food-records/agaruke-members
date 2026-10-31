@@ -105,3 +105,10 @@
  .ag-moment-image{position:relative;height:auto;min-height:380px;align-self:stretch}
  .ag-moment-image img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 }
+
+@media screen and (min-width:750px){
+ .ag-restored-hero{height:auto}
+ .ag-restored-photo.banner__media{position:relative;height:auto}
+ .ag-restored-photo picture{height:auto}
+ .ag-restored-photo img{position:static;width:100%;height:auto;object-fit:contain}
+}
