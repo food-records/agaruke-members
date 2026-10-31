@@ -4,6 +4,21 @@
 
 API ecTiersとbackend購入画面を3,800円へ変更。交換停止の試験mode、既発行テスト券、本人連携/注文/ポイントの処理は維持する。
 
-検証: Go全packageテスト/vet、Node14件、型検査・build成功。隔離Firestore Emulator/race検査と本番照合を継続中。
+検証: Go全packageテスト/vet、Node14件、型検査・build成功。隔離Firestore Emulatorで全Go packageのrace検査成功。
 
-本番反映状況は追記する。Secretary記録先orderec、Driveイベント公開は未承認で保留。
+## 本番反映
+
+配信元clean remote master `cc6cc7babd280ae7490d466d9e0b5dd427e92fb2`。旧API `15fc0bc`、backend `c1c9de9`の包含とlocal/remote SHA一致をrelease guardで確認。
+
+- API: `members-api-pricing-cc6cc7b`、100%。build `a875606d-f4c0-43c3-8d1a-8d200ca34124` SUCCESS、digest `sha256:207ebeaa70d5e84b6c1b3320149ece2c7045ac1786bae3b12c5ab94bfb3db76c`。
+- backend: `shopify-members-pricing-cc6cc7b`、100%。build `d8cd93ae-76d3-49ac-8e60-67f4c8eb14b4` SUCCESS、digest `sha256:0a97b5e237d3e70f66a3a7a0007041aa9157e2094ebcc8c0071069d2dc4e0b0c`。
+- 各root200、private API403、未署名proxy400、未認証customer API401を確認。汎用bot UAはSDK410となるため通常Chrome UAで401を確認。
+- backend試験mode=true、CPU0.08/256Miを保持。通常券交換/購入ptの試験停止を解除していない。コード条件を配信したことと、通常交換を営業開始したことは区別する。
+
+## Shopify管理画面
+
+一般配送プロファイル117004239021に国内5ゾーン（20/9/9/8/1都道府県、合計47、重複割当なし）と各冷凍便料金を保存。旧通常870円/7,700円以上送料無料と旧速達3,762円を新体系へ置換。配送の管理場所をMarketsから都道府県対応の配送プロファイルへ戻した（2027-07-01のMarkets移行予定あり）。Japanと言語/テーマ/決済は保持。無効マーケット向け既存国際ゾーンは変更なし。
+
+セット商品15335625359533を下書き作成。3種各1個の説明、3商品写真、価格3,980円、比較価格4,040円、在庫0/追跡あり/売越しなしを保存。単品の在庫は各30であるため独立セット在庫を推測設定しない。公式無料Shopify Bundlesでの構成品共有を提案し、オーナー/スタッフ情報と商品/分析/公開権限への新規アクセス承認を待つ。セットはまだ公開していない。
+
+3種の公開単価1,280/1,280/1,480円をブラウザで確認。実注文/支払操作はしていない。画面証跡は共有workspaceのGit外`.runtime/shopify-pricing-20261031/`へ保持。80サイズ超/複数個口と離島の配送可否・遠方契約実費の確認は残る。Secretary記録先orderec、Driveイベント公開は未承認で保留。

@@ -4,6 +4,8 @@ Organization顧客台帳への会員状態投影は`LINE_PROVIDER_ID=food-record
 
 FOOD RECORDS メンバーズ ポイントシステム
 
+2026-10-31: EC200pt券の最低額を税込3,800円へ本番反映。地域別冷凍送料990〜2,200円をShopifyへ保存。3種セット3,980円は下書きで、構成品在庫連動用の公式Bundles権限承認待ち。通常交換の試験停止は維持。[反映記録](docs/SHOPIFY_PRICING_RELEASE_20261031.md)。
+
 ## 2026年アンケート回答特典（配信前）
 
 回答者向け500ptは、共通LIFF URL `https://liff.line.me/2000938587-06YmdyJ5/?survey_reward=agaruke-2026-survey-500` から受け取る設計。LIFF認証後、未登録者と同意履歴のない既存会員は規約同意を経て登録する。APIは検証済みLINE UIDを、organization配下の`point_campaigns/agaruke-2026-survey-500/eligible/{uid}`と照合する。本人だけが受け取れ、会員残高・ポイント履歴・受取時刻をFirestore Transactionで一度に更新する。特典は累積ランク対象外。共通リンクにUIDやシリアルを含めない。
