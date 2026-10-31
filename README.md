@@ -205,3 +205,5 @@ agaruke-members/
 2026-10-31: スマホVIEW ITEMをアイボリー背景・読みやすい文字と矢印・48px操作高へ調整。[仕様](docs/SHOPIFY_TASTE_MOBILE_20261031.md)。
 
 2026-10-31確定: 500円券を購入歴不問・1人1回へ変更、LINEは任意・購入後案内。バナーは券優先→未連携案内→非表示。[状態](docs/SHOPIFY_PUBLIC_COUPON_RELEASE_20261031.md)。
+
+2026-10-31: 未ログイン時のヘッダーアカウントはShopifyログイン画面への直接リンクに変更。ログイン済みだけ標準アカウントメニューを表示する。LINE認証状態とは別にLiquid customerで判定。[仕様](docs/SHOPIFY_ACCOUNT_ENTRY_20261031.md)。

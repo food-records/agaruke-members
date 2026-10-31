@@ -1,0 +1,17 @@
+{% doc %}
+  未ログイン時はログイン画面へ案内し、ログイン済みの場合だけアカウントメニューを表示する。
+{% enddoc %}
+{%- if customer -%}
+  <shopify-account
+    menu="{{ settings.customer_account_menu | default: 'customer-account-main-menu' }}"
+    class="header__icon header__icon--account link focus-inset"
+  >
+    <span slot="signed-out-avatar" class="svg-wrapper">{{ 'icon-account.svg' | inline_asset_content }}</span>
+    <span slot="signed-out-avatar" class="visually-hidden">{{ 'customer.log_in' | t }}</span>
+  </shopify-account>
+{%- else -%}
+  <a href="{{ routes.account_login_url }}" class="header__icon header__icon--account link focus-inset" rel="nofollow">
+    <span class="svg-wrapper">{{ 'icon-account.svg' | inline_asset_content }}</span>
+    <span class="visually-hidden">{{ 'customer.log_in' | t }}</span>
+  </a>
+{%- endif -%}
