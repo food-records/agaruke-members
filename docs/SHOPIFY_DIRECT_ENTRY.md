@@ -312,3 +312,6 @@ EC購入には「商品500円以上」という独自の最低購入額は実装
 
 
 2026-10-31: 依頼に従い未連携バナー「LINEポイントカードの登録・連携はこちら（任意）」から末尾を削除。Members master f1ff2e7をpush/clean/remote一致/直前f5d4fd5包含で確認、Dawn189917102253のagaruke-coupons.jsのみ限定配信。原本差分1文言のみ、公開readback byte一致。既存クーポン検査5件・JS構文・theme検査成功。連携/クーポン条件/他の「任意」文言は変更なし。Secretary orderec/Driveイベント公開未承認保留。.work追加削除なし。
+
+
+2026-10-31 注文完了LINE連携の確認表示調査: ユーザー指定#1001はAdminのPAID、shopify_purchase_ordersの本人/購入session一致、shopify_orders台帳の100pt/paid、未失効sessionのorder一致、shopify_customer_linksの本人LINE会員一致を読取照合。支払い・購入100pt・継続連携は完了。10:38〜10:44 UTCの/api/purchase-orderはPOST409が4回、対応時刻にMembers購入actionの呼出記録なし（10:41の別status200のみ）。Node routeはcustomerContext/入力検証/内部呼出失敗を同じ409へまとめ、UIもすべて「注文情報を確認中」と表示するため、待機中とは限らない。具体的なthrow原因は現状ログに残らず未特定。APIで注文/ポイント/連携を書き換える再試行・Webhook再送・実決済・LINE配信は行わない。注文受付や既付与100ptの失敗と案内しない。原因別の安全なエラー識別/診断と、注文の実状態に即した表示への修正が残件。Secret/JWT/LINE UID/顧客ID/tokenを出力・Git保存せず、調査scriptは共有workspace Git外.runtime/shopify-order-link-diagnostic-20261031。Secretary orderec/Driveイベント公開未承認保留。.work追加削除なし。
