@@ -304,3 +304,6 @@ EC購入には「商品500円以上」という独自の最低購入額は実装
 
 
 2026-10-31常設会員導線: PC通常/メガメニューとスマホドロワーへ「ポイントカード・クーポン」→ローカライズ済み/apps/membersを追加。マイページアイコンは同じ入口を持つ軽い開閉メニューへ統一。未Shopifyログイン時はログイン・新規登録と会員入口だけ、ログイン済みは注文履歴/プロフィール/会員入口。会員入口はShopifyログインもLINE状態も問わず表示し、既存の会員ページがLINE本人認証・残高/所持券/交換を処理する。認証期限切れはLINE再認証、一般500円券は既存どおり。バナー条件・認可・残高・クーポン設定は変更しない。日本語/英語、48pxリンク、外側クリック/Escapeで閉じる。テーマ再適用はtools/theme-member-navigation.pyで7ファイルを準備する。theme-entry/localesはマージ用の追加キーのみで、そのまま既存localeへ上書きしない。
+
+
+2026-10-31常設会員導線の公開結果: Members master 0a2dee9/f5d4fd5をorigin/masterへpushし、clean/remote一致と直前配信8b13f5e・既配信メニュー0a2dee9の包含をrelease_guardで確認。Dawn189917102253へ対象7ファイルを限定反映、直前既存原本6ファイル一致・新規snippet競合なし、最終公開readback7/7 byte一致。Liquid検査7ファイル成功（既存drawerのsection文脈警告のみ）、最終自作snippet2ファイル警告なし、JS/Python構文・パッチ冪等性・翻訳追加キー以外不変を確認。PC常設リンク/マイページ3項目、390pxスマホの常設ドロワーとマイページ、Escapeで閉じる、日英の会員入口と/apps/members・/en/apps/membersの実遷移をブラウザー確認。証跡は共有workspace Git外.runtime/shopify-member-navigation-20261031/{desktop-account,mobile-account,mobile-menu}.jpg。ブラウザーはShopifyログイン済みで、未ログイン実端末の確認は残す。匿名HTTP照合は端末証明書設定/サイト429により未取得。ログアウト・実LINE認証・解除・発券・ポイント消費・注文・決済・LINE配信は行わない。Cloud Runとapp拡張、割引設定、権限は変更なし。Secretary orderec/Driveイベント公開未承認保留。.work追加削除なし。
