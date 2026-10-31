@@ -161,3 +161,5 @@ agaruke-members/
 2026-10-31完了: 正式PRODUCT形式CSVで3商品の英語名/説明6件を登録。日英商品表示・内容量・切替・トップ3商品名を公開確認。初回CSVのType誤りを修正。外部LIFF/購入特典文言は日本語を維持。[現況](docs/SHOPIFY_BILINGUAL_RELEASE_20261031.md)。
 
 2026-10-31: トップの紹介/食べ方/FAQ/CTAをテーマ編集画面の日英入力欄へ移行。現行コピーと商品設定を保持するローカル移行tool、Liquid検査完了。[編集方法・状態](docs/SHOPIFY_EDITABLE_CONTENT_20261031.md)。
+
+2026-10-31: 日英のトップ編集欄を公開テーマへ反映しreadback・公開表示確認済み。管理画面iframeの読込停滞によりUI保存操作のみ未確認。両言語は同じテーマ画面の各入力欄で管理。[詳細](docs/SHOPIFY_EDITABLE_CONTENT_20261031.md)。

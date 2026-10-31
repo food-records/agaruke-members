@@ -22,4 +22,8 @@ section2件と共通のagaruke-copy snippetが、現在言語に対応する設�
 
 ## 状態
 
-実装・Shopify Liquid4件の検査完了。公開テーマ反映と管理画面での編集確認を実施予定。
+公開テーマ189917102253へ反映済み。初回383a257f5fd3aa03677015040278f225c33ba288（section2件/snippet/index）、改行空白補正9fbb7720ed4be0326438c22ae849c02cb96fd79d（snippetのみ）。いずれもremote fetch/base SHA一致・直前配信SHA包含・clean commitをrelease guardで確認してから配信。初回4ファイルのreadback一致。Liquid4件とsnippet再検査成功。
+
+公開日本語コピーは空白を除き変更前と一致、英語も全見出し/本文/FAQ/CTAを保持。英語の商品抜粋は段落間に空白を補完。3商品と4FAQ、既存/app/membersではなく正しい/apps/membersリンク、VIEW ITEM→#ag-productsを確認。PC1303pxで横はみ出しなし。viewport overrideは390pxを指定しても実幅1303pxのままで、スマートフォン実表示の新規確認はできていない。CSSは変更していない。
+
+管理画面のschema/config保存はShopifyが受理。テーマ編集画面そのものが埋込iframeの読込途中で止まり、入力欄の操作・保存のUI確認は未完了。ユーザーに管理画面が開けるか確認中。公開反映とUI保存確認を区別する。既存のTranslate & Adaptでも同様の白画面があった。新たな権限/セキュリティ設定は変更していない。
