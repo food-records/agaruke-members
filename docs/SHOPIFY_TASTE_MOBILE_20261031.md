@@ -25,3 +25,5 @@ ABOUT写真の本番反映: clean remote master75a5fa77209ec2740bdaa76b5b5f27cf2
 ユーザー指定の添付と一致するDownloads/house-meal.pngを加工せずFiles46900611678381へ登録。「お店のおいしさを、あなたの一皿へ。」の見出し右側に最大400pxの写真を配置し、スマホは見出し下へ1列で表示する。写真の自然な縦横比で全体を見せ、既存の3理由は下に保持する。craftブロックにimage_pickerと日英altを追加し、画像なしでは従来の見出しだけの表示を保つ。他セクション/画像/商品/会員導線は変更しない。
 
 管理場所は「AGARUKE サービス紹介→おいしさの理由→おいしさの理由の画像」。適用ツールtheme-craft-photo.py。indexの変更はcraft画像/日英altの3設定のみ、それ以外の設定一致を確認。Liquid/CSS/index3件検査成功。schemaの反映後にindexを設定する2段階の配信とする。
+
+craft写真の本番反映: clean remote master189fffc90cd23d93b045959eb1059a446c967e4b、fetch/remote SHA一致と既配信75a5fa7/720b48e包含guard成功。直前3件変更なし。公開Dawn189917102253へsection/CSS→indexの順に反映し、readbackはsection/CSS完全一致、index意味一致。公開PC1352px（画像400×400）/スマホ390px（画像346×346）で写真全体と3理由・横はみ出しなしを確認。英語alt確認、viewport復元。証跡craft-pc.pngは保護runtime shopify-craft-photo-20261031。注文/決済操作なし。管理画面で新しい設定欄のUI保存操作は未実施、schema/readback/公開表示を検証した。
