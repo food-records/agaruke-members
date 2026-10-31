@@ -1,3 +1,4 @@
+{% assign ag_craft = section.blocks | where: 'type', 'craft' | first %}
 {% assign ag_delivery = section.blocks | where: 'type', 'delivery' | first %}
 {% assign ag_about = section.blocks | where: 'type', 'about' | first %}
 {% assign ag_how = section.blocks | where: 'type', 'how' | first %}
@@ -26,6 +27,48 @@
         <p>{% render 'agaruke-copy', copy_settings: ag_about.settings, key: 'caption' %}</p>
       </div>
     {% endif %}
+  </section>
+  {% endif %}
+
+  {% if ag_menu != blank %}
+  <section class="ag-products ag-wrap ag-section" id="ag-products" aria-labelledby="ag-products-heading">
+    <div class="ag-section-top" {{ ag_menu.shopify_attributes }}><div><p class="ag-eyebrow">{% render 'agaruke-copy', copy_settings: ag_menu.settings, key: 'eyebrow' %}</p><h2 id="ag-products-heading">{% render 'agaruke-copy', copy_settings: ag_menu.settings, key: 'heading', mobile_break: true %}</h2></div><a class="ag-text-link" href="{{ routes.all_products_collection_url }}">{% render 'agaruke-copy', copy_settings: ag_menu.settings, key: 'list_cta' %} <span aria-hidden="true">↗</span></a></div>
+    {% assign ag_product_count = 0 %}
+    {% for block in section.blocks %}{% if block.settings.product != blank %}{% assign ag_product_count = ag_product_count | plus: 1 %}{% endif %}{% endfor %}
+    <div class="ag-product-grid{% if ag_product_count == 3 %} ag-product-grid--three{% endif %}">
+      {% for block in section.blocks %}
+        {% assign item = block.settings.product %}
+        {% if item != blank %}
+          <article class="ag-product" {{ block.shopify_attributes }}>
+            <a class="ag-product-image" href="{{ item.url }}" aria-label="{{ item.title | escape }}">
+              {% if item.featured_image != blank %}{{ item.featured_image | image_url: width: 1000 | image_tag: widths: '350, 600, 1000', sizes: '(min-width: 990px) 27vw, (min-width: 750px) 45vw, 100vw', loading: 'lazy', alt: item.title }}{% endif %}
+            </a>
+            <div class="ag-product-copy"><h3><a href="{{ item.url }}">{{ item.title | escape }}</a></h3><p>{% if request.locale.iso_code == 'en' %}{% if block.settings.description_en != blank %}{{ block.settings.description_en | escape | newline_to_br }}{% else %}{{ item.description | replace: '</p>', ' ' | strip_html | truncate: 140 | escape }}{% endif %}{% else %}{{ block.settings.description | escape | newline_to_br }}{% endif %}</p><p class="ag-product-price">{{ item.price | money }}{% if cart.taxes_included %}<span>{% render 'agaruke-copy', copy_settings: ag_menu.settings, key: 'tax_note' %}</span>{% endif %}</p><a class="ag-button ag-button-small" href="{{ item.url }}">{% render 'agaruke-copy', copy_settings: ag_menu.settings, key: 'detail_cta' %} <span aria-hidden="true">↗</span></a></div>
+          </article>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <p class="ag-products-note">{% render 'agaruke-copy', copy_settings: ag_menu.settings, key: 'shipping_note' %}</p>
+  </section>
+  {% endif %}
+
+  {% if ag_craft != blank %}
+  <section class="ag-craft ag-section" id="ag-craft" {{ ag_craft.shopify_attributes }} aria-labelledby="ag-craft-heading">
+    <div class="ag-wrap">
+      <p class="ag-eyebrow">{% render 'agaruke-copy', copy_settings: ag_craft.settings, key: 'eyebrow' %}</p>
+      <h2 id="ag-craft-heading">{% render 'agaruke-copy', copy_settings: ag_craft.settings, key: 'heading' %}</h2>
+      <div class="ag-craft-grid">
+        {% for number in (1..3) %}
+          {% assign title_key = 'reason_' | append: number | append: '_heading' %}
+          {% assign body_key = 'reason_' | append: number | append: '_body' %}
+          <article class="ag-craft-item">
+            <span class="ag-craft-number" aria-hidden="true">0{{ number }}</span>
+            <h3>{% render 'agaruke-copy', copy_settings: ag_craft.settings, key: title_key %}</h3>
+            <p>{% render 'agaruke-copy', copy_settings: ag_craft.settings, key: body_key %}</p>
+          </article>
+        {% endfor %}
+      </div>
+    </div>
   </section>
   {% endif %}
 
@@ -59,28 +102,6 @@
         {% if ag_step_three != blank %}<li {{ ag_step_three.shopify_attributes }}><span class="ag-step-number">03</span><div class="ag-step-art" aria-hidden="true"><svg viewBox="0 0 120 100" fill="none"><ellipse cx="60" cy="59" rx="44" ry="27"/><ellipse cx="60" cy="59" rx="29" ry="17"/><path d="m90 8 3 8 9 3-9 4-3 8-4-8-8-4 8-3 4-8ZM20 12v17M12 20h16"/></svg></div><h3>{% render 'agaruke-copy', copy_settings: ag_step_three.settings, key: 'heading' %}</h3><p>{% render 'agaruke-copy', copy_settings: ag_step_three.settings, key: 'body' %}</p></li>{% endif %}
       </ol>
     </div>
-  </section>
-  {% endif %}
-
-  {% if ag_menu != blank %}
-  <section class="ag-products ag-wrap ag-section" id="ag-products" aria-labelledby="ag-products-heading">
-    <div class="ag-section-top" {{ ag_menu.shopify_attributes }}><div><p class="ag-eyebrow">{% render 'agaruke-copy', copy_settings: ag_menu.settings, key: 'eyebrow' %}</p><h2 id="ag-products-heading">{% render 'agaruke-copy', copy_settings: ag_menu.settings, key: 'heading', mobile_break: true %}</h2></div><a class="ag-text-link" href="{{ routes.all_products_collection_url }}">{% render 'agaruke-copy', copy_settings: ag_menu.settings, key: 'list_cta' %} <span aria-hidden="true">↗</span></a></div>
-    {% assign ag_product_count = 0 %}
-    {% for block in section.blocks %}{% if block.settings.product != blank %}{% assign ag_product_count = ag_product_count | plus: 1 %}{% endif %}{% endfor %}
-    <div class="ag-product-grid{% if ag_product_count == 3 %} ag-product-grid--three{% endif %}">
-      {% for block in section.blocks %}
-        {% assign item = block.settings.product %}
-        {% if item != blank %}
-          <article class="ag-product" {{ block.shopify_attributes }}>
-            <a class="ag-product-image" href="{{ item.url }}" aria-label="{{ item.title | escape }}">
-              {% if item.featured_image != blank %}{{ item.featured_image | image_url: width: 1000 | image_tag: widths: '350, 600, 1000', sizes: '(min-width: 990px) 27vw, (min-width: 750px) 45vw, 100vw', loading: 'lazy', alt: item.title }}{% endif %}
-            </a>
-            <div class="ag-product-copy"><h3><a href="{{ item.url }}">{{ item.title | escape }}</a></h3><p>{% if request.locale.iso_code == 'en' %}{% if block.settings.description_en != blank %}{{ block.settings.description_en | escape | newline_to_br }}{% else %}{{ item.description | replace: '</p>', ' ' | strip_html | truncate: 140 | escape }}{% endif %}{% else %}{{ block.settings.description | escape | newline_to_br }}{% endif %}</p><p class="ag-product-price">{{ item.price | money }}{% if cart.taxes_included %}<span>{% render 'agaruke-copy', copy_settings: ag_menu.settings, key: 'tax_note' %}</span>{% endif %}</p><a class="ag-button ag-button-small" href="{{ item.url }}">{% render 'agaruke-copy', copy_settings: ag_menu.settings, key: 'detail_cta' %} <span aria-hidden="true">↗</span></a></div>
-          </article>
-        {% endif %}
-      {% endfor %}
-    </div>
-    <p class="ag-products-note">{% render 'agaruke-copy', copy_settings: ag_menu.settings, key: 'shipping_note' %}</p>
   </section>
   {% endif %}
 
@@ -141,6 +162,109 @@
     }
   ],
   "blocks": [
+    {
+      "type": "craft",
+      "name": "おいしさの理由",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "ラベル（日本語）",
+          "default": "WHY AGARUKE"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow_en",
+          "label": "ラベル（英語）",
+          "default": "WHY AGARUKE"
+        },
+        {
+          "type": "textarea",
+          "id": "heading",
+          "label": "見出し（日本語）",
+          "default": "お店のおいしさを、\nあなたの一皿へ。"
+        },
+        {
+          "type": "textarea",
+          "id": "heading_en",
+          "label": "見出し（英語）",
+          "default": "From our kitchen\nto your table."
+        },
+        {
+          "type": "text",
+          "id": "reason_1_heading",
+          "label": "理由1 見出し（日本語）",
+          "default": "お店で人気の味を、冷凍でも。"
+        },
+        {
+          "type": "text",
+          "id": "reason_1_heading_en",
+          "label": "理由1 見出し（英語）",
+          "default": "Restaurant favorites, made for your freezer."
+        },
+        {
+          "type": "textarea",
+          "id": "reason_1_body",
+          "label": "理由1 説明（日本語）",
+          "default": "実店舗で親しまれている人気メニューを、ご自宅でも。料理ごとの持ち味を大切に、冷凍してもおいしさを楽しめるよう工夫を重ねています。"
+        },
+        {
+          "type": "textarea",
+          "id": "reason_1_body_en",
+          "label": "理由1 説明（英語）",
+          "default": "Enjoy popular dishes from our restaurant at home. We adapt each recipe for freezing, with care to preserve the flavors and textures that make it special."
+        },
+        {
+          "type": "text",
+          "id": "reason_2_heading",
+          "label": "理由2 見出し（日本語）",
+          "default": "個別の真空パックで、おいしさを守る。"
+        },
+        {
+          "type": "text",
+          "id": "reason_2_heading_en",
+          "label": "理由2 見出し（英語）",
+          "default": "Individually vacuum-packed to preserve flavor."
+        },
+        {
+          "type": "textarea",
+          "id": "reason_2_body",
+          "label": "理由2 説明（日本語）",
+          "default": "料理や付け合わせを、それぞれ真空パックに。おいしさと冷凍での保存性に配慮し、食べたいときまで大切にお届けします。"
+        },
+        {
+          "type": "textarea",
+          "id": "reason_2_body_en",
+          "label": "理由2 説明（英語）",
+          "default": "Each dish and accompaniment is vacuum-packed separately, with care for flavor and frozen storage, ready for you to enjoy when you choose."
+        },
+        {
+          "type": "text",
+          "id": "reason_3_heading",
+          "label": "理由3 見出し（日本語）",
+          "default": "盛り付けた姿まで、おいしく。"
+        },
+        {
+          "type": "text",
+          "id": "reason_3_heading_en",
+          "label": "理由3 見出し（英語）",
+          "default": "Designed to look as good as it tastes."
+        },
+        {
+          "type": "textarea",
+          "id": "reason_3_body",
+          "label": "理由3 説明（日本語）",
+          "default": "主菜と付け合わせの組み合わせ、彩り、盛り付けたときのバランスまで。お皿の上で一皿が完成するよう、目でも楽しめるおいしさを考えています。"
+        },
+        {
+          "type": "textarea",
+          "id": "reason_3_body_en",
+          "label": "理由3 説明（英語）",
+          "default": "From the main dish and accompaniments to their colors and balance on the plate, every element is considered. Finish it on your favorite plate and enjoy a meal that delights the eyes, too."
+        }
+      ]
+    },
     {
       "type": "about",
       "name": "サービス紹介",
@@ -877,6 +1001,9 @@
     {
       "name": "AGARUKE サービス紹介",
       "blocks": [
+        {
+          "type": "craft"
+        },
         {
           "type": "about"
         },
