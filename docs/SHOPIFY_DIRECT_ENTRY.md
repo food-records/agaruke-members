@@ -60,7 +60,7 @@ Shopifyは現行customer accountsを使用する。メール認証はパスワ�
 - 次回、同じShopify顧客としてログインし、商品入りの**カート画面**を開くと、継続連携から新しい購入セッションを復帰させる。
 - 継続連携がDBに存在するだけでは購入ptを付与しない。注文に有効な購入セッションが必要。
 - セッションのない状態で直接会員ページを開くと、継続連携済みでもLINE認証の入口が表示される場合がある。現行の自動復帰はカートを起点とする。
-- 商品画面のShop Pay等でカートを経由しない経路、ログアウト/別端末/別アカウントへの切替は受入確認対象。
+- 商品ページの「今すぐ購入」（動的checkout）は2026-10-31に非表示へ変更。カートを経由して連携状態・券を確認する。ログアウト/別端末/別アカウントへの切替は受入確認対象。
 
 ## 4. 画面別の導線・表示
 
@@ -298,3 +298,6 @@ EC購入には「商品500円以上」という独自の最低購入額は実装
 候補・公開の合成未連携status200、不正unlink400、未連携exchange400。対象revision ERROR標本0。実ブラウザーは購入tokenなしのログイン済み状態でアカウント情報・再認証/解除ボタン・解除確認画面を表示できた。解除の確定は行わない。確認dialogは最後の照合でno longer activeだったが、以後の画面取得がブラウザー操作側でタイムアウトしたためキャンセル後の画面再確認・スクリーンショットは未取得。本番の解除→再連携→注文/決済はユーザー受入として残す。実ポイント変更・発券・注文・LINE配信なし。Secretary orderec、Driveイベント公開未承認保留。.work追加削除なし。
 
 2026-10-31購入導線: 商品ページのbuy_buttons.show_dynamic_checkoutをfalseにして「今すぐ購入」を非表示にし、カートを経由する導線へ統一する。テーマ再生成時にも同設定を適用。Shopify未ログイン・LINE連携済みの恒常入口は、Shopifyアカウントのログインと分離したメニュー「ポイントカード・クーポン」→/apps/membersを推奨。後者は提案で未実装。
+
+
+2026-10-31購入ボタン反映結果: Members master source5fdbd2bをpushしremote一致/clean/直前配信8b13f5e包含をrelease_guardで確認。Dawn189917102253のtemplates/product.json内buy_buttons.show_dynamic_checkoutだけtrue→falseに変更。直前原本一致、公開readback byte一致、Liquid schema検査/Python構文成功。公開3種セットでカート追加ボタンのみをブラウザー確認し、Git外.runtime/shopify-cart-route-20261031/cart-only.jpgへ保存。商品追加/購入/認証変更/LINE送信なし。API/Node backend・クーポン・ポイント処理を変更しない。Shopify未ログイン時の独立メニュー「ポイントカード・クーポン」常設は提案のみ。Secretary orderec/Driveイベント公開未承認保留。.work追加削除なし。
