@@ -21,3 +21,5 @@ LINE/カート/backend/台帳/試験modeは変更なし。外部LIFF/会員認�
 Translate & Adaptは標準言語追加時にインストールされたがiframe空白。標準CSVへ切替。Chrome file URL accessはユーザーが有効化。最初の手製CSVはTypeをProductsとし、登録されなかった。正式exportではTypeはPRODUCT、Identificationは先頭apostrophe付きの商品IDだった。「通常商品IDとは異なる」と先に説明したのは未確認の推測で誤り。ユーザーがDownloadsへ保存した公式CSVの識別子/Type/原文をそのまま維持して6件を記入、再import後に公開readback成功。
 
 保護runtime shopify-bilingual-20261031に変更前snapshot、公式export、英訳CSV、公開JP/EN証跡を保持。商品実データをGitへ保存せず、翻訳用商品権限の追加なし。新規課金構成なし。Secretary eventのDrive公開は未承認で保留。
+
+最終補正: 英語トップからのカード導線を既存 /apps/members に固定し、英語prefixとの連結不具合を防止。00a7395d59689d1f4275f2662700bbb050b35742をclean remote/包含guard後にsection1件配信、公開DOMで同パスを確認。Liquid再検査成功。
