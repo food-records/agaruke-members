@@ -86,3 +86,5 @@ Go全packageのFirestore Emulator `go test -race ./...` / `go vet ./...`、Node�
 ポイント交換用は既存の200pt→200円/最低3,800円、500pt→500円/最低7,000円、1,000pt→1,000円/最低12,000円を確認。交換時に会員ごとのランダムな1回券を発行し、交換から暦3か月有効・併用不可。共通固定コードや架空のポイント消費は作成しない。`SHOPIFY_LINK_TEST_ONLY=true`による通常交換/購入pt停止は維持しており、営業開始は未完了。今回コード変更/デプロイなし。Nodeテスト15件成功。
 
 管理画面で作成成功・有効・0回使用・金額/条件/期限を確認。画面証跡は共有workspaceのGit外`.runtime/shopify-pricing-20261031/line-500-coupon.png`。Secretary記録先orderec、Driveイベント公開は未承認で保留。
+
+2026-10-31追記: 交換のみの一時公開を完了。backend shopify-members-exchange-f4c07e3、100%。購入pt/paid/返金は停止、LINE配信なし。[現行状態・復旧](SHOPIFY_EXCHANGE_TEST_RELEASE_20261031.md)。
