@@ -35,5 +35,7 @@
   {{ 'agaruke-coupons.css' | asset_url | stylesheet_tag }}
   <script type="module" src="{{ 'agaruke-coupons.js' | asset_url }}"></script>
   <script type="module" src="{{ 'agaruke-members-status.js' | asset_url }}"></script>
-  <script type="module" src="{{ 'agaruke-benefits.js' | asset_url }}"></script>
+  {% if request.page_type == 'product' or request.page_type == 'cart' %}
+    <script type="module" src="{{ 'agaruke-benefits.js' | asset_url }}"></script>
+  {% endif %}
 {% endunless %}

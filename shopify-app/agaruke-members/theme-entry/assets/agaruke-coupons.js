@@ -1,3 +1,4 @@
+import {getCart,mutateCart} from './agaruke-cart.js?v=2026103101';
 const ROOT = typeof window === 'undefined' ? '/' : window.Shopify?.routes?.root || '/';
 export function couponTitle(code, amount = 0) {
   if (code === 'AGARUKE500') return 'AGARUKEオープン記念！500円OFF';
@@ -31,7 +32,7 @@ function initialize(){
   const returnTo=/^\/(collections|products|search)(\/|\?|$)/.test(location.pathname)?location.pathname+location.search:'';
   const couponPageHref='/apps/members'+(returnTo?'?return_to='+encodeURIComponent(returnTo):'');
   let bar, text, change, clear, busy=false, pending, selectedCode='', currentState={selected:false,title:'クーポン未選択',text:'クーポン未選択',applicable:false};
-  async function request(path,body){const r=await fetch(ROOT+path,{cache:'no-store',...(body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{})});if(!r.ok)throw Error('クーポンを更新できませんでした。もう一度お試しください。');return r.json();}
+  async function request(path,body){if(path==='cart.js'&&!body)return getCart();if(path==='cart/update.js'&&body)return mutateCart(ROOT+path,body);const r=await fetch(ROOT+path,{cache:'no-store',...(body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{})});if(!r.ok)throw Error('クーポンを更新できませんでした。もう一度お試しください。');return r.json();}
   function mount(){
     if(bar)return;
     bar=document.createElement('aside');bar.className='agaruke-coupon-banner shopify-section-group-header-group';bar.setAttribute('aria-label','ポイント・クーポンのご案内');bar.hidden=true;document.documentElement.dataset.agarukeBenefitsBanner='ready';

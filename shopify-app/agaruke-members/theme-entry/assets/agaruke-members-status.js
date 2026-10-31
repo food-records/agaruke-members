@@ -1,3 +1,4 @@
+import {getCart,mutateCart} from './agaruke-cart.js?v=2026103101';
 export const POINT_PROPERTY = '獲得予定ポイント（注文全体）';
 export const DISPLAY_CACHE_KEY = 'agaruke-members-display-v3';
 export const DISPLAY_CACHE_TTL = 5 * 60 * 1000;
@@ -32,6 +33,7 @@ function initialize(config) {
   let running=null;let scheduled=null;let again=false;let forceAgain=false;let unlinkVersion=0;
   const safeStorage={get(){try{return sessionStorage.getItem(storageKey)||'';}catch{return '';}},set(token){try{if(token)sessionStorage.setItem(storageKey,token);else sessionStorage.removeItem(storageKey);}catch{}}};
   async function request(url,body) {
+    if(body&&[root+'cart/update.js',root+'cart/change.js'].includes(url))return mutateCart(url,body);
     const response=await fetch(url,{cache:'no-store',...(body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{})});
     if(!response.ok)throw new Error('MEMBERS_STATUS_UNAVAILABLE');
     return response.json();
@@ -64,7 +66,7 @@ function initialize(config) {
     if(dedicated&&!config.legacy_note)return;
     const generation=unlinkVersion;
     running=(async()=>{
-      const cart=await request(root+'cart.js');if(generation!==unlinkVersion)return;
+      const cart=await getCart({fresh:force||config.is_cart});if(generation!==unlinkVersion)return;
       if(dedicated){await cleanupLegacyNote(cart);return;}
       const token=safeStorage.get()||cart.attributes?._agaruke_purchase||'';
       if(!config.customer_present&&!token) {
@@ -88,7 +90,7 @@ function initialize(config) {
       }
       show(state);
       remember(state);
-      if(config.is_cart||config.legacy_note)await cleanupLegacyNote(await request(root+'cart.js'));
+      if(config.is_cart||config.legacy_note)await cleanupLegacyNote(await getCart({fresh:true}));
     })().catch(()=>{
       window.dispatchEvent(new Event('agaruke:benefits-error'));
     }).finally(()=>{running=null;if(again){const force=forceAgain;again=false;forceAgain=false;schedule(force);}});
@@ -99,7 +101,7 @@ function initialize(config) {
     const controls=[...document.querySelectorAll('cart-items input, cart-items button, button[name="checkout"]')].filter(el=>!el.disabled);
     controls.forEach(el=>el.disabled=true);
     try {
-      cart=await request(root+'cart.js');
+      cart=await getCart({fresh:true});
       for(let i=0;i<cart.items.length+2;i++) {
         const change=clearLegacyAnnotation(cart);if(!change)break;
         cart=await request(root+'cart/change.js',change);

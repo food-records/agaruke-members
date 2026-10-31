@@ -231,3 +231,5 @@ agaruke-members/
 2026-10-31: 注文完了画面のLINEポイントカード表示を撤去。初回の裏側連携リクエストと購入ポイントWebhookは維持。[現行仕様](docs/SHOPIFY_DIRECT_ENTRY.md)。
 
 2026-10-31: 商品/カート/トップFAQの発送目安「ご入金確認後、通常3〜5日以内に発送」（暦日）を公開。到着日とは区別。[仕様・公式情報確認](docs/SHOPIFY_DISPATCH_WINDOW_20261031.md)。
+
+2026-10-31: デザインを維持して速度改善を実装。日本語fontの同じ字形をsubset化、画像sizesを適正化、カート読取を共通化し、benefits UIを商品/カートだけへ限定。[測定と実装](docs/SHOPIFY_PERFORMANCE_REVIEW_20261031.md)。

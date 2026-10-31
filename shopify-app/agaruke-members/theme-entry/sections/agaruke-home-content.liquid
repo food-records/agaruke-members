@@ -27,7 +27,7 @@
     {% if ag_about.settings.image == blank %}{% assign ag_about_alt = section.settings.feature_product.title %}{% endif %}
     {% if ag_about_image != blank %}
       <div class="ag-about-image">
-        {{ ag_about_image | image_url: width: 1100 | image_tag: widths: '400, 700, 1100', sizes: '(min-width: 750px) 46vw, 100vw', loading: 'lazy', alt: ag_about_alt }}
+        {{ ag_about_image | image_url: width: 1100 | image_tag: widths: '400, 700, 1100', sizes: '(min-width: 750px) 46vw, calc(100vw - 44px)', loading: 'lazy', alt: ag_about_alt }}
         <p>{% render 'agaruke-copy', copy_settings: ag_about.settings, key: 'caption' %}</p>
       </div>
     {% endif %}
@@ -39,13 +39,15 @@
     <div class="ag-section-top" {{ ag_menu.shopify_attributes }}><div><p class="ag-eyebrow">{% render 'agaruke-copy', copy_settings: ag_menu.settings, key: 'eyebrow' %}</p><h2 id="ag-products-heading">{% render 'agaruke-copy', copy_settings: ag_menu.settings, key: 'heading', mobile_break: true %}</h2></div><a class="ag-text-link" href="{{ routes.all_products_collection_url }}">{% render 'agaruke-copy', copy_settings: ag_menu.settings, key: 'list_cta' %} <span aria-hidden="true">↗</span></a></div>
     {% assign ag_product_count = 0 %}
     {% for block in section.blocks %}{% if block.settings.product != blank %}{% assign ag_product_count = ag_product_count | plus: 1 %}{% endif %}{% endfor %}
+    {% assign ag_product_sizes = '(min-width: 990px) 27vw, (min-width: 750px) 45vw, 100vw' %}
+    {% if ag_product_count == 3 %}{% assign ag_product_sizes = '(min-width: 1256px) 366px, (min-width: 990px) calc(33.333vw - 53.333px), (min-width: 750px) calc(38vw - 36.48px), calc(46vw - 20.24px)' %}{% endif %}
     <div class="ag-product-grid{% if ag_product_count == 3 %} ag-product-grid--three{% endif %}">
       {% for block in section.blocks %}
         {% assign item = block.settings.product %}
         {% if item != blank %}
           <article class="ag-product" {{ block.shopify_attributes }}>
             <a class="ag-product-image" href="{{ item.url }}" aria-label="{{ item.title | escape }}">
-              {% if item.featured_image != blank %}{{ item.featured_image | image_url: width: 1000 | image_tag: widths: '350, 600, 1000', sizes: '(min-width: 990px) 27vw, (min-width: 750px) 45vw, 100vw', loading: 'lazy', alt: item.title }}{% endif %}
+              {% if item.featured_image != blank %}{{ item.featured_image | image_url: width: 1000 | image_tag: widths: '200, 350, 500, 600, 750, 1000', sizes: ag_product_sizes, loading: 'lazy', alt: item.title }}{% endif %}
             </a>
             <div class="ag-product-copy"><h3><a href="{{ item.url }}">{{ item.title | escape }}</a></h3><p>{% if request.locale.iso_code == 'en' %}{% if block.settings.description_en != blank %}{{ block.settings.description_en | escape | newline_to_br }}{% else %}{{ item.description | replace: '</p>', ' ' | strip_html | truncate: 140 | escape }}{% endif %}{% else %}{{ block.settings.description | escape | newline_to_br }}{% endif %}</p><p class="ag-product-price">{{ item.price | money }}{% if cart.taxes_included %}<span>{% render 'agaruke-copy', copy_settings: ag_menu.settings, key: 'tax_note' %}</span>{% endif %}</p><a class="ag-button ag-button-small" href="{{ item.url }}">{% render 'agaruke-copy', copy_settings: ag_menu.settings, key: 'detail_cta' %} <span aria-hidden="true">↗</span></a></div>
           </article>

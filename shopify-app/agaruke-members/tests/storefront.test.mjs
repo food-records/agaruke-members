@@ -1,5 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
+import {invalidateCart} from '../theme-entry/assets/agaruke-cart.js?v=2026103101';
 import {storefrontPresentation} from '../app/storefront.server.ts';
 import {clearLegacyAnnotation,POINT_PROPERTY,DISPLAY_CACHE_KEY,DISPLAY_CACHE_TTL,cacheRecord,readDisplayCache} from '../theme-entry/assets/agaruke-members-status.js';
 const cart={item_count:3,total_price:360000,currency:'JPY'};
@@ -31,6 +32,7 @@ test('display cache expires at five minutes and is invalid for another account o
 });
 async function browserRun({key='scope',stored=new Map(),isCart=false,legacy=false,suffix='default'}={}) {
  const originals={document:globalThis.document,window:globalThis.window,sessionStorage:globalThis.sessionStorage,fetch:globalThis.fetch,location:globalThis.location};
+ invalidateCart();
  let requests=[];
  globalThis.document={documentElement:{dataset:{}},getElementById:()=>({textContent:JSON.stringify({path:'/apps/members',cache_key:key,customer_present:true,is_cart:isCart,legacy_note:legacy})}),querySelectorAll:()=>[],addEventListener:()=>{}};
  globalThis.window={Shopify:{routes:{root:'/'}},addEventListener:()=>{},dispatchEvent:()=>{}};globalThis.location={pathname:isCart?'/cart':'/collections/all'};
