@@ -141,3 +141,5 @@
 2026-10-31: トップの紹介/食べ方/FAQ/CTAをテーマ編集画面の日英入力欄へ移行。現行コピーと商品設定を保持するローカル移行tool、Liquid検査完了。[編集方法・状態](docs/SHOPIFY_EDITABLE_CONTENT_20261031.md)。
 
 2026-10-31: 日英のトップ編集欄を公開テーマへ反映しreadback・公開表示確認済み。管理画面iframeの読込停滞によりUI保存操作のみ未確認。両言語は同じテーマ画面の各入力欄で管理。[詳細](docs/SHOPIFY_EDITABLE_CONTENT_20261031.md)。
+
+2026-10-31: ヘッダーCompany（food-records.com）をPC/dropdown/megaとmobile drawer共通で別タブ化するローカルpatch toolを追加。公開反映を確認する。
