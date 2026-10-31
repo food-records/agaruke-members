@@ -157,3 +157,5 @@ agaruke-members/
 2026-10-31: 商品の日英対応は進行中。日本語既定化・3商品名分離・豚角煮説明保存済み。英語CSV登録はChromeのファイルアクセス設定待ち。トップ翻訳は検査済み未配信。[状態・残作業](docs/SHOPIFY_BILINGUAL_RELEASE_20261031.md)。
 
 2026-10-31続報: ファイルアクセスは解決。CSV importは商品へ紐づかず、正式な商品翻訳exportを管理者メールへ出力しdownloadファイル待ち。英語公開/言語切替とトップ翻訳section2件は反映済み、商品英訳は未完了。配信SHA d37bafd、readback一致。
+
+2026-10-31完了: 正式PRODUCT形式CSVで3商品の英語名/説明6件を登録。日英商品表示・内容量・切替・トップ3商品名を公開確認。初回CSVのType誤りを修正。外部LIFF/購入特典文言は日本語を維持。[現況](docs/SHOPIFY_BILINGUAL_RELEASE_20261031.md)。
