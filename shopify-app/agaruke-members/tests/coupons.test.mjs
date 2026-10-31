@@ -14,17 +14,17 @@ test('status uses Shopify applicability, distinguishes unmet requirements and ne
  assert.match(couponSummary({discount_codes:[{code,applicable:false}]},'EC 200円OFFクーポン').text,/200円OFF.*条件未達/);
  const cart={discount_codes:[{code,applicable:true}],cart_level_discount_applications:[{type:'discount_code',total_allocated_amount:20000}]};
  const text=couponSummary(cart).text;assert.equal(text,'EC 200円OFFクーポン 適用中');assert.ok(!text.includes(code));
- assert.equal(couponTitle('AGARUKE500'),'公開記念 500円OFFクーポン');
+ assert.equal(couponTitle('AGARUKE500'),'AGARUKEオープン記念！500円OFF');
  assert.equal(couponTitle('AMTEST'+'A'.repeat(32)),'テスト 500円OFFクーポン');
 });
 
 test('an old ineligible code never masks the actually applicable code',()=>{
  const cart={discount_codes:[{code:'AM'+'a'.repeat(64),applicable:false},{code:'AGARUKE500',applicable:true}],cart_level_discount_applications:[{type:'discount_code',total_allocated_amount:50000}]};
- assert.equal(couponSummary(cart).text,'公開記念 500円OFFクーポン 適用中');
+ assert.equal(couponSummary(cart).text,'AGARUKEオープン記念！500円OFF 適用中');
 });
 
 test('coupon takes priority without LINE, registration is optional and linked shoppers see no empty banner',()=>{
- const coupon={selected:true,applicable:true,text:'公開記念 500円OFFクーポン 適用中'};
+ const coupon={selected:true,applicable:true,text:'AGARUKEオープン記念！500円OFF 適用中'};
  for(const member of [undefined,{linked:false},{linked:true,ready:true,link_test_only:true}]){
   const view=benefitBanner(member,coupon);assert.equal(view.visible,true);assert.equal(view.mode,'applied');assert.equal(view.text,coupon.text);assert.ok(!view.text.includes('pt'));
  }
@@ -33,3 +33,5 @@ test('coupon takes priority without LINE, registration is optional and linked sh
  assert.equal(benefitBanner({linked:true},{selected:false}).visible,false);
  assert.equal(benefitBanner({linked:false},{...coupon,applicable:false,text:'条件未達'}).mode,'unmet');
 });
+
+test('launch name ignores old stored display labels',()=>{assert.equal(couponSummary({discount_codes:[{code:'AGARUKE500',applicable:true}]},'公開記念 500円OFFクーポン').text,'AGARUKEオープン記念！500円OFF 適用中');});

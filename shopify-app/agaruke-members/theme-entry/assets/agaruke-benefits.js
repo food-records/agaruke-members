@@ -6,7 +6,7 @@ export function benefitPoints(state,english=false) {
 }
 export function couponChoices(state,now=Date.now()) {
   const choices=[];
-  if(now<Date.parse('2026-11-30T14:59:00Z'))choices.push({code:'AGARUKE500',title:'公開記念 500円OFFクーポン',cost:500,minimum:3800,public:true});
+  if(now<Date.parse('2026-11-30T14:59:00Z'))choices.push({code:'AGARUKE500',title:'AGARUKEオープン記念！500円OFF',cost:500,minimum:3800,public:true});
   if(state?.linked)for(const c of state.coupons||[]) {
     if(typeof c.code!=='string'||!Number.isFinite(c.cost)||!Number.isFinite(c.minimum)||choices.some(x=>x.code===c.code))continue;
     if(c.expires_at&&Date.parse(c.expires_at)<=now)continue;
@@ -59,7 +59,7 @@ function initialize(){
       v.link.textContent=state?.linked?t('ポイント交換・会員ページ','Points and member page'):t('LINEで登録・連携する（任意）','Link LINE (optional)');
       v.list.replaceChildren();v.choices=[];
       for(const c of couponChoices(state)){
-        const row=node('article','benefits-ticket');const copy=node('div');copy.append(node('strong','',c.public?t('公開記念 500円OFF','Launch offer: ¥500 off'):t(`${c.cost.toLocaleString()}円OFF（交換済み）`,`¥${c.cost.toLocaleString()} off (redeemed)`)));
+        const row=node('article','benefits-ticket');const copy=node('div');copy.append(node('strong','',c.public?t('AGARUKEオープン記念！500円OFF','AGARUKE opening offer! ¥500 off'):t(`${c.cost.toLocaleString()}円OFF（交換済み）`,`¥${c.cost.toLocaleString()} off (redeemed)`)));
         copy.append(node('p','',t(`商品税込${c.minimum.toLocaleString()}円以上・併用不可`,`Items ¥${c.minimum.toLocaleString()} or more · Cannot combine`)));
         if(c.public)copy.append(node('p','',t('1人1回・11月30日まで・LINE連携不要','Once per customer · Ends Nov 30 · No LINE required')));
         else if(c.expires_at)copy.append(node('p','',t('期限 ','Expires ')+new Date(c.expires_at).toLocaleDateString(english?'en-GB':'ja-JP',{timeZone:'Asia/Tokyo'})));

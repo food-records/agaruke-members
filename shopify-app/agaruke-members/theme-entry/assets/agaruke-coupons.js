@@ -1,6 +1,6 @@
 const ROOT = typeof window === 'undefined' ? '/' : window.Shopify?.routes?.root || '/';
 export function couponTitle(code, amount = 0) {
-  if (code === 'AGARUKE500') return '公開記念 500円OFFクーポン';
+  if (code === 'AGARUKE500') return 'AGARUKEオープン記念！500円OFF';
   if (/^AMTEST[A-F0-9]{32}$/.test(code)) return 'テスト 500円OFFクーポン';
   if (/^AM[a-f0-9]{64}$/i.test(code)) return amount > 0 ? `EC ${amount.toLocaleString()}円OFFクーポン` : 'ECポイント交換クーポン';
   return 'クーポン';
@@ -16,7 +16,7 @@ export function couponSummary(cart, label = '') {
   const code=codes.find(c=>c.applicable===true)?.code||codes[0]?.code||applied[0]?.title||'';
   const valid=codes.length?codes.some(c=>c.applicable===true):applied.length>0;
   const amount=(applied.reduce((sum,d)=>sum+Number(d.total_allocated_amount||0),0))/100;
-  const title=label||couponTitle(code,amount);
+  const title=code==='AGARUKE500'?couponTitle(code):label||couponTitle(code,amount);
   return {selected:true,text:valid?`${title} 適用中`:`${title} 選択中（利用条件未達）`};
 }
 export function benefitBanner(member,coupon) {
@@ -44,7 +44,7 @@ function initialize(){
   async function show(cart){
     mount();let label='';const code=cart.discount_codes?.find(c=>c.applicable===true)?.code||cart.discount_codes?.[0]?.code;
     if(code&&cart.attributes?._agaruke_coupon_hash){const patch=await couponChange(code);if(patch.attributes._agaruke_coupon_hash===cart.attributes._agaruke_coupon_hash)label=cart.attributes._agaruke_coupon_label||'';}
-    const summary=couponSummary(cart,label);selectedCode=code||'';const amount=(cart.cart_level_discount_applications||[]).filter(d=>d.type==='discount_code').reduce((sum,d)=>sum+Number(d.total_allocated_amount||0),0)/100;currentState={...summary,title:label||couponTitle(selectedCode,amount),applicable:summary.selected&&!summary.text.includes('条件未達')};renderBanner();window.dispatchEvent(new CustomEvent('agaruke:coupon-changed'));document.dispatchEvent(new Event('agaruke:banner-layout'));
+    const summary=couponSummary(cart,label);selectedCode=code||'';const amount=(cart.cart_level_discount_applications||[]).filter(d=>d.type==='discount_code').reduce((sum,d)=>sum+Number(d.total_allocated_amount||0),0)/100;currentState={...summary,title:selectedCode==='AGARUKE500'?couponTitle(selectedCode):label||couponTitle(selectedCode,amount),applicable:summary.selected&&!summary.text.includes('条件未達')};renderBanner();window.dispatchEvent(new CustomEvent('agaruke:coupon-changed'));document.dispatchEvent(new Event('agaruke:banner-layout'));
   }
   function renderBanner(){
     if(!bar)return;const view=benefitBanner(member,currentState);bar.hidden=!view.visible;text.textContent=view.text;change.textContent=view.action||'変更';clear.hidden=member?.linked!==true||!currentState.selected;bar.dataset.state=view.mode;change.href=view.mode==='unlinked'||member?.linked===true?couponPageHref:ROOT+'cart';

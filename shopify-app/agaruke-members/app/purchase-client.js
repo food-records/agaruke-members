@@ -42,21 +42,39 @@
   let currentTitle, currentBadge, currentHelp, clearButton;
   let choices=[];
   function syncSelection(){
-    const api=window.agarukeCoupons;if(!api||!currentTitle)return;
+    const api=window.agarukeCoupons;if(!api)return;
     const selected=api.current();
+    if(currentTitle){
     currentTitle.textContent=selected?.selected?selected.title:'クーポンは選択されていません';
     currentBadge.textContent=selected?.selected?(selected.applicable?'適用中':'条件未達'):'未選択';
     currentBadge.dataset.state=selected?.selected?(selected.applicable?'applied':'unmet'):'none';
     currentHelp.textContent=selected?.selected?(selected.applicable?'このクーポンでお買い物できます。':'商品合計などの利用条件をご確認ください。'):'下の一覧から使うクーポンを選んでください。';
     clearButton.hidden=!selected?.selected;
+    }
     for(const choice of choices){
       const active=api.isSelected(choice.code);choice.card.dataset.selected=String(active);
       choice.button.textContent=active?'選択中':'このクーポンを使う';choice.button.disabled=active;choice.button.dataset.locked=String(active);
-      choice.badge.hidden=!active;
+      choice.badge.hidden=!active;if(choice.clear)choice.clear.hidden=!active;
     }
   }
   window.addEventListener('agaruke:coupon-changed',syncSelection);
   window.addEventListener('agaruke:coupons-ready',syncSelection);
+  function launchTicket(list){
+    if(Date.now()>=Date.parse('2026-11-30T14:59:00Z'))return false;
+    const card=el('article','coupon-ticket');const top=el('div','coupon-ticket-top');top.append(el('span','coupon-eyebrow','オープン記念クーポン'));
+    const badge=el('span','coupon-badge','選択中');badge.hidden=true;top.append(badge);card.append(top);
+    card.append(el('h3','coupon-current-title','AGARUKEオープン記念！500円OFF'));
+    card.append(el('p','coupon-ticket-minimum','税込商品合計 3,800円以上'));
+    card.append(el('p','coupon-muted','1人1回・2026年11月30日まで・ポイント消費なし'));
+    const use=button('このクーポンを使う',async()=>{await couponSelect('AGARUKE500','AGARUKEオープン記念！500円OFF');say('AGARUKEオープン記念！500円OFFを選択しました。');},card);
+    let clear;if(!state){clear=button('選択を解除する',async()=>{await couponSelect('');say('選択を解除しました。');},card,true);clear.hidden=true;}
+    choices.push({code:'AGARUKE500',card,button:use,badge,clear});list.append(card);return true;
+  }
+  function guestOffers(){
+    choices=[];const owned=el('section','coupon-owned');owned.append(el('h2','','お持ちのクーポン'));
+    const list=el('div','coupon-ticket-grid');if(!launchTicket(list))return;
+    owned.append(list,el('p','coupon-fine-print','LINE連携・Shopifyログイン不要。送料は利用条件に含まれません。他クーポンとの併用不可です。'));actions.append(owned);syncSelection();
+  }
   function returnPath(){
     const path=new URLSearchParams(location.search||'').get('return_to')||'';
     return /^\/(collections|products|search)(\/|\?|$)/.test(path)&&!path.includes('\\')?path:'/collections/all';
@@ -78,6 +96,7 @@
     if(!state.completed){
       const owned=el('section','coupon-owned');owned.append(el('h2','','お持ちのクーポン'),el('p','coupon-muted','選択・解除でポイントが減ることはありません。'));
       const list=el('div','coupon-ticket-grid');let count=0;
+      if(launchTicket(list))count++;
       for(const c of state.coupons||[]){
         const test=(state.test_coupon_ids||[]).includes(c.id);if(!exchangeEnabled&&!test)continue;
         if(!['available','pending'].includes(c.status))continue;count++;
@@ -146,6 +165,6 @@
       if (!updated.ok) throw new Error('カートへの設定に失敗しました。LINE認証をやり直してください。');
     }
     if (sessionStorage.getItem(key)) await refresh();
-    else { say('LINEでポイントカードを確認します。Shopifyへのログインは、後から選べます。'); button('LINEでポイントカードを使う', start); }
-  } catch (e) { say(e.message || '処理できませんでした。'); actions.replaceChildren(); button('LINE認証を始める', start); }
+    else { guestOffers();say('ポイント交換クーポンを使う場合は、LINEでポイントカードを確認してください。'); button('LINEでポイントカードを使う', start); }
+  } catch (e) { say(e.message || '処理できませんでした。'); actions.replaceChildren();guestOffers();button('LINE認証を始める', start); }
 })();

@@ -22,10 +22,10 @@ const before=await read();
 if(before.codes.nodes[0]?.code!=='AGARUKE500'||Number(before.customerGets.value.amount?.amount)!==500||Number(before.minimumRequirement.greaterThanOrEqualToSubtotal.amount)!==3800||!before.appliesOncePerCustomer||before.endsAt!=='2026-11-30T14:59:00Z'||Object.values(before.combinesWith).some(Boolean))throw Error('EXISTING_CONDITIONS_CHANGED');
 console.log(JSON.stringify({apply:process.argv.includes('--apply'),code:'AGARUKE500',amount:500,minimum:3800,once_per_customer:before.appliesOncePerCustomer,eligibility:before.context.__typename,ends_at:before.endsAt}));
 if(process.argv.includes('--apply')){
- const result=(await gql(mutation,{id,input:{title:'公開記念 500円OFFクーポン',context:{all:'ALL'}}})).discountCodeBasicUpdate;
+ const result=(await gql(mutation,{id,input:{title:'AGARUKEオープン記念！500円OFF'}})).discountCodeBasicUpdate;
  if(result.userErrors.length||result.codeDiscountNode?.id!==id)throw Error('UPDATE_FAILED');
- const after=await read();const unchanged=x=>{const {title,context,...rest}=x;return rest;};
+ const after=await read();const unchanged=x=>{const {title,...rest}=x;return rest;};
  if(JSON.stringify(unchanged(before))!==JSON.stringify(unchanged(after)))throw Error('CONDITIONS_READBACK_MISMATCH');
- if(!/All/.test(after.context.__typename)||after.title!=='公開記念 500円OFFクーポン')throw Error('ELIGIBILITY_READBACK_FAILED');
+ if(!/All/.test(after.context.__typename)||after.title!=='AGARUKEオープン記念！500円OFF')throw Error('ELIGIBILITY_READBACK_FAILED');
  console.log(JSON.stringify({public_coupon:true,title:after.title,eligibility:after.context.__typename,once_per_customer:after.appliesOncePerCustomer,other_conditions_preserved:true,no_messages:true}));
 }
