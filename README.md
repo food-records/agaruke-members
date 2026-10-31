@@ -1,5 +1,7 @@
 # agaruke-members
 
+**Shopifyの現行仕様と実アカウント受入チェックリスト:** [顧客・LINE連携・全クーポン・ポイント条件](docs/SHOPIFY_DIRECT_ENTRY.md)（2026-10-31照合）。購入pt/交換/返金は本番有効、LINE配信未実施。旧報告の試験停止記述と区別する。
+
 Organization顧客台帳への会員状態投影は`LINE_PROVIDER_ID=food-records-line`を設定した場合だけ有効です。`POST /members/register`成功時に会員フラグを更新し、退会申請時に解除します。顧客台帳の失敗で会員登録・ポイント処理は取り消しません。
 
 FOOD RECORDS メンバーズ ポイントシステム

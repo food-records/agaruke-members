@@ -1,5 +1,7 @@
 # AGARUKE Members Shopifyアプリ
 
+**現在（2026-10-31）:** 一般500円券はLINE/Shopifyログイン不要、購入pt/交換/返金は本番有効。[現行仕様・受入一覧](../../docs/SHOPIFY_DIRECT_ENTRY.md)を優先し、以下の過去の試験停止記述と区別する。
+
 LINE認証を先に行い、Shopifyログイン時は継続連携、ゲスト購入時は一注文だけの連携を行う。会員番号・確認コード入力は不要。2026-10-28に本番反映し、本人連携の試験モードで稼働。本人のLINE認証とログイン分岐の連携保存を確認済み。ゲスト・注文の実機試験は未完了。[配信記録](../../docs/SHOPIFY_LINE_FIRST_RELEASE_20261028.md)。
 
 対象は`stxmu0-ef.myshopify.com`／`https://shop.agaruke.com`。現行仕様は[SHOPIFY_DIRECT_ENTRY.md](../../docs/SHOPIFY_DIRECT_ENTRY.md)、envは`runtime.env.example`を参照する。
@@ -29,6 +31,6 @@ shopify app build
 
 `shopify app dev`は開発ストアへの設定変更・tunnel公開を伴う。対象・コマンド・送信情報を提示して承認後に実行する。本番アプリ導入、権限追加、deploy、webhook登録、割引・注文の実操作も個別承認後に行う。ローカルのbuild成功はストアへの公開・結合試験成功を意味しない。
 
-連携済みヘッダー/カートの表示切替は `theme-entry/assets/agaruke-members-status.js` とglobal snippetで行う。Basicのcheckoutは商品補足欄に注文全体で一回の予定ptを表示し、独自Checkout UI blockは追加しない。[仕様・配信記録](../../docs/SHOPIFY_LINKED_UI_RELEASE_20261028.md)。
+連携済みヘッダー/カートの表示切替は `theme-entry/assets/agaruke-members-status.js` とglobal snippetで行う。checkoutの商品補足欄への予定pt注記は撤去済み。予定ptは商品/カートの共通特典カードへ表示する。[仕様・配信記録](../../docs/SHOPIFY_LINKED_UI_RELEASE_20261028.md)。
 
 2026-10-31: ユーザー指示で交換だけを一時公開する独立フラグを追加。購入pt/paid/返金は試験停止を維持、配信なし。[交換テスト反映記録](../../docs/SHOPIFY_EXCHANGE_TEST_RELEASE_20261031.md)。
