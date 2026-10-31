@@ -13,16 +13,19 @@ export function clearLegacyAnnotation(cart) {
   }
   return null;
 }
-export function cacheRecord(state,key,now=Date.now()) {
-  return {version:3,key,at:now,state:{linked:state.linked===true,ready:state.ready===true,permanent:state.permanent===true,
+export function cacheRecord(state,key,now=Date.now(),identityKey=key) {
+  if(typeof state?.linked!=='boolean')return null;
+  return {version:3,key,identity_key:identityKey,at:now,state:{linked:state.linked===true,ready:state.ready===true,permanent:state.permanent===true,
     expected_points:state.expected_points===100?100:0,link_test_only:state.link_test_only!==false,
     coupon_count:Number.isInteger(state.coupon_count)&&state.coupon_count>0?state.coupon_count:0,test_coupon_count:Number.isInteger(state.test_coupon_count)&&state.test_coupon_count>0?state.test_coupon_count:0,coupon_url:'/apps/members'}};
 }
-export function readDisplayCache(storage,key,now=Date.now()) {
+export function readDisplayCache(storage,key,now=Date.now(),identityKey=key) {
   try {
     const saved=JSON.parse(storage.getItem(DISPLAY_CACHE_KEY)||'null');
-    if(!key||saved?.version!==3||saved.key!==key||!Number.isFinite(saved.at)||now<saved.at||now-saved.at>=DISPLAY_CACHE_TTL)return null;
-    return cacheRecord(saved.state,key,saved.at).state;
+    if(!key||saved?.version!==3||(saved.key!==key&&saved.identity_key!==identityKey)||!Number.isFinite(saved.at)||now<saved.at||now-saved.at>=DISPLAY_CACHE_TTL)return null;
+    const record=cacheRecord(saved.state,key,saved.at,identityKey);
+    if(!record)return null;
+    return saved.key===key?record.state:{...record.state,ready:false,expected_points:0,coupon_count:0,test_coupon_count:0};
   } catch {return null;}
 }
 if (typeof document !== 'undefined') {
@@ -40,9 +43,11 @@ function initialize(config) {
     return response.json();
   }
   function show(state) {
+    if(typeof state?.linked!=='boolean')return;
     document.documentElement.dataset.agarukeMembersState=state.linked?'linked':'unlinked';
     for(const anchor of document.querySelectorAll('.announcement-bar a')) {
-      if(new URL(anchor.href,location.origin).pathname!==config.path)continue;
+      const path=new URL(anchor.href,location.origin).pathname.replace(/\/$/,'');
+      if(path!==config.path&&path!==root.replace(/\/$/,'')+config.path)continue;
       const section=anchor.closest('.shopify-section');
       const single=section?.querySelectorAll('.announcement-bar__message').length===1&&!section.querySelector('.list-social,localization-form');
       const target=single?section:anchor.closest('.slideshow__slide')||anchor;
@@ -61,13 +66,14 @@ function initialize(config) {
       }
     }
   }
-  function cachedState(){try{return readDisplayCache(sessionStorage,config.cache_key);}catch{return null;}}
-  function remember(state){try{if(config.cache_key)sessionStorage.setItem(DISPLAY_CACHE_KEY,JSON.stringify(cacheRecord(state,config.cache_key)));}catch{}}
+  function cachedState(){try{return readDisplayCache(sessionStorage,config.cache_key,Date.now(),config.identity_key||config.cache_key);}catch{return null;}}
+  function remember(state){try{if(config.cache_key)sessionStorage.setItem(DISPLAY_CACHE_KEY,JSON.stringify(cacheRecord(state,config.cache_key,Date.now(),config.identity_key||config.cache_key)));}catch{}}
   async function refresh(force=false) {
     if(running){again=true;forceAgain=forceAgain||force;return running;}
     const cached=cachedState();
     if(cached)show(cached);
     if(cached&&!force&&!config.legacy_note)return;
+    if(!config.customer_present&&config.has_cart_session===false&&!safeStorage.get()&&!config.is_cart&&!config.legacy_note){show({linked:false});remember({linked:false});return;}
     const dedicated=location.pathname.replace(/\/$/,'')===config.path;
     if(dedicated&&!config.legacy_note)return;
     running=(async()=>{
@@ -82,6 +88,7 @@ function initialize(config) {
       }
       if(cached&&!force){await cleanupLegacyNote(cart);return;}
       const state=await request(config.path,{action:'storefront_status',token,cart:cart.token||(cart.item_count===0?'empty-cart':''),item_count:cart.item_count,total_price:cart.total_price,currency:cart.currency,resume:config.is_cart});
+      if(typeof state?.linked!=='boolean')throw new Error('MEMBERS_STATUS_INVALID');
       if(state.purchase_token) {
         safeStorage.set(state.purchase_token);
         await request(root+'cart/update.js',{attributes:{_agaruke_purchase:state.purchase_token}});
@@ -129,7 +136,7 @@ function initialize(config) {
   }
   function schedule(force=false){if(running){again=true;forceAgain=forceAgain||force;return;}clearTimeout(scheduled);scheduled=setTimeout(()=>refresh(force),180);}
   if(typeof subscribe==='function'&&typeof PUB_SUB_EVENTS!=='undefined')subscribe(PUB_SUB_EVENTS.cartUpdate,event=>{if(event.source!=='agaruke-members')schedule(true);});
-  window.addEventListener('pageshow',event=>{if(event.persisted)schedule(config.is_cart);});
+  window.addEventListener('pageshow',event=>{if(event.persisted){try{sessionStorage.removeItem(DISPLAY_CACHE_KEY);}catch{}schedule(true);}});
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule();});
   document.addEventListener('shopify:section:load',()=>schedule());
   window.addEventListener('agaruke:members-authenticated',()=>{try{sessionStorage.removeItem(DISPLAY_CACHE_KEY);}catch{}show({linked:true});});

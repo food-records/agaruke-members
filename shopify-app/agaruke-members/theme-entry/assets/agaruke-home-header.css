@@ -15,9 +15,11 @@ body.agaruke-home-banner:has(#MainContent > .shopify-section:first-child .banner
   position: fixed;
   top: 0;
 }
-/* Preserve the wordmark on the existing wide banner on narrow screens. */
-@media screen and (max-width: 749px) {
-  body.agaruke-home-banner #MainContent > .shopify-section:first-child .banner__media img {
-    object-position: left center;
-  }
+/* Hidden sticky headers must keep Dawn's hide/show behavior. */
+body.agaruke-home-banner:has(#MainContent > .shopify-section:first-child .banner__media img) .section-header{top:auto}
+body.agaruke-home-banner:has(#MainContent > .shopify-section:first-child .banner__media img) .section-header.shopify-section-header-sticky{top:var(--ag-announcement-visible,0px)}
+body.agaruke-home-banner:has(#MainContent > .shopify-section:first-child .banner__media img) .section-header.shopify-section-header-hidden:not(.menu-open){top:calc(var(--ag-announcement-visible,0px) - var(--header-height))}
+@media screen and (max-width:749px){
+  body.agaruke-home-banner:has(#MainContent > .shopify-section:first-child .banner__media img) .section-header:not(.shopify-section-header-sticky){position:relative}
+  body.agaruke-home-banner #MainContent > .shopify-section:first-child .banner__media img{object-position:center}
 }

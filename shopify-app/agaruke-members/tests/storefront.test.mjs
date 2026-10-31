@@ -69,3 +69,14 @@ test('automatic coupon sets only a verified test code on an empty discount selec
  assert.ok(!JSON.stringify(cacheRecord(state,'scope')).includes(code));
  assert.equal(storefrontPresentation({linked:false},cart,true).automatic_coupon,'');
 });
+
+test('identity cache survives cart changes without reusing purchase benefits',()=>{
+ const record=cacheRecord({linked:true,ready:true,expected_points:100,coupon_count:2},'old-cart',1000,'same-person');
+ const storage={getItem:()=>JSON.stringify(record)};
+ const next=readDisplayCache(storage,'new-cart',1001,'same-person');
+ assert.equal(next.linked,true);assert.equal(next.ready,false);assert.equal(next.expected_points,0);assert.equal(next.coupon_count,0);
+ assert.equal(readDisplayCache(storage,'new-cart',1001,'another-person'),null);
+ assert.equal(cacheRecord({ready:true},'key'),null);
+ storage.getItem=()=>JSON.stringify({...record,state:{ready:true}});
+ assert.equal(readDisplayCache(storage,'old-cart',1001,'same-person'),null);
+});

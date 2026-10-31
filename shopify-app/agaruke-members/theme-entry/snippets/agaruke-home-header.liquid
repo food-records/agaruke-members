@@ -3,4 +3,5 @@
 {% enddoc %}
 {%- if request.page_type == 'index' -%}
   {{ 'agaruke-home-header.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'agaruke-home-header.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}

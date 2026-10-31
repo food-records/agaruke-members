@@ -47,3 +47,12 @@
 .ag-delivery-copy .ag-delivery-note{font-size:11px;line-height:1.8;color:#74695b;margin-top:30px;margin-bottom:0;max-width:380px}
 @media(min-width:750px) and (max-width:989px){.ag-delivery{gap:40px;padding-block:60px}.ag-delivery-copy h2{font-size:27px}.ag-delivery-copy>p:not(.ag-eyebrow){font-size:13px}}
 @media(max-width:749px){.ag-delivery{grid-template-columns:1fr;gap:30px;padding-block:44px 52px}.ag-delivery-image{max-width:430px}.ag-delivery-copy{max-width:none}.ag-delivery-copy h2{font-size:28px}.ag-delivery-copy>p:not(.ag-eyebrow){font-size:13px}.ag-delivery-copy .ag-delivery-note{font-size:10px;margin-top:24px}}
+
+/* SVG keeps the promise icons consistent across mobile platforms. */
+.ag-promise-icon{width:24px;height:24px;flex:0 0 24px}
+@media screen and (max-width:749px){
+  .ag-restored-hero{height:auto;overflow:visible}
+  .ag-restored-photo.banner__media{position:relative;height:auto;aspect-ratio:1672 / 941}
+  .ag-restored-photo img{position:static;width:100%;height:auto;object-fit:contain}
+  .ag-home .ag-hero-cta{position:relative;left:auto;bottom:auto;margin:20px 24px}
+}
