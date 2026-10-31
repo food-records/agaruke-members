@@ -5,3 +5,5 @@
 トップの告知サイズ変更をResizeObserverで監視し、Dawnのsticky header位置と境界を更新する。スクロールで隠すDawnの動作を保つ。スマホはヘッダーを通常配置し、既存横長画像全体を表示、VIEW ITEMは画像下へ配置する。PCの透明ヘッダーと既存画像を維持する。メイン画像直下の3アイコンはUnicode文字からSVG線画へ変更した。
 
 ローカル検査: Liquid/CSS/JS7件成功、アプリtest15件成功。390px iframeで横幅390/scroll390、告知bottom38/header top39で重なりなし、画像390×219.7、SVG3件を確認。注文・決済・会員台帳は変更しない。
+
+本番反映: clean remote master 46254fa577acf5f021250f4b10600ddbf838bb34から7件、1f63e60d3faa258d5ed7fe41832c7ca82c24eb1bからスマホstickyの高さ保持CSS1件を公開Dawn189917102253へ配信。fetch・remote SHA一致・直前本番SHA包含guard成功。直前対象6件の変更なし、最終7件readback完全一致。公開日英の実幅369pxで横はみ出しなし、連携済み告知非表示、既存写真全体とSVG3件を確認。下スクロール時のheader上端-65/bottom0で非表示を確認。画面証跡mobile-live.pngは保護runtime shopify-banner-mobile-20261031へ保存。実注文/決済操作なし。Secretary Drive公開は保留。
