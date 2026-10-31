@@ -189,3 +189,5 @@ agaruke-members/
 2026-10-31: おいしさの理由のタイトルをPCの写真右側・説明上へ移動。スマホはタイトル→写真→説明を維持。[配置](docs/SHOPIFY_TASTE_MOBILE_20261031.md)。
 
 2026-10-31: クーポン選択/解除・各ページの適用状態欄と交換券名称を改善。テスト券の自動適用を撤去。[状態と検証](docs/SHOPIFY_COUPON_CONTROLS_RELEASE_20261031.md)。
+
+2026-10-31公開確認: backend coupons-6ee7ebb、theme補正6f08a71。既存200円券の選択・検索中の適用表示・解除/非再適用を実確認。追加交換/決済・LINE配信なし。[記録](docs/SHOPIFY_COUPON_CONTROLS_RELEASE_20261031.md)。
