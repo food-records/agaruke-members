@@ -1,25 +1,25 @@
 # お届けイメージ（2026-10-31）
 
-## 状態：実装・検査済み、本番未反映
+## 状態：公開反映・日英表示確認済み
 
-ユーザー添付の箱入りミールキット写真を使う依頼。サービス紹介の直後・食べ方の前にお届けイメージを追加する。PCは画像左/説明右、mobileは画像上/説明下。元画像の透過や構図を保ち、object-fit:containと自然な縦横比で表示。現在の配色に合わせた淡いベージュ背景。画像・見出し・本文・注記・代替テキストはテーマ編集画面の日英欄から変更可能。
+ユーザー指定のDownloads/box-image.pngをShopify Filesへ登録し、公開Dawn189917102253のサービス紹介直後・食べ方の前へ追加。元画像は960×956の透過PNGで、画像生成・加工はせずそのまま使用。画像参照はshopify://shop_images/box-image.png。淡いベージュの背景、PCは画像左/説明右、mobile用CSSは画像上/説明下。自然な縦横比とobject-fit:containで箱全体を見せる。
 
-コピーは冷凍の箱配送/冷凍庫保存/温めて盛り付ける案内に限定。「写真はお届けイメージです。内容はご注文の商品によって異なります。」を日英で明記。箱サイズ、配送日数、調理時間、同梱数、真空包装等は推測で追加しない。送料/価格/在庫/バンドル/クーポン/LINE/バックエンドは変更しない。
+画像・見出し・本文・注記・代替テキストは「AGARUKE サービス紹介 → お届けイメージ」の日英欄から変更する。コピーは冷凍配送/冷凍庫保存/温めて盛付の案内に限定し、「写真はお届けイメージです。内容はご注文の商品によって異なります。」を日英で付記。箱サイズ/配送日数/同梱数等は推測追加なし。
 
-## 画像の受取待ち
+## 配信・検証
 
-会話の添付画像は見えるが、アップロード可能な元ファイルのパスは提供されていない。Downloads直下の直近画像とShopify Filesの既存11件を確認したが、添付の箱写真は確認できず。新しい3meals-setは盛付3皿の写真であり別画像。代用品は使わない。ユーザーへ元画像のファイル名/保存先を依頼中。
+配信元はclean remote master e4d985eeb71d606f87186ecf74a24f16f6262ebb（実装b85518bを包含、最新の3種3980円Bundles/商品一覧設定の記録も保持）。release guardでremote SHA一致・開始時49fcca9包含を検査。最新テーマを取得し、既存17ブロック/商品選択/順序/文言/画像設定/section順を保持したままdelivery1件を追加。section/CSS/index JSONの3ファイルだけを反映、3件readback一致。
 
-Shopify Files画面は正常に開く。ファイル選択経由で登録し、観測した実ファイル名をimage_pickerへ設定する予定。元画像を変更/生成しない。新しい権限の追加は不要。現在、画像アップロードとテーマ配信は実行していない。
+Shopify validatorでLiquid/CSS/index3件を確認。公開日英ページで実画像のロード・見出し/説明/注記/代替テキストを確認。PC1352pxで横はみ出しなし、画像と本文は横並び。DOM順はabout→delivery→how。商品3件/FAQ4件、Company target=_blankと/apps/members導線も維持。元の送料・価格・在庫・バンドル・クーポン・LINE・バックエンドには変更なし。注文/決済操作なし。
 
-## コード・検証
+viewport overrideは390px指定後も実幅1352pxのままでmobile実表示の新規検証はできていない。responsive CSSは追加・検査済み。テーマ編集アプリのiframeは引き続き読込途中で白画面になるため、管理画面での入力/保存操作は未確認。画像登録のFiles画面は正常に動作した。未確認事項を公開表示確認と混同しない。
 
-- agaruke-home-content.liquidにdeliveryブロックを追加（limit1）。画像が未設定なら表示しない。
-- agaruke-home-content.cssへPC/mobile用の見た目を追加。
-- theme-delivery-section.pyが既存データを保持し、about直後に1ブロックを追加。画像が異なる既存deliveryを上書きしない。
-- 旧theme-editable-content.pyは任意deliveryブロックを移行必須項目にしない。
-- 既存17ブロックの内容/順序/section設定を保持、再実行の冪等性をローカル確認。Liquid/CSS/index JSONの3件をShopify validatorで確認済み。
+## 実装・継続運用
 
-保護runtimeはshopify-delivery-section-20261031。beforeは公開Dawn189917102253を取得。candidateは画像名agaruke-delivery.pngを仮設定したローカル検査用で、実際には未登録。これをそのまま配信しない。元画像受領後に最新テーマを再取得し、既存の編集を保持して実ファイル名でcandidateを再作成する。
+- agaruke-home-content.liquidのdeliveryブロックはlimit1、画像未設定なら非表示。
+- theme-delivery-section.pyは取得済みテーマをローカル変更する。既存データを保持し、同じ画像での再実行は文言を初期化しない。異なる既存画像は上書きせず停止。
+- 旧theme-editable-content.pyではdeliveryを任意ブロックとして扱い、既存の編集文言の移行判定を壊さない。
+- snapshot/元画像コピー/公開JP・EN画面/readback/manifestはGit外保護runtime shopify-delivery-section-20261031へ保持。
+- runtime candidateは初回の仮画像名検査用で配信しない。実配信物はrelease、配信後はreadbackを参照する。
 
-配信時は既配信機能を含むremote masterを確認（開始時HEAD49fcca9、3種3980円Bundlesの公開確認まで含む）。現行index/section/CSSの変更を直前比較し、clean/pushed SHA・包含関係をrelease guardで検査してからsection/CSS/indexのみ反映。日英/実画像/既存商品と導線/画像編集欄を確認し、readbackとPC/mobile証跡を保存する。
+当初は会話添付の元画像パスが取得できず未配信だったが、ユーザーからbox-image.pngの保存先を受領して登録・反映を完了。追加権限・新規課金構成なし。Secretary eventのDrive公開は未承認で保留。
