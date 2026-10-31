@@ -7,3 +7,5 @@
 .agaruke-coupon-banner a,.agaruke-coupon-banner button{min-height:28px;min-width:24px;display:inline-flex;align-items:center;justify-content:center}.members-coupons-page .coupon-text-button{min-height:40px;display:inline-flex;align-items:center}
 
 .members-coupons-page{width:100%;box-sizing:border-box}
+
+@media(min-width:750px){body.agaruke-home-banner:has(#MainContent > .shopify-section:first-child .banner__media img) .section-header:not(.shopify-section-header-sticky){top:var(--ag-announcement-height,0px)}}

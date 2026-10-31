@@ -13,6 +13,7 @@ if (header) {
   const measure = () => {
     for (const section of preceding()) if (!observed.has(section)) { observed.add(section); observer.observe(section); }
     top = preceding().reduce((height, section) => height + section.getBoundingClientRect().height, 0);
+    document.documentElement.style.setProperty('--ag-announcement-height', `${top}px`);
     document.documentElement.style.setProperty('--header-height', `${header.offsetHeight}px`);
     update();
   };
