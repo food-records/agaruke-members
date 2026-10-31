@@ -10,8 +10,8 @@
       {%- break -%}
     {%- endif -%}
   {%- endfor -%}
-  {%- capture members_cache_scope -%}{{ customer.id }}|{{ cart.token }}|{{ cart.item_count }}|{{ cart.total_price }}|{{ cart.currency.iso_code }}|{{ cart.attributes._agaruke_purchase }}{%- endcapture -%}
-  {%- capture members_identity_scope -%}{{ customer.id }}|{% unless customer %}{{ cart.attributes._agaruke_purchase }}{% endunless %}|{{ cart.currency.iso_code }}{%- endcapture -%}
+  {%- capture members_cache_scope -%}benefits-live-v1|{{ customer.id }}|{{ cart.token }}|{{ cart.item_count }}|{{ cart.total_price }}|{{ cart.currency.iso_code }}|{{ cart.attributes._agaruke_purchase }}{%- endcapture -%}
+  {%- capture members_identity_scope -%}benefits-live-v1|{{ customer.id }}|{% unless customer %}{{ cart.attributes._agaruke_purchase }}{% endunless %}|{{ cart.currency.iso_code }}{%- endcapture -%}
   <script id="agaruke-members-config" type="application/json">{"path":"/apps/members","cache_key":{{ members_cache_scope | sha256 | json }},"identity_key":{{ members_identity_scope | sha256 | json }},"has_cart_session":{% if cart.attributes._agaruke_purchase != blank %}true{% else %}false{% endif %},"legacy_note":{{ members_legacy_note | json }},"customer_present":{% if customer %}true{% else %}false{% endif %},"is_cart":{% if template.name == 'cart' %}true{% else %}false{% endif %}}</script>
   <style>
     html[data-agaruke-benefits-banner="ready"] .shopify-section:has(.announcement-bar a[href*="/apps/members"]) { display: none; }
@@ -35,4 +35,5 @@
   {{ 'agaruke-coupons.css' | asset_url | stylesheet_tag }}
   <script type="module" src="{{ 'agaruke-coupons.js' | asset_url }}"></script>
   <script type="module" src="{{ 'agaruke-members-status.js' | asset_url }}"></script>
+  <script type="module" src="{{ 'agaruke-benefits.js' | asset_url }}"></script>
 {% endunless %}

@@ -49,17 +49,8 @@ function initialize(config) {
       const target=single?section:anchor.closest('.slideshow__slide')||anchor;
       target.style.display='none';
     }
-    for(const card of document.querySelectorAll('[data-agaruke-member-card]')) {
-      card.querySelector('[data-members-unlinked]').hidden=state.linked;
-      card.querySelector('[data-members-linked]').hidden=!state.linked;
-      const points=card.querySelector('[data-members-points]');
-      points.textContent=state.ready?(state.link_test_only?'通常はこの注文で100ポイント。現在は連携試験中のため、今回の付与予定は0ポイントです。':`この注文の獲得予定は${state.expected_points}ポイントです。支払い完了後に付与します。`):'ポイントカードは連携済みです。購入内容を確認すると獲得予定ポイントが表示されます。';
-      const coupon=card.querySelector('[data-members-coupons]');coupon.replaceChildren();
-      {
-        const text=document.createElement('p');text.textContent=state.coupon_count>0?`ECクーポンが${state.coupon_count}枚あります。使うクーポンを選択できます。`:'ポイント・クーポンは会員ページで確認できます。';coupon.append(text);
-        const link=document.createElement('a');link.className='button button--secondary';link.href=state.coupon_url;link.textContent='ポイント・クーポンを確認する';coupon.append(link);
-      }
-    }
+    window.dispatchEvent(new CustomEvent('agaruke:benefits-state',{detail:state}));
+    window.agarukeBenefitPresentation=state;
   }
   function cachedState(){try{return readDisplayCache(sessionStorage,config.cache_key,Date.now(),config.identity_key||config.cache_key);}catch{return null;}}
   function remember(state){try{if(config.cache_key)sessionStorage.setItem(DISPLAY_CACHE_KEY,JSON.stringify(cacheRecord(state,config.cache_key,Date.now(),config.identity_key||config.cache_key)));}catch{}}
@@ -97,7 +88,7 @@ function initialize(config) {
       remember(state);
       if(config.is_cart||config.legacy_note)await cleanupLegacyNote(await request(root+'cart.js'));
     })().catch(()=>{
-      for(const message of document.querySelectorAll('[data-members-points]'))message.textContent='ポイントの状態を確認できませんでした。ページを再読み込みしてください。';
+      window.dispatchEvent(new Event('agaruke:benefits-error')); 
     }).finally(()=>{running=null;if(again){const force=forceAgain;again=false;forceAgain=false;schedule(force);}});
     return running;
   }
@@ -121,5 +112,6 @@ function initialize(config) {
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule();});
   document.addEventListener('shopify:section:load',()=>schedule());
   window.addEventListener('agaruke:members-authenticated',()=>{try{sessionStorage.removeItem(DISPLAY_CACHE_KEY);}catch{}show({linked:true});});
+  window.addEventListener('agaruke:benefits-open',()=>schedule(true));
   refresh(config.is_cart);
 }

@@ -73,3 +73,12 @@ test('identity cache survives cart changes without reusing purchase benefits',()
  storage.getItem=()=>JSON.stringify({...record,state:{ready:true}});
  assert.equal(readDisplayCache(storage,'old-cart',1001,'same-person'),null);
 });
+
+
+test('inline coupon list requires verified linked state and is never persisted',()=>{
+ const coupon={status:'available',code:'AM'+'a'.repeat(64),cost:200,minimum:3800,expires_at:'2026-12-01T00:00:00Z'};
+ const linked=storefrontPresentation({linked:true,ready:true,coupons:[coupon,{...coupon,status:'used'}]},cart,false);
+ assert.equal(linked.coupons.length,1);assert.equal(linked.coupons[0].code,coupon.code);
+ assert.deepEqual(storefrontPresentation({linked:false,coupons:[coupon]},cart,false).coupons,[]);
+ assert.ok(!JSON.stringify(cacheRecord(linked,'scope')).includes(coupon.code));
+});

@@ -207,3 +207,5 @@ agaruke-members/
 2026-10-31確定: 500円券を購入歴不問・1人1回へ変更、LINEは任意・購入後案内。バナーは券優先→未連携案内→非表示。[状態](docs/SHOPIFY_PUBLIC_COUPON_RELEASE_20261031.md)。
 
 2026-10-31: 未ログイン時のヘッダーアカウントはShopifyログイン画面への直接リンクに変更。ログイン済みだけ標準アカウントメニューを表示する。LINE認証状態とは別にLiquid customerで判定。[仕様](docs/SHOPIFY_ACCOUNT_ENTRY_20261031.md)。
+
+2026-10-31: 商品/カートの特典カードを統一し、同画面の券選択・解除と購入ポイント付与の開始を実装。[現行仕様・公開状態](docs/SHOPIFY_INLINE_BENEFITS_20261031.md)。
