@@ -40,7 +40,9 @@ function initialize(){
     lookup:async()=>{
       const response=await fetch(ROOT.replace(/\/$/,'')+'/apps/members',{method:'POST',cache:'no-store',signal:AbortSignal.timeout(12000),headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'launch_status'})});
       if(!response.ok)throw Error('LAUNCH_STATUS_UNAVAILABLE');
-      return (await response.json()).launch_coupon;
+      const result=(await response.json()).launch_coupon;
+      console.debug('AGARUKE_LAUNCH_CHECK', ['guest','used','not_used','unknown','expired'].includes(result)?result:'unknown');
+      return result;
     },
     onChange:state=>{
       window.dispatchEvent(new CustomEvent('agaruke:launch-coupon-state',{detail:{state}}));
@@ -101,5 +103,6 @@ function initialize(){
   window.addEventListener('pageshow',e=>{if(e.persisted){schedule();if(launchActive){launch.invalidate();void checkLaunch();}}});
   document.addEventListener('visibilitychange',()=>{if(!document.hidden){schedule();if(launchActive){launch.invalidate();void checkLaunch();}}});
   window.addEventListener('agaruke:benefits-open',()=>{void checkLaunch();});
+  window.addEventListener('agaruke:members-authenticated',()=>{void checkLaunch();});
   mount();renderBanner();refresh();window.dispatchEvent(new Event('agaruke:coupons-ready'));if(/\/apps\/members\/?$/.test(location.pathname))void checkLaunch();
 }
