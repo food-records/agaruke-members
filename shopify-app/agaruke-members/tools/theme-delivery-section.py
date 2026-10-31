@@ -10,7 +10,7 @@ SOURCE = Path(__file__).resolve().parents[1] / 'theme-entry'
 FILES = ['sections/agaruke-home-content.liquid', 'assets/agaruke-home-content.css']
 
 
-def prepare(directory, image):
+def prepare(directory, image, hide_on_home=False):
     if not image.startswith('shopify://shop_images/') or '..' in image:
         raise ValueError('Shopifyに登録済みの画像を指定してください')
     path = directory / 'templates/index.json'
@@ -45,6 +45,9 @@ def prepare(directory, image):
         order.insert(order.index(about[0]) + 1, 'ag_delivery')
         if len(order) > definition['max_blocks']:
             raise ValueError('block数の上限を超えます')
+    if hide_on_home:
+        delivery_id = existing[0] if existing else 'ag_delivery'
+        blocks[delivery_id]['settings']['show_on_home'] = False
     for filename in FILES:
         destination = directory / filename
         destination.parent.mkdir(parents=True, exist_ok=True)
@@ -57,5 +60,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--theme-directory', type=Path, required=True)
     parser.add_argument('--image', required=True)
+    parser.add_argument('--hide-on-home', action='store_true', help='画像・文言を保持しトップの独立案内だけを非表示にする')
     args = parser.parse_args()
-    prepare(args.theme_directory, args.image)
+    prepare(args.theme_directory, args.image, args.hide_on_home)

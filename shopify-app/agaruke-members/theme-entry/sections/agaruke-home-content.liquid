@@ -29,7 +29,7 @@
   </section>
   {% endif %}
 
-  {% if ag_delivery != blank and ag_delivery.settings.image != blank %}
+  {% if ag_delivery != blank and ag_delivery.settings.show_on_home and ag_delivery.settings.image != blank %}
   <section class="ag-delivery-shell" {{ ag_delivery.shopify_attributes }} aria-labelledby="ag-delivery-heading" id="ag-delivery">
     <div class="ag-delivery ag-wrap ag-section">
       <div class="ag-delivery-image">
@@ -54,7 +54,7 @@
       <p class="ag-eyebrow">{% render 'agaruke-copy', copy_settings: ag_how.settings, key: 'eyebrow' %}</p>
       <h2 id="ag-how-heading">{% render 'agaruke-copy', copy_settings: ag_how.settings, key: 'heading', mobile_break: true %}</h2>
       <ol class="ag-steps">
-        {% if ag_step_one != blank %}<li {{ ag_step_one.shopify_attributes }}><span class="ag-step-number">01</span><div class="ag-step-art" aria-hidden="true"><svg viewBox="0 0 120 100" fill="none"><path d="M24 35 60 19l36 16v44L60 95 24 79V35Zm0 0 36 17 36-17M60 52v43M41 27l36 17"/><path d="M60 2v12m-6-9 6 5 6-5m-6 9-6-3m6 3 6-3"/></svg></div><h3>{% render 'agaruke-copy', copy_settings: ag_step_one.settings, key: 'heading' %}</h3><p>{% render 'agaruke-copy', copy_settings: ag_step_one.settings, key: 'body' %}</p></li>{% endif %}
+        {% if ag_step_one != blank %}<li {{ ag_step_one.shopify_attributes }}><span class="ag-step-number">01</span><div class="ag-step-art" aria-hidden="true"><svg viewBox="0 0 120 100" fill="none" focusable="false"><path d="m22 49 38-18 38 18-38 19-38-19Zm0 0L9 34l36-18 15 15m38 18 13-15-36-18-15 15"/><g transform="rotate(-12 39 40)"><path d="M28 20h22l2 4-1 35-2 4H29l-2-4-1-35 2-4Z" fill="#fffaf1"/><path d="M28 25h22M29 58h20M31 21v3m4-3v3m4-3v3m4-3v3m4-3v3M32 36c4-4 10-4 14 0m-15 7c4 4 10 4 15 0m-13 6h11"/></g><g transform="rotate(5 62 35)"><path d="M51 11h22l2 4-1 39-2 4H52l-2-4-1-39 2-4Z" fill="#fffaf1"/><path d="M51 16h22M52 53h20M54 12v3m4-3v3m4-3v3m4-3v3m4-3v3M55 28c3-3 10-3 14 1l-2 12H55l-2-7 2-6Z"/></g><g transform="rotate(17 85 42)"><path d="M76 23h21l2 4-1 33-2 4H77l-2-4-1-33 2-4Z" fill="#fffaf1"/><path d="M76 28h21M77 59h19M79 24v3m4-3v3m4-3v3m4-3v3m4-3v3M80 38l5-3 5 4-3 5-6 1-3-4Zm8 9 6-3 2 5-5 5-5-2 2-5Z"/></g><path d="m22 49 38 19 38-19v29L60 97 22 78V49Z" fill="#f6f0e5"/><path d="M60 68v29m-38-48-12 14 38 19 12-14m38-19 12 14-38 19-12-14" fill="#f6f0e5"/></svg></div><h3>{% render 'agaruke-copy', copy_settings: ag_step_one.settings, key: 'heading' %}</h3><p>{% render 'agaruke-copy', copy_settings: ag_step_one.settings, key: 'body' %}</p></li>{% endif %}
         {% if ag_step_two != blank %}<li {{ ag_step_two.shopify_attributes }}><span class="ag-step-number">02</span><div class="ag-step-art" aria-hidden="true"><svg viewBox="0 0 120 100" fill="none"><path d="M21 53h78c-3 27-18 37-39 37S24 80 21 53Zm-6 39h90M43 40c-15-12 12-14 0-29m19 29c-15-12 12-14 0-29m19 29c-15-12 12-14 0-29"/></svg></div><h3>{% render 'agaruke-copy', copy_settings: ag_step_two.settings, key: 'heading' %}</h3><p>{% render 'agaruke-copy', copy_settings: ag_step_two.settings, key: 'body' %}</p></li>{% endif %}
         {% if ag_step_three != blank %}<li {{ ag_step_three.shopify_attributes }}><span class="ag-step-number">03</span><div class="ag-step-art" aria-hidden="true"><svg viewBox="0 0 120 100" fill="none"><ellipse cx="60" cy="59" rx="44" ry="27"/><ellipse cx="60" cy="59" rx="29" ry="17"/><path d="m90 8 3 8 9 3-9 4-3 8-4-8-8-4 8-3 4-8ZM20 12v17M12 20h16"/></svg></div><h3>{% render 'agaruke-copy', copy_settings: ag_step_three.settings, key: 'heading' %}</h3><p>{% render 'agaruke-copy', copy_settings: ag_step_three.settings, key: 'body' %}</p></li>{% endif %}
       </ol>
@@ -249,6 +249,12 @@
         {
           "type": "paragraph",
           "content": "サービス紹介と食べ方の間に表示します。画像と、日本語・英語それぞれの文章を編集できます。"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_on_home",
+          "label": "トップページに表示する",
+          "default": true
         },
         {
           "type": "image_picker",
