@@ -191,3 +191,5 @@ agaruke-members/
 2026-10-31: クーポン選択/解除・各ページの適用状態欄と交換券名称を改善。テスト券の自動適用を撤去。[状態と検証](docs/SHOPIFY_COUPON_CONTROLS_RELEASE_20261031.md)。
 
 2026-10-31公開確認: backend coupons-6ee7ebb、theme補正6f08a71。既存200円券の選択・検索中の適用表示・解除/非再適用を実確認。追加交換/決済・LINE配信なし。[記録](docs/SHOPIFY_COUPON_CONTROLS_RELEASE_20261031.md)。
+
+2026-10-31: クーポンの適用状況をヘッダーのバナーへ移し、現在選択/所持券/折りたたみ交換のUIへ再設計。[状態](docs/SHOPIFY_COUPON_UI_RELEASE_20261031.md)。

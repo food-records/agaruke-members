@@ -21,32 +21,32 @@ export function couponSummary(cart, label = '') {
 }
 if(typeof document!=='undefined') initialize();
 function initialize(){
-  let bar, text, clear, busy=false, pending;
+  let bar, text, change, clear, busy=false, pending, selectedCode='', currentState={selected:false,title:'クーポン未選択',text:'クーポン未選択',applicable:false};
   async function request(path,body){const r=await fetch(ROOT+path,{cache:'no-store',...(body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{})});if(!r.ok)throw Error('クーポンを更新できませんでした。もう一度お試しください。');return r.json();}
   function mount(){
     if(bar)return;
-    bar=document.createElement('aside');bar.className='agaruke-coupon-bar';bar.setAttribute('aria-label','クーポンの選択状態');
+    bar=document.createElement('aside');bar.className='agaruke-coupon-banner shopify-section-group-header-group';bar.setAttribute('aria-label','クーポンの選択状態');
     text=document.createElement('span');text.setAttribute('role','status');text.textContent='クーポンを確認中…';
-    const change=document.createElement('a');change.href='/apps/members';change.textContent='選択・変更';
+    change=document.createElement('a');const returnTo=/^\/(collections|products|search)(\/|\?|$)/.test(location.pathname)?location.pathname+location.search:'';change.href='/apps/members'+(returnTo?'?return_to='+encodeURIComponent(returnTo):'');change.textContent='クーポンを選ぶ';
     clear=document.createElement('button');clear.type='button';clear.textContent='解除';clear.hidden=true;
     clear.addEventListener('click',()=>select('').catch(e=>{text.textContent=e.message}));
-    bar.append(text,change,clear);document.body.append(bar);
+    const content=document.createElement('div');content.className='agaruke-coupon-banner-inner';content.append(text,change,clear);bar.append(content);const header=document.querySelector('.section-header');if(header)header.before(bar);else document.body.prepend(bar);document.dispatchEvent(new Event('agaruke:banner-layout'));
   }
   async function show(cart){
     mount();let label='';const code=cart.discount_codes?.find(c=>c.applicable===true)?.code||cart.discount_codes?.[0]?.code;
     if(code&&cart.attributes?._agaruke_coupon_hash){const patch=await couponChange(code);if(patch.attributes._agaruke_coupon_hash===cart.attributes._agaruke_coupon_hash)label=cart.attributes._agaruke_coupon_label||'';}
-    const summary=couponSummary(cart,label);text.textContent=summary.text;clear.hidden=!summary.selected;
+    const summary=couponSummary(cart,label);selectedCode=code||'';const amount=(cart.cart_level_discount_applications||[]).filter(d=>d.type==='discount_code').reduce((sum,d)=>sum+Number(d.total_allocated_amount||0),0)/100;currentState={...summary,title:label||couponTitle(selectedCode,amount),applicable:summary.selected&&!summary.text.includes('条件未達')};text.textContent=summary.text;clear.hidden=!summary.selected;change.textContent=summary.selected?'変更':'クーポンを選ぶ';bar.dataset.state=summary.selected?(currentState.applicable?'applied':'unmet'):'none';window.dispatchEvent(new CustomEvent('agaruke:coupon-changed'));document.dispatchEvent(new Event('agaruke:banner-layout'));
   }
   async function refresh(){try{await show(await request('cart.js'));}catch{mount();text.textContent='クーポンの状態を確認できませんでした';}}
   async function select(code,title=''){
     if(busy)throw Error('クーポンを更新しています。');busy=true;mount();clear.disabled=true;
-    try{const cart=await request('cart/update.js',await couponChange(code,title));await show(cart);window.dispatchEvent(new CustomEvent('agaruke:coupon-changed'));if(location.pathname.replace(/\/$/,'').endsWith('/cart'))location.reload();return cart;}
+    try{const cart=await request('cart/update.js',await couponChange(code,title));await show(cart);if(location.pathname.replace(/\/$/,'').endsWith('/cart'))location.reload();return cart;}
     finally{busy=false;clear.disabled=false;}
   }
-  window.agarukeCoupons={select,refresh};
+  window.agarukeCoupons={select,refresh,current:()=>({...currentState}),isSelected:code=>Boolean(code)&&code===selectedCode};
   function schedule(){clearTimeout(pending);pending=setTimeout(refresh,100);}
   if(typeof subscribe==='function'&&typeof PUB_SUB_EVENTS!=='undefined')subscribe(PUB_SUB_EVENTS.cartUpdate,schedule);
   window.addEventListener('pageshow',e=>{if(e.persisted)schedule()});
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule()});
-  refresh();window.dispatchEvent(new Event('agaruke:coupons-ready'));
+  mount();refresh();window.dispatchEvent(new Event('agaruke:coupons-ready'));
 }

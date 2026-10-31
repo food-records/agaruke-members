@@ -90,3 +90,5 @@ Go全packageのFirestore Emulator `go test -race ./...` / `go vet ./...`、Node�
 2026-10-31追記: 交換のみの一時公開を完了。backend shopify-members-exchange-f4c07e3、100%。購入pt/paid/返金は停止、LINE配信なし。[現行状態・復旧](SHOPIFY_EXCHANGE_TEST_RELEASE_20261031.md)。
 
 2026-10-31: テスト券を含むEC券は手動選択/解除方式へ変更。各ページの状態欄で適用中/条件未達/未選択を表示。交換券の管理titleとカート表示は金額付き名称へ統一。[詳細](SHOPIFY_COUPON_CONTROLS_RELEASE_20261031.md)。
+
+2026-10-31 UI改訂: 適用状況はヘッダー上のバナー、選択画面は現在選択→所持券→折りたたみ交換の順に整理。所持券の選択状態を強調し、残高不足の交換は無効化。[記録](SHOPIFY_COUPON_UI_RELEASE_20261031.md)。

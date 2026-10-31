@@ -57,16 +57,20 @@ test('exchange testing opens independently while paid/refund processing stays pa
  assert.equal(couponExchangeEnabled({SHOPIFY_LINK_TEST_ONLY:'false'}),true);
 });
 
-test('exchange test UI exposes all tiers and issued coupons without claiming purchase points',async()=>{
- const {readFile}=await import('node:fs/promises'); const {runInNewContext}=await import('node:vm');
+test('coupon UI groups selection, owned tickets and optional exchange; insufficient points stay disabled',async()=>{
+ const {readFile}=await import('node:fs/promises');const {runInNewContext}=await import('node:vm');
  const source=await readFile(new URL('../app/purchase-client.js',import.meta.url),'utf8');
- const nodes=[];const actions={replaceChildren(){nodes.length=0},append(el){nodes.push(el)}};
- const document={getElementById:id=>id==='members-purchase-config'?{textContent:'{"path":"/apps/members"}'}:id==='members-actions'?actions:{},createElement:tag=>({tag,addEventListener(){}})};
- const state={member_number:1,point:1000,permanent:true,link_test_only:true,coupon_exchange_enabled:true,coupons:[{id:'normal',status:'available',cost:200,minimum:3800,code:'test-only-code'}]};
+ const created=[];
+ function element(tag){const node={tag,className:'',textContent:'',dataset:{},children:[],append(...items){this.children.push(...items)},replaceChildren(){this.children=[]},addEventListener(){}};created.push(node);return node;}
+ const actions=element('div');const message=element('p');const root={querySelectorAll:()=>created.filter(n=>n.tag==='button')};
+ const document={getElementById:id=>id==='members-purchase-config'?{textContent:'{"path":"/apps/members"}'}:id==='members-actions'?actions:id==='members-message'?message:root,createElement:element};
+ const state={member_number:1,point:800,permanent:true,link_test_only:true,coupon_exchange_enabled:true,coupons:[{id:'normal',status:'available',cost:200,minimum:3800,code:'test-only-code'}]};
  const storage={getItem:()=> 'test-session',removeItem(){}};
- await runInNewContext(source,{URLSearchParams,document,sessionStorage:storage,window:{dispatchEvent(){}},Event:class{},location:{hash:''},fetch:async url=>Response.json(url==='/cart.js'?{token:'cart'}:state)});
- const labels=nodes.map(n=>n.textContent||'').join(' ');
- for(const amount of ['200pt','500pt','1000pt'])assert.ok(labels.includes(amount));
- assert.ok(labels.includes('購入ポイント付与は停止'));assert.ok(labels.includes('税込商品合計3,800円以上'));assert.ok(labels.includes('クーポンを使わない（解除）'));
- assert.ok(labels.includes('EC 200円OFFクーポンを使う'));
+ await runInNewContext(source,{URLSearchParams,document,sessionStorage:storage,window:{dispatchEvent(){},addEventListener(){}},Event:class{},location:{hash:'',search:'?return_to=%2Fsearch%3Fq%3Dcurry'},fetch:async url=>Response.json(url==='/cart.js'?{token:'cart'}:state)});
+ const labels=created.map(n=>n.textContent||'').join(' ');
+ for(const text of ['現在の選択','お持ちのクーポン','ポイントでクーポンに交換','このクーポンを使う','選択を解除する','税込商品合計 3,800円以上'])assert.ok(labels.includes(text),text);
+ const details=created.find(n=>n.className==='coupon-exchange');assert.equal(details.tag,'details');assert.equal(details.open,undefined);
+ const insufficient=created.find(n=>n.textContent==='1,000pt必要（残高不足）');assert.equal(insufficient.disabled,true);assert.equal(insufficient.dataset.locked,'true');
+ assert.equal(created.find(n=>n.textContent==='お買い物を続ける').href,'/search?q=curry');
+ assert.ok(labels.includes('購入ポイント付与は停止'));assert.equal(message.textContent,'');
 });

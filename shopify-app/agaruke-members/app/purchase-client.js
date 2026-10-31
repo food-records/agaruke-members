@@ -19,59 +19,105 @@
     if (!response.ok) throw new Error(data.error || '処理できませんでした。LINE認証からやり直してください。');
     return data;
   }
-  function button(text, fn) {
-    const b = document.createElement('button'); b.className = 'button'; b.type = 'button'; b.textContent = text;
-    b.addEventListener('click', async () => {
-      for (const el of root.querySelectorAll('button')) el.disabled = true;
-      try { await fn(); } catch (e) { say(e.message || '処理できませんでした。'); }
-      finally { for (const el of root.querySelectorAll('button')) el.disabled = false; }
-    }); actions.append(b);
+  function el(tag, className='', text='') {
+    const node=document.createElement(tag);node.className=className;if(text)node.textContent=text;return node;
+  }
+  function button(text, fn, parent=actions, secondary=false) {
+    const b=el('button',secondary?'coupon-text-button':'coupon-button',text);b.type='button';
+    b.addEventListener('click',async()=>{
+      for(const control of root.querySelectorAll('button'))control.disabled=true;
+      try{await fn()}catch(e){say(e.message||'処理できませんでした。')}
+      finally{for(const control of root.querySelectorAll('button'))control.disabled=control.dataset.locked==='true';}
+    });parent.append(b);return b;
   }
   async function couponSelect(code,title='') {
-    if(!window.agarukeCoupons)await new Promise(resolve=>window.addEventListener('agaruke:coupons-ready',resolve,{once:true}));
+    if(!window.agarukeCoupons)await new Promise((resolve,reject)=>{
+      const timer=setTimeout(()=>reject(Error('クーポン欄を読み込めませんでした。ページを再読み込みしてください。')),5000);
+      window.addEventListener('agaruke:coupons-ready',()=>{clearTimeout(timer);resolve()},{once:true});
+    });
     return window.agarukeCoupons.select(code,title);
   }
+  let currentTitle, currentBadge, currentHelp, clearButton;
+  let choices=[];
+  function syncSelection(){
+    const api=window.agarukeCoupons;if(!api||!currentTitle)return;
+    const selected=api.current();
+    currentTitle.textContent=selected?.selected?selected.title:'クーポンは選択されていません';
+    currentBadge.textContent=selected?.selected?(selected.applicable?'適用中':'条件未達'):'未選択';
+    currentBadge.dataset.state=selected?.selected?(selected.applicable?'applied':'unmet'):'none';
+    currentHelp.textContent=selected?.selected?(selected.applicable?'このクーポンでお買い物できます。':'商品合計などの利用条件をご確認ください。'):'下の一覧から使うクーポンを選んでください。';
+    clearButton.hidden=!selected?.selected;
+    for(const choice of choices){
+      const active=api.isSelected(choice.code);choice.card.dataset.selected=String(active);
+      choice.button.textContent=active?'選択中':'このクーポンを使う';choice.button.disabled=active;choice.button.dataset.locked=String(active);
+      choice.badge.hidden=!active;
+    }
+  }
+  window.addEventListener('agaruke:coupon-changed',syncSelection);
+  window.addEventListener('agaruke:coupons-ready',syncSelection);
+  function returnPath(){
+    const path=new URLSearchParams(location.search||'').get('return_to')||'';
+    return /^\/(collections|products|search)(\/|\?|$)/.test(path)&&!path.includes('\\')?path:'/collections/all';
+  }
   async function refresh() {
-    state = await call('status', {token: sessionStorage.getItem(key), cart: await cart()});
-    invalidateDisplay(); window.dispatchEvent(new Event('agaruke:members-authenticated'));
-    actions.replaceChildren();
-    say(`会員番号 FR${String(state.member_number).padStart(6, '0')} ／ ${state.point}ポイント。${state.permanent ? 'Shopifyアカウントと連携済みです。' : '今回のお買い物にポイントカードを設定しました。'}`);
-    const exchangeEnabled = state.coupon_exchange_enabled ?? !state.link_test_only;
-    if (state.link_test_only) {
-      const p = document.createElement('p'); p.textContent = exchangeEnabled ? 'クーポン交換のテスト中です。購入ポイント付与は停止しています。' : '連携試験中です。クーポン交換と購入ポイント付与はまだ開始していません。'; actions.append(p);
-    }
-    if (exchangeEnabled && !state.completed) {
-      for (const cost of [200, 500, 1000]) {
-        button(`${cost}ptで${cost}円券に交換（商品小計${{200:3800,500:7000,1000:12000}[cost].toLocaleString()}円以上）`, async () => {
-          if (!confirm(`${cost}ポイントを使って交換します。よろしいですか？`)) return;
-          const requestKey = `${key}-exchange-${cost}`;
-          let requestId = sessionStorage.getItem(requestKey);
-          if (!requestId) { requestId = crypto.randomUUID(); sessionStorage.setItem(requestKey, requestId); }
-          await call('exchange', {token: sessionStorage.getItem(key), cart: await cart(), cost, request_id: requestId});
-          sessionStorage.removeItem(requestKey); await refresh();
-        });
-      }
-    }
-    if (!state.completed) {
-      const current = document.createElement('p'); current.className='agaruke-coupon-current'; current.textContent='適用状態は画面下のクーポン欄で確認できます。'; actions.append(current);
-      button('クーポンを使わない（解除）', async()=>{await couponSelect('');say('クーポンを解除しました。ポイントや交換済みの券はそのままです。');});
-      for (const c of state.coupons || []) {
-        const testCoupon=(state.test_coupon_ids||[]).includes(c.id);
-        if(!exchangeEnabled&&!testCoupon)continue;
-        if (c.status === 'pending') button(`${c.cost}円券の発行を再開`, async () => { await call('retry', {token: sessionStorage.getItem(key), cart: await cart(), coupon_id: c.id}); await refresh(); });
-        else if (c.status === 'available') {
-          const title = testCoupon ? 'テスト 500円OFFクーポン' : `EC ${c.cost.toLocaleString()}円OFFクーポン`;
-          const note = document.createElement('p'); note.textContent = `${title} ／ 税込商品合計${c.minimum.toLocaleString()}円以上・1回限り・併用不可`; actions.append(note);
-          button(`${title}を使う`, async()=>{await couponSelect(c.code,title);say(`${title}を選択しました。実際の適用状態は画面下で確認できます。`);});
+    state=await call('status',{token:sessionStorage.getItem(key),cart:await cart()});
+    invalidateDisplay();window.dispatchEvent(new Event('agaruke:members-authenticated'));
+    actions.replaceChildren();choices=[];say('');
+    const membership=el('div','coupon-membership');
+    const balance=el('div');balance.append(el('span','coupon-balance-label','利用可能ポイント'),el('strong','coupon-balance',`${state.point.toLocaleString()} pt`));
+    membership.append(balance,el('span','coupon-member-number',`会員番号 FR${String(state.member_number).padStart(6,'0')}`));actions.append(membership);
+    const current=el('section','coupon-current');
+    const currentHead=el('div','coupon-section-heading');currentHead.append(el('h2','','現在の選択'));currentBadge=el('span','coupon-badge','確認中');currentHead.append(currentBadge);current.append(currentHead);
+    currentTitle=el('p','coupon-current-title','確認しています…');currentHelp=el('p','coupon-muted');current.append(currentTitle,currentHelp);
+    clearButton=button('選択を解除する',async()=>{await couponSelect('');say('選択を解除しました。クーポンは未使用のまま残ります。');},current,true);clearButton.hidden=true;actions.append(current);
+    const exchangeEnabled=state.coupon_exchange_enabled??!state.link_test_only;
+    if(!state.completed){
+      const owned=el('section','coupon-owned');owned.append(el('h2','','お持ちのクーポン'),el('p','coupon-muted','選択・解除でポイントが減ることはありません。'));
+      const list=el('div','coupon-ticket-grid');let count=0;
+      for(const c of state.coupons||[]){
+        const test=(state.test_coupon_ids||[]).includes(c.id);if(!exchangeEnabled&&!test)continue;
+        if(!['available','pending'].includes(c.status))continue;count++;
+        const card=el('article','coupon-ticket');
+        const top=el('div','coupon-ticket-top');top.append(el('span','coupon-eyebrow',test?'テストクーポン':'ECポイント交換クーポン'));
+        const badge=el('span','coupon-badge','選択中');badge.hidden=true;top.append(badge);card.append(top);
+        const amount=el('p','coupon-ticket-amount');amount.append(el('strong','',c.cost.toLocaleString()),el('span','','円OFF'));card.append(amount);
+        card.append(el('p','coupon-ticket-minimum',`税込商品合計 ${c.minimum.toLocaleString()}円以上`));
+        if(c.expires_at){const date=new Date(c.expires_at);if(!Number.isNaN(date.getTime()))card.append(el('p','coupon-muted',`有効期限 ${date.toLocaleDateString('ja-JP',{timeZone:'Asia/Tokyo'})}`));}
+        if(c.status==='pending'){
+          card.append(el('p','coupon-muted','発行手続きが完了していません。追加のポイント消費はありません。'));
+          button('発行を再開する',async()=>{await call('retry',{token:sessionStorage.getItem(key),cart:await cart(),coupon_id:c.id});await refresh();},card);
+        }else{
+          const title=test?'テスト 500円OFFクーポン':`EC ${c.cost.toLocaleString()}円OFFクーポン`;
+          const use=button('このクーポンを使う',async()=>{await couponSelect(c.code,title);say(`${title}を選択しました。`);},card);
+          choices.push({code:c.code,card,button:use,badge});
         }
+        list.append(card);
       }
+      if(!count)list.append(el('p','coupon-empty','お持ちのクーポンはありません。下のポイント交換から取得できます。'));
+      owned.append(list,el('p','coupon-fine-print','送料は利用条件に含まれません。各クーポンは1回限り・他クーポンとの併用不可です。'));actions.append(owned);
     }
-    if (!state.permanent && !state.completed) {
-      const login = document.createElement('a'); login.className = 'button button--secondary'; login.textContent = 'Shopifyにログインして購入';
-      login.href = `/customer_authentication/login?return_to=${encodeURIComponent(config.path)}`; actions.append(login);
+    if(exchangeEnabled&&!state.completed){
+      const exchange=el('details','coupon-exchange');const summary=el('summary');summary.append(el('span','','ポイントでクーポンに交換'),el('span','coupon-expand','＋'));exchange.append(summary);
+      exchange.append(el('p','coupon-muted','交換時にポイントを消費します。交換後の取り消しはできません。'));
+      const tiers=el('div','coupon-tier-grid');
+      for(const cost of [200,500,1000]){
+        const tier=el('article','coupon-tier');tier.append(el('h3','',`${cost.toLocaleString()}円OFF`),el('p','coupon-muted',`税込商品合計 ${{200:3800,500:7000,1000:12000}[cost].toLocaleString()}円以上`));
+        const enough=state.point>=cost;
+        const exchangeButton=button(enough?`${cost.toLocaleString()}ptで交換`:`${cost.toLocaleString()}pt必要（残高不足）`,async()=>{
+          if(!confirm(`${cost}ポイントを使って交換します。よろしいですか？`))return;
+          const requestKey=`${key}-exchange-${cost}`;let requestId=sessionStorage.getItem(requestKey);
+          if(!requestId){requestId=crypto.randomUUID();sessionStorage.setItem(requestKey,requestId);}
+          await call('exchange',{token:sessionStorage.getItem(key),cart:await cart(),cost,request_id:requestId});
+          sessionStorage.removeItem(requestKey);await refresh();say('クーポンを発行しました。「お持ちのクーポン」から選べます。');
+        },tier);exchangeButton.disabled=!enough;exchangeButton.dataset.locked=String(!enough);tiers.append(tier);
+      }
+      exchange.append(tiers);actions.append(exchange);
     }
-    const guest = document.createElement('a'); guest.className = 'button button--secondary'; guest.textContent = state.permanent ? 'お買い物に戻る' : 'ログインせずお買い物を続ける'; guest.href = '/cart'; actions.append(guest);
-    button('LINE認証をやり直す', start);
+    const footer=el('nav','coupon-page-footer');const shop=el('a','coupon-button','お買い物を続ける');shop.href=returnPath();const cartLink=el('a','coupon-text-button','カートを確認する');cartLink.href='/cart';footer.append(shop,cartLink);actions.append(footer);
+    if(state.link_test_only)actions.append(el('p','coupon-test-note',exchangeEnabled?'クーポン交換のテスト中です。購入ポイント付与は停止しています。':'連携試験中です。クーポン交換と購入ポイント付与は停止しています。'));
+    const account=el('details','coupon-account');account.append(el('summary','','アカウント・認証について'),el('p','coupon-muted',state.permanent?'Shopifyアカウントと連携済みです。':'今回のお買い物にLINEポイントカードを設定しています。'));
+    if(!state.permanent&&!state.completed){const login=el('a','coupon-text-button','Shopifyアカウントと連携する');login.href=`/customer_authentication/login?return_to=${encodeURIComponent(config.path)}`;account.append(login);}
+    button('LINE認証をやり直す',start,account,true);actions.append(account);syncSelection();
   }
   async function start() {
     invalidateDisplay();
