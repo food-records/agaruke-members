@@ -35,3 +35,13 @@ DOM上はDawn/Shopify標準と会員関連のJS/CSSが多数あるが、多く�
 - benefitsの操作UIはproduct/cartだけで読み込む。トップで不要な8,160bytes（非圧縮）のJSと初期化を除く。共通カートmoduleはversion付きURLを両利用元で統一する。
 
 Node34件と型検査成功。並行読取2→1、fresh、更新と読取の競合、失敗後の再取得、クーポン選択/解除/会員状態/購入pt表示を回帰確認。Shopify Liquid/JS8件検査成功（layoutの既存scheme_classesとpreload表記のwarningあり）。バックエンド/課金構成/権限/定期処理は変更せず、テーマのみ反映する。ビルド用fonttools4.68.0/brotli1.2.1は保護runtime venvへ隔離。再生成はtools/build-font-subsets.pyとrequirementsを参照。元font hashを固定し、異なる元ファイルでは生成を止める。
+
+## 本番反映・変更後の確認
+
+本番テーマ189917102253へclean/push済みmasterの43179e9af086b5678a9f72e400fa4901eb08b37cから11ファイルを配信。直前の配信8186830と発送目安更新bf59383の包含、remote SHA一致をrelease_guardで検査。readback11ファイルは候補とbyte一致、templates/index.json/config/settings_data.jsonは配信直前と一致。既配信の発送目安3〜5日も保持。
+
+2026-10-31 20:03 JSTの同条件PageSpeedはスコア70、FCP2.0s、LCP7.2s、TBT30ms、CLS0、Speed Index5.5s。変更前64/1.9s/25.5s/30ms/0/13.3s。LCP約72%短縮だが7.2sは改善余地が残る。単発ラボ測定で、実ユーザーの速度保証やINP評価ではない。変更後 https://pagespeed.web.dev/analysis/https-shop-agaruke-com/n0wwbwzci4?form_factor=mobile 。画像削減見込みは1,020KiB→188KiB。変更後の総転送量は採録していない。
+
+公開トップのフォント・画像・ヘッダー/CTA、商品/カート特典表示、支払い完了後100pt表示を確認。所持200円券の選択でShopifyの合計5,120円→4,920円、解除と再選択を確認。商品数量は4のまま、注文/決済/ポイント交換は行わない。開始時の公開AGARUKE500選択へ戻したが、再検証では条件未達となる。既存の未購入者セグメント問題との照合が必要で、今回の速度改善では資格条件を変更しない。所持券と公開券の適用可否を混同しない。
+
+証跡は保護runtime shopify-performance-20261031のpsi-before/after.txt/png、store-before/after.png、tests/typecheck/validate2.log、candidate/readback。Secretaryはagarukeのローカル承認待ちdraftへ記録し、Driveへ未公開。
