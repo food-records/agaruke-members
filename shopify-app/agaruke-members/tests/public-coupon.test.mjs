@@ -15,7 +15,8 @@ test('usage query is scoped to the authenticated customer and the public code an
 });
 test('uncertain and unrelated history never falsely marks a customer as used',async()=>{
  assert.equal(await launchCouponStatus('123',graphql([]),now),'not_used');
- for(const value of [order({cancelledAt:'2026-10-31T10:00:00Z'}),order({displayFinancialStatus:'REFUNDED'}),order({displayFinancialStatus:'PENDING'}),order({customer:{id:'gid://shopify/Customer/456'}}),order({discountCodes:['OTHER']})])assert.equal(await launchCouponStatus('123',graphql([value]),now),'unknown');
+ assert.equal(await launchCouponStatus('123',graphql([order({cancelledAt:'2026-10-31T10:00:00Z'})]),now),'used');
+ for(const value of [order({cancelledAt:'2026-10-31T10:00:00Z',displayFinancialStatus:'VOIDED'}),order({displayFinancialStatus:'REFUNDED'}),order({displayFinancialStatus:'PENDING'}),order({customer:{id:'gid://shopify/Customer/456'}}),order({discountCodes:['OTHER']})])assert.equal(await launchCouponStatus('123',graphql([value]),now),'unknown');
  assert.equal(await launchCouponStatus('123',graphql([order({cancelledAt:'2026-10-31T10:00:00Z'}),order()]),now),'used');
  assert.equal(await launchCouponStatus('123',async()=>Response.json({errors:[{message:'access denied'}]}),now),'unknown');
  assert.equal(await launchCouponStatus('123',async()=>{throw Error('timeout')},now),'unknown');

@@ -18,7 +18,7 @@ export async function launchCouponStatus(customer: string, graphql: GraphQL, now
     if (!response.ok || result.errors || !Array.isArray(result.data?.orders?.nodes)) return 'unknown';
     const {nodes, pageInfo} = result.data.orders;
     if (nodes.some((order: {customer?: {id?: string}; discountCodes?: string[]}) => order.customer?.id !== `gid://shopify/Customer/${customer}` || !order.discountCodes?.some(code => code.toUpperCase() === 'AGARUKE500'))) return 'unknown';
-    if (nodes.some((order: {cancelledAt?: string; displayFinancialStatus?: string}) => !order.cancelledAt && ['PAID', 'PARTIALLY_REFUNDED'].includes(order.displayFinancialStatus || ''))) return 'used';
+    if (nodes.some((order: {cancelledAt?: string; displayFinancialStatus?: string}) => ['PAID', 'PARTIALLY_REFUNDED'].includes(order.displayFinancialStatus || ''))) return 'used';
     return nodes.length || pageInfo?.hasNextPage ? 'unknown' : 'not_used';
   } catch { return 'unknown'; }
 }
