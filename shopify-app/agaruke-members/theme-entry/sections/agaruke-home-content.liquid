@@ -59,13 +59,13 @@
   {% if ag_craft != blank %}
   <section class="ag-craft ag-section" id="ag-craft" {{ ag_craft.shopify_attributes }} aria-labelledby="ag-craft-heading">
     <div class="ag-wrap">
+      <div class="ag-craft-layout{% if ag_craft.settings.image != blank %} ag-craft-layout--image{% endif %}">
       <div class="ag-craft-header">
         <div>
           <p class="ag-eyebrow">{% render 'agaruke-copy', copy_settings: ag_craft.settings, key: 'eyebrow' %}</p>
           <h2 id="ag-craft-heading">{% render 'agaruke-copy', copy_settings: ag_craft.settings, key: 'heading' %}</h2>
         </div>
       </div>
-      <div class="ag-craft-layout{% if ag_craft.settings.image != blank %} ag-craft-layout--image{% endif %}">
         {% if ag_craft.settings.image != blank %}
           {% assign ag_craft_alt = ag_craft.settings.image_alt %}
           {% if request.locale.iso_code == 'en' %}{% assign ag_craft_alt = ag_craft.settings.image_alt_en %}{% endif %}

@@ -185,3 +185,5 @@ agaruke-members/
 2026-10-31: おいしさの理由にユーザー指定house-meal.pngを追加し、PC見出し横/スマホ見出し下の画像と日英altを設定。[記録](docs/SHOPIFY_TASTE_MOBILE_20261031.md)。
 
 2026-10-31: おいしさの理由の余白を修正し、見出しの下に写真左/3理由右をまとめた配置へ変更。[現行配置](docs/SHOPIFY_TASTE_MOBILE_20261031.md)。
+
+2026-10-31: おいしさの理由のタイトルをPCの写真右側・説明上へ移動。スマホはタイトル→写真→説明を維持。[配置](docs/SHOPIFY_TASTE_MOBILE_20261031.md)。
