@@ -28,3 +28,5 @@ LINEからストアの配布リンク/ポイントカード入口を開く→LIN
 重要な訂正: Shopify公式Discount codes FAQは、顧客segment指定の割引は既存顧客向けで、まだprofileのない初回購入者は初回注文完了までsegmentに含まれないと明記している。現在AGARUKE500に設定したCustomers who haven't purchasedでは、顧客未登録の新規購入者を取りこぼす。以前の「初回購入限定をこのsegmentだけで実現できた」とした案内は不十分だった。LINE配布前に適格性を修正・新規guestで検証する必要がある。実注文テストは未実施、今回native条件の変更なし。
 
 原典: https://help.shopify.com/en/manual/discounts/discounts-faq 、メール同意: https://help.shopify.com/en/manual/promoting-marketing/create-marketing/shopify-messaging/email/subscriber-list-management 。Secretary orderec/Drive event公開は未承認保留、.work変更なし。
+
+2026-10-31ユーザー確定: 一般向け500円券/1人1回＋任意LINE案内を採用。全クーポンLINE必須/個別500円券発行/Shopifyログイン必須の案は採用しない。edce008は表示統合だけ再利用。[正本](SHOPIFY_PUBLIC_COUPON_RELEASE_20261031.md)。

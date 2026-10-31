@@ -39,13 +39,15 @@ function initialize(config) {
   function show(state) {
     if(typeof state?.linked!=='boolean')return;
     document.documentElement.dataset.agarukeMembersState=state.linked?'linked':'unlinked';
+    window.agarukeMemberPresentation=cacheRecord(state,'display')?.state||{linked:state.linked};
+    window.dispatchEvent(new CustomEvent('agaruke:members-state',{detail:window.agarukeMemberPresentation}));
     for(const anchor of document.querySelectorAll('.announcement-bar a')) {
       const path=new URL(anchor.href,location.origin).pathname.replace(/\/$/,'');
       if(path!==config.path&&path!==root.replace(/\/$/,'')+config.path)continue;
       const section=anchor.closest('.shopify-section');
       const single=section?.querySelectorAll('.announcement-bar__message').length===1&&!section.querySelector('.list-social,localization-form');
       const target=single?section:anchor.closest('.slideshow__slide')||anchor;
-      if(state.linked)target.style.display='none';else target.style.removeProperty('display');
+      target.style.display='none';
     }
     for(const card of document.querySelectorAll('[data-agaruke-member-card]')) {
       card.querySelector('[data-members-unlinked]').hidden=state.linked;
@@ -53,9 +55,9 @@ function initialize(config) {
       const points=card.querySelector('[data-members-points]');
       points.textContent=state.ready?(state.link_test_only?'通常はこの注文で100ポイント。現在は連携試験中のため、今回の付与予定は0ポイントです。':`この注文の獲得予定は${state.expected_points}ポイントです。支払い完了後に付与します。`):'ポイントカードは連携済みです。購入内容を確認すると獲得予定ポイントが表示されます。';
       const coupon=card.querySelector('[data-members-coupons]');coupon.replaceChildren();
-      if(state.coupon_count>0) {
-        const text=document.createElement('p');text.textContent=`ECクーポンが${state.coupon_count}枚あります。使うクーポンを選択できます。`;coupon.append(text);
-        const link=document.createElement('a');link.className='button button--secondary';link.href=state.coupon_url;link.textContent='クーポンを選択・変更する';coupon.append(link);
+      {
+        const text=document.createElement('p');text.textContent=state.coupon_count>0?`ECクーポンが${state.coupon_count}枚あります。使うクーポンを選択できます。`:'ポイント・クーポンは会員ページで確認できます。';coupon.append(text);
+        const link=document.createElement('a');link.className='button button--secondary';link.href=state.coupon_url;link.textContent='ポイント・クーポンを確認する';coupon.append(link);
       }
     }
   }

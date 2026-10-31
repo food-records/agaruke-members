@@ -203,3 +203,5 @@ agaruke-members/
 2026-10-31: 全クーポンのLINE条件・3状態バナーを検討中。未公開draftはfeature branch edce008。Shopifyログインなしの利用フローを説明し、本人限定の範囲は確認中。[未確定事項](docs/SHOPIFY_LINE_BENEFITS_PLAN_20261031.md)。
 
 2026-10-31: スマホVIEW ITEMをアイボリー背景・読みやすい文字と矢印・48px操作高へ調整。[仕様](docs/SHOPIFY_TASTE_MOBILE_20261031.md)。
+
+2026-10-31確定: 500円券を購入歴不問・1人1回へ変更、LINEは任意・購入後案内。バナーは券優先→未連携案内→非表示。[状態](docs/SHOPIFY_PUBLIC_COUPON_RELEASE_20261031.md)。

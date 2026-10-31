@@ -19,6 +19,9 @@ function PurchaseLink(){
   }catch{setMessage('注文情報を確認中です。下のボタンから連携を再確認してください。');setRetry(true);}
  }
  useEffect(()=>{sync();},[purchase,order]);
- if(!purchase)return null;
+ if(!purchase){
+  if(!shopify.orderConfirmation.value?.isFirstOrder)return null;
+  return <s-banner heading="LINEポイントカードのご案内"><s-stack gap="base"><s-text>次回のお買い物に向けて、LINEポイントカードを登録・連携できます。登録は任意です。</s-text><s-link href="https://shop.agaruke.com/apps/members">LINEポイントカードを登録・連携する</s-link></s-stack></s-banner>;
+ }
  return <s-banner heading="LINEポイントカード"><s-stack gap="base"><s-text>{message}</s-text>{retry&&<s-button onClick={sync}>連携を再確認</s-button>}</s-stack></s-banner>;
 }
