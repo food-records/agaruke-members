@@ -9,3 +9,15 @@
 既存Cloud Run/Firestore/同一リソース構成を維持。新service/スキャン/定期Job/権限なし。既存イベント処理と操作時の本人限定照会のみで、大幅な課金増につながる構成変更なし。LINE配信・実注文作成/決済なし。
 
 検査: Node24件/型/build、隔離Firestore Emulator全Go package race（注文/クーポン/返金/ゲスト/継続連携）、theme4ファイルschema成功。公開結果は後記。
+
+## 公開結果
+
+実装f98c5b0、配信元c6f070816170b5722523bf9fcd4533dfea057ef8をmaster/origin一致・clean・直前公開6807ab8包含で確認。Cloud Build 78df00f8-6674-4dca-836c-1a48bfb65fcd成功、image sha256:a4c48a7b9ede7c4eb0bcb90a286c8d10bf9fee5e1d9a568cd64a665debc4ddfd。Cloud Run shopify-members-benefits-c6f0708へ100% traffic、git-shaラベル一致。SHOPIFY_MEMBERS_ENABLED=true / SHOPIFY_LINK_TEST_ONLY=false / SHOPIFY_COUPON_EXCHANGE_ENABLED=trueを確認。CPU0.08/256Mi/concurrency1/max1/min0維持。Members API pricing-cc6cc7bはsource差分なしのため再配信不要。アプリextension/権限/バージョン変更なし。
+
+候補・公開の架空未連携Customer status200/live modefalse/交換有効、未連携交換400。公開revision ERROR標本0。過去注文の再送や付与の遡及は行っていない。
+
+Dawn189917102253の対象4ファイルのみ公開しreadback byte一致。最終確認メッセージを位置に依存しない文言へ補正したtheme source6cc081fもorigin/clean/ancestor照合・Liquid再検証後に新JSだけ公開。
+
+実ブラウザーで商品/カートの共通カード、券一覧、500円券への切替、解除、200円交換券への復元を確認。カート合計5,120→4,620→5,120→4,920円。追加交換/ポイント消費なし、残高800ptと元の200円券選択を保持。スマホ390pxで両画面のoverflowなし、支払い完了後100ptの表示を確認。証跡は共有workspace Git外.runtime/shopify-benefits-20261031/cart-mobile.png、product-mobile.png。実注文/決済は行っていないため、本番支払い後の実残高増加は未検証。付与/重複/返金動作は隔離Emulatorで検証済み。
+
+Secretary記録先orderec、Driveイベント公開未承認保留。.work追加/削除なし。
