@@ -59,3 +59,5 @@ PC1352pxで写真とセクション高431.9px一致、スマホ390pxの写真245
 ## スマホのヘッダー・CTAを画像へ重ねる（2026-10-31）
 
 ユーザー指定でスマホもPCと同じく、透明ヘッダーとVIEW ITEMをトップ画像内へ配置する。通常配置/スマホstickyの例外を外し、非stickyヘッダーは告知/クーポンバナー高さの変数を基準にabsolute配置する。スクロール時は既存のfixed表示/非表示を維持。CTAは写真内左24px/下24pxのabsoluteへ戻す。専用縦長画像全体・画像設定・日英文言・PCレイアウト・クーポン機能は保持。変更はhome-header/contentのCSS2件のみ。
+
+スマホ重ね表示の本番反映: clean remote master4ff7b4a69551fd29822b8e0f19daa98a31b9b2f3から公開Dawn189917102253へCSS2件。fetch/remote SHA一致・既配信ce2ec58/197a1c9包含guard、直前差分なし、Liquid2件/readback一致/index保持。公開390pxでクーポンバナー下45pxからヘッダーと画像が始まり、ヘッダー背景透明、CTAが写真内左24/下24px、横はみ出しなし。メニュー展開時の白背景/開閉とVIEW ITEM→商品欄、英語の同配置を確認。通常幅1352pxへ復元しPCヘッダー/画像上端45px・hero560px・CTA absoluteを保持。証跡mobile-overlay.pngは保護runtime shopify-mobile-overlay-20261031。クーポン/カートの選択や数量は操作していない。
