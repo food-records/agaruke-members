@@ -68,7 +68,7 @@ test('coupon UI groups selection, owned tickets and optional exchange; insuffici
  const storage={getItem:()=> 'test-session',removeItem(){}};
  await runInNewContext(source,{URLSearchParams,document,sessionStorage:storage,window:{dispatchEvent(){},addEventListener(){}},Event:class{},CustomEvent:class{constructor(type,options){this.type=type;this.detail=options?.detail}},location:{hash:'',search:'?return_to=%2Fsearch%3Fq%3Dcurry'},fetch:async url=>Response.json(url==='/cart.js'?{token:'cart'}:state)});
  const labels=created.map(n=>n.textContent||'').join(' ');
- for(const text of ['現在の選択','お持ちのクーポン','ポイントでクーポンに交換','このクーポンを使う','選択を解除する','税込商品合計 3,800円以上'])assert.ok(labels.includes(text),text);
+ for(const text of ['現在の選択','お持ちのクーポン','ポイントでクーポンに交換','このクーポンを使う','選択を解除する','LINE連携を解除する','税込商品合計 3,800円以上'])assert.ok(labels.includes(text),text);
  const details=created.find(n=>n.className==='coupon-exchange');assert.equal(details.tag,'details');assert.equal(details.open,undefined);
  const insufficient=created.find(n=>n.textContent==='1,000pt必要（残高不足）');assert.equal(insufficient.disabled,true);assert.equal(insufficient.dataset.locked,'true');
  assert.equal(created.find(n=>n.textContent==='お買い物を続ける').href,'/search?q=curry');

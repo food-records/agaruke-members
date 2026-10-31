@@ -29,12 +29,14 @@ type purchaseGrant struct {
 	Consumed  bool      `firestore:"consumed"`
 }
 type purchaseSession struct {
-	CreatedAt time.Time `firestore:"created_at"`
-	UID       string    `firestore:"uid"`
-	CartHash  string    `firestore:"cart_hash"`
-	Customer  string    `firestore:"customer"`
-	OrderID   string    `firestore:"order_id"`
-	ExpiresAt time.Time `firestore:"expires_at"`
+	Generation int64     `firestore:"generation"`
+	RevokedAt  time.Time `firestore:"revoked_at,omitempty"`
+	CreatedAt  time.Time `firestore:"created_at"`
+	UID        string    `firestore:"uid"`
+	CartHash   string    `firestore:"cart_hash"`
+	Customer   string    `firestore:"customer"`
+	OrderID    string    `firestore:"order_id"`
+	ExpiresAt  time.Time `firestore:"expires_at"`
 }
 
 func purchaseRef(fs *firestore.Client, token string) *firestore.DocumentRef {
@@ -94,6 +96,7 @@ func (h handler) PurchaseAuthorize(w http.ResponseWriter, r *http.Request) {
 // Shopify backend after verifying a Shopify-signed authenticated context.
 func (h handler) PurchaseAction(w http.ResponseWriter, r *http.Request) {
 	var b struct {
+		Confirm    bool   `json:"confirm"`
 		Resume     bool   `json:"resume"`
 		Action     string `json:"action"`
 		Token      string `json:"token"`
@@ -174,7 +177,14 @@ func (h handler) PurchaseAction(w http.ResponseWriter, r *http.Request) {
 			if _, e = activeMember(tx, config.DataCollection(h.fs, "members").Doc(g.UID)); e != nil {
 				return e
 			}
-			if e = tx.Create(purchaseRef(h.fs, sessionToken), purchaseSession{CreatedAt: now, UID: g.UID, CartHash: tokenHash(b.Cart), ExpiresAt: now.Add(24 * time.Hour)}); e != nil {
+			epoch, e := h.readEpoch(ctx, tx, g.UID)
+			if e != nil {
+				return e
+			}
+			if g.ExpiresAt.Add(-linkSessionLifetime).Before(epoch.RevokedAt) {
+				return errors.New("GRANT_REVOKED")
+			}
+			if e = tx.Create(purchaseRef(h.fs, sessionToken), purchaseSession{Generation: epoch.Generation, CreatedAt: now, UID: g.UID, CartHash: tokenHash(b.Cart), ExpiresAt: now.Add(24 * time.Hour)}); e != nil {
 				return e
 			}
 			return tx.Update(ref, []firestore.Update{{Path: "consumed", Value: true}})
@@ -186,6 +196,18 @@ func (h handler) PurchaseAction(w http.ResponseWriter, r *http.Request) {
 		presenter.EncodeWithMessage(w, map[string]any{"token": sessionToken})
 		return
 	}
+	if b.Action == "unlink" {
+		if !b.Confirm || b.Cart == "" || len(b.Cart) > 256 {
+			presenter.BadRequest(w, "INVALID_CART")
+			return
+		}
+		if e := h.unlinkPurchase(ctx, b.Token, b.Cart, customerID(b.Customer), now); e != nil {
+			presenter.BadRequest(w, "UNLINK_NOT_AVAILABLE")
+			return
+		}
+		presenter.EncodeWithMessage(w, map[string]any{"unlinked": true})
+		return
+	}
 	snap, e := purchaseRef(h.fs, b.Token).Get(ctx)
 	if e != nil {
 		presenter.BadRequest(w, "PURCHASE_NOT_AVAILABLE")
@@ -194,6 +216,10 @@ func (h handler) PurchaseAction(w http.ResponseWriter, r *http.Request) {
 	var p purchaseSession
 	if snap.DataTo(&p) != nil || !p.ExpiresAt.After(now) || (b.Action != "bind_order" && (b.Cart == "" || tokenHash(b.Cart) != p.CartHash)) {
 		presenter.BadRequest(w, "PURCHASE_EXPIRED")
+		return
+	}
+	if e = h.requireSession(ctx, nil, p); e != nil {
+		presenter.BadRequest(w, "PURCHASE_REVOKED")
 		return
 	}
 	if p.OrderID != "" && (b.Action == "exchange" || b.Action == "activate") {
@@ -213,6 +239,9 @@ func (h handler) PurchaseAction(w http.ResponseWriter, r *http.Request) {
 			}
 			var current purchaseSession
 			if e = s.DataTo(&current); e != nil {
+				return e
+			}
+			if e = h.requireSession(ctx, tx, current); e != nil {
 				return e
 			}
 			if current.UID != p.UID || !current.ExpiresAt.After(now) || (current.Customer != "" && current.Customer != customer) || (current.OrderID != "" && b.OrderID != "" && current.OrderID != b.OrderID) {
@@ -341,6 +370,13 @@ func (h handler) OrdersCreated(w http.ResponseWriter, r *http.Request) {
 		if e = snap.DataTo(&current); e != nil {
 			return e
 		}
+		blocked, e := h.orderRevoked(ctx, tx, current, order)
+		if e != nil {
+			return e
+		}
+		if blocked {
+			return errors.New("PURCHASE_REVOKED")
+		}
 		if current.OrderID != "" && current.OrderID != orderID {
 			return errors.New("PURCHASE_ALREADY_USED")
 		}
@@ -362,7 +398,7 @@ func (h handler) OrdersCreated(w http.ResponseWriter, r *http.Request) {
 		return tx.Update(purchaseRef(h.fs, token), []firestore.Update{{Path: "order_id", Value: orderID}})
 	})
 	if e != nil {
-		if e.Error() == "PURCHASE_ALREADY_USED" {
+		if e.Error() == "PURCHASE_ALREADY_USED" || e.Error() == "PURCHASE_REVOKED" {
 			presenter.EncodeWithMessage(w, map[string]any{"recorded": false})
 			return
 		}

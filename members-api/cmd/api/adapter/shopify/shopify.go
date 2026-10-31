@@ -203,6 +203,13 @@ func (h handler) applyPaidOrder(ctx context.Context, order paidOrder, customer s
 			if e = s.DataTo(&p); e != nil {
 				return e
 			}
+			blocked, e := h.orderRevoked(ctx, tx, p, order)
+			if e != nil {
+				return e
+			}
+			if blocked {
+				return nil
+			}
 			if order.CreatedAt.IsZero() || order.CreatedAt.Before(p.CreatedAt.Truncate(time.Second)) || order.CreatedAt.After(p.ExpiresAt) || p.CartHash != tokenHash(order.CartToken) || (p.OrderID != "" && p.OrderID != orderID) {
 				return nil
 			}

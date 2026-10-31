@@ -82,6 +82,9 @@ func activeMember(tx *firestore.Transaction, ref *firestore.DocumentRef) (member
 }
 
 type customerActionRequest struct {
+	Confirm          bool   `json:"confirm"`
+	LinkHint         string `json:"link_hint"`
+	IncludePurchase  bool   `json:"-"`
 	Purchase         string `json:"-"`
 	ConfirmationCode string `json:"confirmation_code"`
 	Action           string `json:"action"`
@@ -106,6 +109,18 @@ func (h handler) CustomerAction(w http.ResponseWriter, r *http.Request) {
 	b.Customer = customerID(b.Customer)
 	now := time.Now()
 	ctx := r.Context()
+	if b.Action == "unlink" {
+		if !b.Confirm {
+			presenter.BadRequest(w, "CONFIRM_REQUIRED")
+			return
+		}
+		if e := h.unlinkCustomer(ctx, b.Customer, b.LinkHint, now); e != nil {
+			presenter.BadRequest(w, "UNLINK_NOT_AVAILABLE")
+			return
+		}
+		presenter.EncodeWithMessage(w, map[string]any{"unlinked": true})
+		return
+	}
 	if b.Action == "start" {
 		token, e := randomToken()
 		if e != nil {
@@ -149,6 +164,13 @@ func (h handler) CustomerAction(w http.ResponseWriter, r *http.Request) {
 			if intent.Candidate == "" {
 				result["ready"] = false
 				return nil
+			}
+			epoch, e := h.readEpoch(ctx, tx, intent.Candidate)
+			if e != nil {
+				return e
+			}
+			if intent.ExpiresAt.Add(-linkSessionLifetime).Before(epoch.RevokedAt) {
+				return errors.New("LINK_INTENT_REVOKED")
 			}
 			memberRef := config.DataCollection(h.fs, "members").Doc(intent.Candidate)
 			if _, e = activeMember(tx, memberRef); e != nil {
@@ -213,6 +235,11 @@ func (h handler) CustomerAction(w http.ResponseWriter, r *http.Request) {
 		presenter.Error(w, e)
 		return
 	}
+	if b.Action == "account_status" {
+		b.Action = "status"
+		b.IncludePurchase = true
+		b.LinkHint = linkHint(link)
+	}
 	h.memberAction(w, r, b, link.LineUserID, now)
 }
 
@@ -239,6 +266,9 @@ func (h handler) memberAction(w http.ResponseWriter, r *http.Request, b customer
 		code := "AM" + strings.ToUpper(codeToken)
 		var coupon ecCoupon
 		e = h.fs.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
+			if e := h.requireCouponContext(ctx, tx, b, uid, now); e != nil {
+				return e
+			}
 			if b.Purchase != "" {
 				s, e := tx.Get(config.DataCollection(h.fs, "shopify_purchase_sessions").Doc(b.Purchase))
 				if e != nil {
@@ -297,6 +327,9 @@ func (h handler) memberAction(w http.ResponseWriter, r *http.Request, b customer
 			if _, e := activeMember(tx, memberRef); e != nil {
 				return e
 			}
+			if e := h.requireCouponContext(ctx, tx, b, uid, now); e != nil {
+				return e
+			}
 			ref := ecRef(h.fs, b.Code)
 			s, e := tx.Get(ref)
 			if e != nil {
@@ -306,7 +339,7 @@ func (h handler) memberAction(w http.ResponseWriter, r *http.Request, b customer
 			if e = s.DataTo(&c); e != nil {
 				return e
 			}
-			if c.Customer != b.Customer || (c.Purchase=="") != (b.Purchase=="") || c.UID != uid || !c.ExpiresAt.After(now) || (c.Status != "pending" && c.Status != "available") || !strings.HasPrefix(b.DiscountID, "gid://shopify/DiscountCodeNode/") {
+			if c.Customer != b.Customer || (c.Purchase == "") != (b.Purchase == "") || c.UID != uid || !c.ExpiresAt.After(now) || (c.Status != "pending" && c.Status != "available") || !strings.HasPrefix(b.DiscountID, "gid://shopify/DiscountCodeNode/") {
 				return errors.New("INVALID_COUPON")
 			}
 			if c.DiscountID != "" && c.DiscountID != b.DiscountID {
@@ -352,11 +385,11 @@ func (h handler) memberAction(w http.ResponseWriter, r *http.Request, b customer
 	coupons := []ecCoupon{}
 	for _, d := range docs {
 		var c ecCoupon
-		if d.DataTo(&c) == nil && c.Customer == b.Customer && c.Purchase == b.Purchase && c.ExpiresAt.After(now) && (c.Status == "pending" || c.Status == "available") {
+		if d.DataTo(&c) == nil && ((b.IncludePurchase && c.Purchase != "") || (c.Customer == b.Customer && c.Purchase == b.Purchase)) && c.ExpiresAt.After(now) && (c.Status == "pending" || c.Status == "available") {
 			coupons = append(coupons, c)
 		}
 	}
-	presenter.EncodeWithMessage(w, map[string]any{"linked": true, "point": m.Point, "member_number": ms.Data()["number"], "coupons": coupons})
+	presenter.EncodeWithMessage(w, map[string]any{"linked": true, "point": m.Point, "member_number": ms.Data()["number"], "coupons": coupons, "unlink_hint": b.LinkHint})
 }
 
 // LINE only proposes a member. The initiating Shopify account must separately

@@ -13,7 +13,7 @@
     const response = await fetch('/cart.js', {cache: 'no-store'});
     if (!response.ok) throw new Error('カートを確認できませんでした。');
     lastCart = await response.json();
-    return lastCart.token.split('?')[0];
+    return (lastCart.token||'empty-cart').split('?')[0];
   }
   async function call(action, fields = {}) {
     const response = await fetch(config.path, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({action, ...fields})});
@@ -81,6 +81,7 @@
   }
   async function refresh() {
     state=await call('status',{token:sessionStorage.getItem(key),cart:await cart()});
+    if(state.linked===false){state=null;actions.replaceChildren();guestOffers();button('LINEでポイントカードを使う',start);say('LINEでポイントカードを確認してください。');return;}
     invalidateDisplay();window.dispatchEvent(new Event('agaruke:members-authenticated'));
     const presentation={linked:true,ready:!state.completed&&lastCart?.item_count>0&&lastCart?.currency==='JPY',link_test_only:state.link_test_only,expected_points:state.link_test_only?0:100};
     window.agarukeMemberPresentation=presentation;window.dispatchEvent(new CustomEvent('agaruke:members-state',{detail:presentation}));
@@ -106,7 +107,8 @@
         const amount=el('p','coupon-ticket-amount');amount.append(el('strong','',c.cost.toLocaleString()),el('span','','円OFF'));card.append(amount);
         card.append(el('p','coupon-ticket-minimum',`税込商品合計 ${c.minimum.toLocaleString()}円以上`));
         if(c.expires_at){const date=new Date(c.expires_at);if(!Number.isNaN(date.getTime()))card.append(el('p','coupon-muted',`有効期限 ${date.toLocaleDateString('ja-JP',{timeZone:'Asia/Tokyo'})}`));}
-        if(c.status==='pending'){
+        if(c.status==='pending'&&state.account_only){card.append(el('p','coupon-muted','発行を再開するには、下のLINE認証をやり直してください。'));}
+        else if(c.status==='pending'){
           card.append(el('p','coupon-muted','発行手続きが完了していません。追加のポイント消費はありません。'));
           button('発行を再開する',async()=>{await call('retry',{token:sessionStorage.getItem(key),cart:await cart(),coupon_id:c.id});await refresh();},card);
         }else{
@@ -140,7 +142,20 @@
     if(state.link_test_only)actions.append(el('p','coupon-test-note',exchangeEnabled?'クーポン交換のテスト中です。購入ポイント付与は停止しています。':'連携試験中です。クーポン交換と購入ポイント付与は停止しています。'));
     const account=el('details','coupon-account');account.append(el('summary','','アカウント・認証について'),el('p','coupon-muted',state.permanent?'Shopifyアカウントと連携済みです。':'今回のお買い物にLINEポイントカードを設定しています。'));
     if(!state.permanent&&!state.completed){const login=el('a','coupon-text-button','Shopifyアカウントと連携する');login.href=`/customer_authentication/login?return_to=${encodeURIComponent(config.path)}`;account.append(login);}
-    button('LINE認証をやり直す',start,account,true);actions.append(account);syncSelection();
+    button('LINE認証をやり直す',start,account,true);button('LINE連携を解除する',unlink,account,true);actions.append(account);syncSelection();
+  }
+  async function unlink(){
+    if(!confirm(`このショップとのLINE連携を解除します。Shopifyアカウントとの継続連携がある場合は、それも解除します。ポイントカード・ポイント残高・取得済みクーポンは残ります。作成済み注文のポイント・返金処理は引き続き行います。よろしいですか？`))return;
+    await call('unlink',{token:sessionStorage.getItem(key),cart:await cart(),confirm:true,...(state?.account_only?{account_only:true,link_hint:state.unlink_hint}:{})});
+    const coupons=window.agarukeCoupons;
+    if(coupons?.memberSelected?.()||(state?.coupons||[]).some(c=>coupons?.isSelected(c.code)))await couponSelect('');
+    const response=await fetch('/cart/update.js',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({attributes:{_agaruke_purchase:''}})});
+    if(!response.ok)throw Error('連携は解除されました。カートの更新が完了していないため、もう一度解除操作をお試しください。');
+    sessionStorage.removeItem(key);localStorage.removeItem(proofKey);invalidateDisplay();
+    window.dispatchEvent(new Event('agaruke:members-unlinked'));
+    try{localStorage.setItem('agaruke-members-unlinked-at',String(Date.now()));}catch{}
+    state=null;currentTitle=null;currentBadge=null;currentHelp=null;clearButton=null;choices=[];actions.replaceChildren();
+    guestOffers();button('LINEでポイントカードを使う',start);say('LINE連携を解除しました。ポイントカードや残高は保持されています。');
   }
   async function start() {
     invalidateDisplay();
@@ -152,6 +167,7 @@
     localStorage.setItem(proofKey, JSON.stringify({verifier, token: data.token, at: Date.now()}));
     location.assign(data.liff_url);
   }
+  window.addEventListener('storage',e=>{if(e.key==='agaruke-members-unlinked-at')location.reload();});
   try {
     const hash = new URLSearchParams(location.hash.slice(1));
     if (hash.has('grant') || hash.has('code')) {
@@ -164,7 +180,7 @@
       const updated = await fetch('/cart/update.js', {method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({attributes: {_agaruke_purchase: data.token}})});
       if (!updated.ok) throw new Error('カートへの設定に失敗しました。LINE認証をやり直してください。');
     }
-    if (sessionStorage.getItem(key)) await refresh();
+    if (sessionStorage.getItem(key)||config.customer_authenticated) await refresh();
     else { guestOffers();say('ポイント交換クーポンを使う場合は、LINEでポイントカードを確認してください。'); button('LINEでポイントカードを使う', start); }
   } catch (e) { say(e.message || '処理できませんでした。'); actions.replaceChildren();guestOffers();button('LINE認証を始める', start); }
 })();

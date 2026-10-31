@@ -56,7 +56,7 @@ function initialize(){
     try{const cart=await request('cart/update.js',await couponChange(code,title));await show(cart);if(location.pathname.replace(/\/$/,'').endsWith('/cart'))location.reload();return cart;}
     finally{busy=false;clear.disabled=false;}
   }
-  window.agarukeCoupons={select,refresh,current:()=>({...currentState}),isSelected:code=>Boolean(code)&&code===selectedCode};
+  window.agarukeCoupons={select,refresh,current:()=>({...currentState}),memberSelected:()=>/^AM(?:[a-f0-9]{64}|TEST[A-F0-9]{32})$/i.test(selectedCode),isSelected:code=>Boolean(code)&&code===selectedCode};
   function schedule(){clearTimeout(pending);pending=setTimeout(refresh,100);}
   if(typeof subscribe==='function'&&typeof PUB_SUB_EVENTS!=='undefined')subscribe(PUB_SUB_EVENTS.cartUpdate,schedule);
   window.addEventListener('pageshow',e=>{if(e.persisted)schedule()});

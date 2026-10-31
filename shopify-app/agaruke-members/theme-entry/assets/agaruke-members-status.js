@@ -29,7 +29,7 @@ if (typeof document !== 'undefined') {
 function initialize(config) {
   const storageKey='agaruke-purchase-v2';
   const root=window.Shopify?.routes?.root||'/';
-  let running=null;let scheduled=null;let again=false;let forceAgain=false;
+  let running=null;let scheduled=null;let again=false;let forceAgain=false;let unlinkVersion=0;
   const safeStorage={get(){try{return sessionStorage.getItem(storageKey)||'';}catch{return '';}},set(token){try{if(token)sessionStorage.setItem(storageKey,token);else sessionStorage.removeItem(storageKey);}catch{}}};
   async function request(url,body) {
     const response=await fetch(url,{cache:'no-store',...(body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{})});
@@ -62,8 +62,9 @@ function initialize(config) {
     if(!config.customer_present&&config.has_cart_session===false&&!safeStorage.get()&&!config.is_cart&&!config.legacy_note){show({linked:false});remember({linked:false});return;}
     const dedicated=location.pathname.replace(/\/$/,'')===config.path;
     if(dedicated&&!config.legacy_note)return;
+    const generation=unlinkVersion;
     running=(async()=>{
-      const cart=await request(root+'cart.js');
+      const cart=await request(root+'cart.js');if(generation!==unlinkVersion)return;
       if(dedicated){await cleanupLegacyNote(cart);return;}
       const token=safeStorage.get()||cart.attributes?._agaruke_purchase||'';
       if(!config.customer_present&&!token) {
@@ -74,6 +75,7 @@ function initialize(config) {
       }
       if(cached&&!force){await cleanupLegacyNote(cart);return;}
       const state=await request(config.path,{action:'storefront_status',token,cart:cart.token||(cart.item_count===0?'empty-cart':''),item_count:cart.item_count,total_price:cart.total_price,currency:cart.currency,resume:config.is_cart});
+      if(generation!==unlinkVersion)return;
       if(typeof state?.linked!=='boolean')throw new Error('MEMBERS_STATUS_INVALID');
       if(state.purchase_token) {
         safeStorage.set(state.purchase_token);
@@ -112,6 +114,9 @@ function initialize(config) {
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule();});
   document.addEventListener('shopify:section:load',()=>schedule());
   window.addEventListener('agaruke:members-authenticated',()=>{try{sessionStorage.removeItem(DISPLAY_CACHE_KEY);}catch{}show({linked:true});});
+  function resetUnlinked(){unlinkVersion++;safeStorage.set('');try{sessionStorage.removeItem(DISPLAY_CACHE_KEY);}catch{}show({linked:false});remember({linked:false});}
+  window.addEventListener('agaruke:members-unlinked',resetUnlinked);
+  window.addEventListener('storage',e=>{if(e.key==='agaruke-members-unlinked-at')resetUnlinked();});
   window.addEventListener('agaruke:benefits-open',()=>schedule(true));
   refresh(config.is_cart);
 }

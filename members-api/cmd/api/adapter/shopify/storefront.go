@@ -29,10 +29,17 @@ func (h handler) storefrontState(w http.ResponseWriter, r *http.Request, token, 
 		}
 		if e == nil {
 			var p purchaseSession
-			if s.DataTo(&p) == nil && p.ExpiresAt.After(now) && p.OrderID == "" && p.CartHash == tokenHash(cart) && (customer == "" || p.Customer == "" || p.Customer == customer) {
-				uid = p.UID
-				permanent = p.Customer != ""
-				ready = true
+			if s.DataTo(&p) == nil {
+				e = h.requireSession(ctx, nil, p)
+				if e != nil && e.Error() != "PURCHASE_REVOKED" {
+					presenter.Error(w, e)
+					return
+				}
+				if e == nil && p.ExpiresAt.After(now) && p.OrderID == "" && p.CartHash == tokenHash(cart) && (customer == "" || p.Customer == "" || p.Customer == customer) {
+					uid = p.UID
+					permanent = p.Customer != ""
+					ready = true
+				}
 			}
 		}
 	}
@@ -97,7 +104,11 @@ func (h handler) storefrontState(w http.ResponseWriter, r *http.Request, token, 
 			if _, e = activeMember(tx, config.DataCollection(h.fs, "members").Doc(uid)); e != nil {
 				return e
 			}
-			return tx.Create(purchaseRef(h.fs, newToken), purchaseSession{UID: uid, Customer: customer, CartHash: tokenHash(cart), CreatedAt: now, ExpiresAt: now.Add(24 * time.Hour)})
+			epoch, e := h.readEpoch(ctx, tx, uid)
+			if e != nil {
+				return e
+			}
+			return tx.Create(purchaseRef(h.fs, newToken), purchaseSession{Generation: epoch.Generation, UID: uid, Customer: customer, CartHash: tokenHash(cart), CreatedAt: now, ExpiresAt: now.Add(24 * time.Hour)})
 		})
 		if e != nil {
 			presenter.BadRequest(w, "LINK_NOT_AVAILABLE")
