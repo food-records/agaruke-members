@@ -1,3 +1,4 @@
+{% assign ag_delivery = section.blocks | where: 'type', 'delivery' | first %}
 {% assign ag_about = section.blocks | where: 'type', 'about' | first %}
 {% assign ag_how = section.blocks | where: 'type', 'how' | first %}
 {% assign ag_step_one = section.blocks | where: 'type', 'step_one' | first %}
@@ -25,6 +26,25 @@
         <p>{% render 'agaruke-copy', copy_settings: ag_about.settings, key: 'caption' %}</p>
       </div>
     {% endif %}
+  </section>
+  {% endif %}
+
+  {% if ag_delivery != blank and ag_delivery.settings.image != blank %}
+  <section class="ag-delivery-shell" {{ ag_delivery.shopify_attributes }} aria-labelledby="ag-delivery-heading" id="ag-delivery">
+    <div class="ag-delivery ag-wrap ag-section">
+      <div class="ag-delivery-image">
+        {% assign ag_delivery_alt = ag_delivery.settings.image_alt %}
+        {% if request.locale.iso_code == 'en' %}{% assign ag_delivery_alt = ag_delivery.settings.image_alt_en %}{% endif %}
+        {{ ag_delivery.settings.image | image_url: width: 1200 | image_tag: widths: '360, 540, 800, 1200', sizes: '(min-width: 990px) 46vw, (min-width: 750px) 48vw, 100vw', loading: 'lazy', alt: ag_delivery_alt }}
+      </div>
+      <div class="ag-delivery-copy">
+        <p class="ag-eyebrow">{% render 'agaruke-copy', copy_settings: ag_delivery.settings, key: 'eyebrow' %}</p>
+        <h2 id="ag-delivery-heading">{% render 'agaruke-copy', copy_settings: ag_delivery.settings, key: 'heading' %}</h2>
+        <p>{% render 'agaruke-copy', copy_settings: ag_delivery.settings, key: 'body' %}</p>
+        <p>{% render 'agaruke-copy', copy_settings: ag_delivery.settings, key: 'closing' %}</p>
+        <p class="ag-delivery-note">{% render 'agaruke-copy', copy_settings: ag_delivery.settings, key: 'note' %}</p>
+      </div>
+    </div>
   </section>
   {% endif %}
 
@@ -218,6 +238,94 @@
           "type": "url",
           "id": "cta_url",
           "label": "CTAリンク先（空欄なら商品エリア）"
+        }
+      ]
+    },
+    {
+      "type": "delivery",
+      "name": "お届けイメージ",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "サービス紹介と食べ方の間に表示します。画像と、日本語・英語それぞれの文章を編集できます。"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "お届けイメージの画像"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "小見出し（日本語）",
+          "default": "DELIVERY"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow_en",
+          "label": "小見出し（英語）",
+          "default": "DELIVERY"
+        },
+        {
+          "type": "textarea",
+          "id": "heading",
+          "label": "見出し（日本語）",
+          "default": "こんなかたちで、\nお届けします。"
+        },
+        {
+          "type": "textarea",
+          "id": "heading_en",
+          "label": "見出し（英語）",
+          "default": "Delivered frozen,\nready for your moment."
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "本文（日本語）",
+          "default": "冷凍ミールキットを、箱に詰めてお届け。\n届いたら冷凍庫で保存し、食べたいときにお楽しみください。"
+        },
+        {
+          "type": "textarea",
+          "id": "body_en",
+          "label": "本文（英語）",
+          "default": "Your frozen meal kits arrive packed in a box.\nStore them in your freezer and enjoy whenever you like."
+        },
+        {
+          "type": "textarea",
+          "id": "closing",
+          "label": "結びの文章（日本語）",
+          "default": "温めて、お気に入りのお皿に。\nいつもの食卓で、AGARUKEの一皿を。"
+        },
+        {
+          "type": "textarea",
+          "id": "closing_en",
+          "label": "結びの文章（英語）",
+          "default": "Simply heat and arrange on your favorite plate.\nEnjoy a little AGARUKE at your everyday table."
+        },
+        {
+          "type": "textarea",
+          "id": "note",
+          "label": "写真についての注記（日本語）",
+          "default": "写真はお届けイメージです。内容はご注文の商品によって異なります。"
+        },
+        {
+          "type": "textarea",
+          "id": "note_en",
+          "label": "写真についての注記（英語）",
+          "default": "Delivery image for illustration. Contents vary depending on the items ordered."
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "画像の代替テキスト（日本語）",
+          "default": "冷凍ミールキットを箱に詰めたお届けイメージ"
+        },
+        {
+          "type": "text",
+          "id": "image_alt_en",
+          "label": "画像の代替テキスト（英語）",
+          "default": "An open box containing packaged frozen meal kits"
         }
       ]
     },
@@ -765,6 +873,9 @@
       "blocks": [
         {
           "type": "about"
+        },
+        {
+          "type": "delivery"
         },
         {
           "type": "how"

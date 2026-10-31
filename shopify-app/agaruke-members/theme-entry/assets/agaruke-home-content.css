@@ -38,3 +38,12 @@
   .ag-product-grid--three .ag-product{grid-template-columns:38% 62%;align-items:center}
   .ag-product-grid--three .ag-product-copy{padding:0 0 0 30px}
 }
+.ag-delivery-shell{background:#f3ecdf}
+.ag-delivery{display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:80px;padding-block:72px}
+.ag-delivery-image{width:100%;max-width:540px;margin-inline:auto}
+.ag-delivery-image img{display:block;width:100%;height:auto;object-fit:contain}
+.ag-delivery-copy{max-width:470px}
+.ag-delivery-copy>p:not(.ag-eyebrow){margin-bottom:22px}
+.ag-delivery-copy .ag-delivery-note{font-size:11px;line-height:1.8;color:#74695b;margin-top:30px;margin-bottom:0;max-width:380px}
+@media(min-width:750px) and (max-width:989px){.ag-delivery{gap:40px;padding-block:60px}.ag-delivery-copy h2{font-size:27px}.ag-delivery-copy>p:not(.ag-eyebrow){font-size:13px}}
+@media(max-width:749px){.ag-delivery{grid-template-columns:1fr;gap:30px;padding-block:44px 52px}.ag-delivery-image{max-width:430px}.ag-delivery-copy{max-width:none}.ag-delivery-copy h2{font-size:28px}.ag-delivery-copy>p:not(.ag-eyebrow){font-size:13px}.ag-delivery-copy .ag-delivery-note{font-size:10px;margin-top:24px}}

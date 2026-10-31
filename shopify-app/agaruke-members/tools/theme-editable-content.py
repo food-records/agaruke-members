@@ -34,7 +34,7 @@ def prepare(directory):
     definition = schema(FILES[0])
     types = {item['type']: item for item in definition['blocks']}
     existing_types = {b['type'] for b in section.get('blocks', {}).values()}
-    editable_types = set(types) - {'product'}
+    editable_types = set(types) - {'product', 'delivery'}
     if existing_types & editable_types:
         if not editable_types.issubset(existing_types):
             raise ValueError('一部だけ移行済みです。手動確認が必要です')
