@@ -28,15 +28,15 @@ function initialize(){
     card.dataset.benefitsMounted='true';
     card.removeAttribute('style');card.className='agaruke-benefits';
     const head=node('div','benefits-heading');head.append(node('h2','',t('お買い物の特典','Shopping benefits')),node('span','benefits-eyebrow','AGARUKE MEMBERS'));
-    const points=node('section','benefits-points');points.append(node('span','benefits-label',t('購入ポイント','Purchase points')));const pointsText=node('p');points.append(pointsText);
+    const points=node('section','benefits-points');points.hidden=true;points.append(node('span','benefits-label',t('購入ポイント','Purchase points')));const pointsText=node('p');points.append(pointsText);
     const current=node('section','benefits-current');const row=node('div','benefits-row');row.append(node('span','benefits-label',t('クーポン','Coupon')));const badge=node('span','coupon-badge');row.append(badge);const title=node('p','benefits-current-title');
     const clear=node('button','coupon-text-button',t('選択を解除','Remove coupon'));clear.type='button';
     const feedback=node('p','benefits-feedback');feedback.setAttribute('role','status');feedback.setAttribute('aria-live','polite');
     current.append(row,title,clear);
     const details=node('details','benefits-choices');const summary=node('summary','',t('クーポンを選ぶ・変更する','Choose or change a coupon'));const list=node('div','benefits-list');details.append(summary,list);
-    const foot=node('div','benefits-footer');const link=node('a','coupon-text-button',t('LINEで登録・連携する（任意）','Link LINE (optional)'));link.href='/apps/members';foot.append(link);
+    const foot=node('div','benefits-footer');const link=node('a','coupon-text-button',t('LINEで登録・連携する（任意）','Link LINE (optional)'));link.href='/apps/members';const invitation=node('p','coupon-muted',t('購入前に登録・連携すると、ご注文ごとに100ptを獲得できます。支払い完了後に付与します。','Register and link LINE before checkout to earn 100 points per order, awarded after payment.'));invitation.hidden=true;foot.append(link,invitation);
     card.replaceChildren(head,points,current,details,feedback,foot);
-    const view={card,pointsText,badge,title,clear,list,link,feedback,choices:[]};views.push(view);
+    const view={card,points,invitation,pointsText,badge,title,clear,list,link,feedback,choices:[]};views.push(view);
     details.addEventListener('toggle',()=>{if(details.open)window.dispatchEvent(new Event('agaruke:benefits-open'));});
     clear.addEventListener('click',()=>choose(view,''));
   }
@@ -55,6 +55,8 @@ function initialize(){
   function render(){
     mount();
     for(const v of views){
+      v.points.hidden=state?.linked!==true;
+      v.invitation.hidden=state?.linked!==false;
       v.pointsText.textContent=benefitPoints(state,english);
       v.link.textContent=state?.linked?t('ポイント交換・会員ページ','Points and member page'):t('LINEで登録・連携する（任意）','Link LINE (optional)');
       v.list.replaceChildren();v.choices=[];

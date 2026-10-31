@@ -277,3 +277,5 @@ EC購入には「商品500円以上」という独自の最低購入額は実装
 2026-10-31受入追記: ユーザーが500円券を各状態で利用可能と確認。表示名を「AGARUKEオープン記念！500円OFF」に統一し、ショップ会員ページの「お持ちのクーポン」へ追加。LINE未認証時も一般券を選択・解除できる。旧表示cache/カートlabelがあっても共通券は新名称を優先。500円/3,800円/1顧客1回/11月30日期限/併用不可、コード・配布URLを維持。
 
 名称・所持一覧の公開結果: 実装c03024a/注文後の所有券表示補正aa326a8をmasterへpushし、remote一致・clean・直前backend c6f0708包含を確認。Cloud Build11dffaab-8299-4663-aa02-c84591c4d739成功、image sha256:d8b30e2d7dc99775096632b2a048ccbc6b0d0b7ce9245c20af22d945c7edd0b5、shopify-members-opening-aa326a8へ100%。CPU0.08/256Mi/concurrency1/max1/min0・購入pt有効/交換有効を保持。候補・公開status200/試験false、未連携exchange400、ERROR標本0。nativeはtitleだけ変更し他条件のdeep readback一致。Dawn対象3ファイルとhidden補正CSSのみを配信。Node25件/型/build/node構文/Admin query-mutation/Liquid検査成功。LINE未認証のマイページ所持一覧で新名称の選択→解除→再選択を実確認、開始時のAGARUKE500選択へ復元。実交換/ポイント消費/注文/決済/LINE送信なし。.work追加削除なし。Secretary orderec/Driveイベント公開未承認保留。
+
+2026-10-31表示補正: 商品/カートの未連携時は購入ポイント欄を隠し、任意登録・連携リンクの直下へ「購入前に登録・連携すると、ご注文ごとに100ptを獲得できます。支払い完了後に付与します。」を表示。連携済みは従来の予定pt欄を維持。状態未判定では両案内を隠して誤表示を避ける。新たな連携解除は行わず、専用解除UI/APIがない現在状態を回答。ログアウト・LINE再認証は継続リンクの解除と異なる。
