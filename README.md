@@ -199,3 +199,5 @@ agaruke-members/
 2026-10-31公開確認: クーポンのヘッダーバナーとカード型選択画面を反映。backend coupon-ui-cbd14ac、theme最終ce2ec58。PC/スマホ・選択解除・検索へ戻る・トップ重なりなしを実確認。200円券適用と残高を維持、LINE配信なし。[記録](docs/SHOPIFY_COUPON_UI_RELEASE_20261031.md)。
 
 2026-10-31: ユーザー指定でスマホも透明ヘッダーとVIEW ITEMをメイン画像へ重ねる配置へ変更。[現行配置](docs/SHOPIFY_TASTE_MOBILE_20261031.md)。
+
+2026-10-31: 全クーポンのLINE条件・3状態バナーを検討中。未公開draftはfeature branch edce008。Shopifyログインなしの利用フローを説明し、本人限定の範囲は確認中。[未確定事項](docs/SHOPIFY_LINE_BENEFITS_PLAN_20261031.md)。
