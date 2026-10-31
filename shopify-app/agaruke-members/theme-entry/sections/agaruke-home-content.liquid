@@ -2,11 +2,11 @@
   <section class="ag-about ag-wrap ag-section" aria-labelledby="ag-about-heading" id="ag-about">
     <div class="ag-about-copy">
       <p class="ag-eyebrow">ABOUT AGARUKE</p>
-      <h2 id="ag-about-heading">おいしい時間の、<br>仕上げだけ。</h2>
-      <p>がんばる毎日に、自分をいたわる一皿を。</p>
-      <p>AGARUKEは、温めて盛りつけるだけで楽しめる<br class="ag-desktop-break">冷凍のごはんをお届けします。</p>
-      <p>お気に入りのお皿に盛りつけたら、<br>いつもの食卓が、少し特別な時間に。</p>
-      <a class="ag-text-link" href="#ag-how">楽しみ方を見る <span aria-hidden="true">↗</span></a>
+      <h2 id="ag-about-heading">温めて盛り付けるだけの、簡単ミールキット。</h2>
+      <p>ココロに栄養を、気分が上がる一皿を。</p>
+      <p>AGARUKEは、温めて盛りつけるだけで楽しめる<br class="ag-desktop-break">冷凍ミールキットをお届けします。</p>
+      <p>ハレの日ではない、日常「ケ」のアップデート<br>自分だけの「アガる」時間を食事から盛り上げます。</p>
+      <a class="ag-text-link" href="#ag-products">商品を見る <span aria-hidden="true">↗</span></a>
     </div>
     {% if section.settings.feature_product.featured_image != blank %}
       <div class="ag-about-image">
@@ -29,7 +29,7 @@
   </section>
 
   <section class="ag-products ag-wrap ag-section" id="ag-products" aria-labelledby="ag-products-heading">
-    <div class="ag-section-top"><div><p class="ag-eyebrow">OUR MENU</p><h2 id="ag-products-heading">今日の気分で、選ぶ。</h2></div><a class="ag-text-link" href="{{ routes.all_products_collection_url }}">商品一覧を見る <span aria-hidden="true">↗</span></a></div>
+    <div class="ag-section-top"><div><p class="ag-eyebrow">OUR MENU</p><h2 id="ag-products-heading">気分が上がる<br class="ag-mobile-break">一皿を選ぶ。</h2></div><a class="ag-text-link" href="{{ routes.all_products_collection_url }}">商品一覧を見る <span aria-hidden="true">↗</span></a></div>
     <div class="ag-product-grid">
       {% for block in section.blocks %}
         {% assign item = block.settings.product %}
@@ -48,7 +48,7 @@
 
   <section class="ag-moment" aria-labelledby="ag-moment-heading">
     {% if section.settings.moment_product.featured_image != blank %}<div class="ag-moment-image">{{ section.settings.moment_product.featured_image | image_url: width: 1200 | image_tag: widths: '500, 800, 1200', sizes: '(min-width: 750px) 55vw, 100vw', loading: 'lazy', alt: section.settings.moment_product.title }}</div>{% endif %}
-    <div class="ag-moment-copy"><p class="ag-eyebrow">YOUR OWN LITTLE TREAT</p><h2 id="ag-moment-heading">いつもの夜に、<br>小さなご褒美を。</h2><p>忙しい日も、ゆっくりしたい日も。<br>好きな一杯と、お気に入りのお皿と。<br>食事の時間を、あなたらしく楽しんで。</p></div>
+    <div class="ag-moment-copy"><p class="ag-eyebrow">YOUR OWN LITTLE TREAT</p><h2 id="ag-moment-heading">日常の中のひと時に、<br>自分のための時間を</h2><p>仕事や家事でバタバタと過ぎていく毎日。<br>自分を労う時間が後回しに。</p><p>帰宅してから、家事が片付いてからのお楽しみ。<br>好きな一杯とお気に入りの動画に「AGARUKE」の一皿。</p><p>自分だけの時間 &quot;me time&quot; をお楽しみください。</p></div>
   </section>
 
   <section class="ag-guide ag-wrap ag-section" id="ag-guide" aria-labelledby="ag-guide-heading">
