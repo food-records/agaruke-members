@@ -9,7 +9,7 @@
 {%- if request.locale.iso_code == 'en' -%}
   {%- assign copy_key = key | append: '_en' -%}
 {%- endif -%}
-{%- capture copy_value -%}{{ copy_settings[copy_key] | escape | newline_to_br }}{%- endcapture -%}
+{%- capture copy_value -%}{{ copy_settings[copy_key] | escape | newline_to_br | strip_newlines }}{%- endcapture -%}
 {%- if mobile_break and request.locale.iso_code != 'en' -%}
   {{- copy_value | replace: '<br />', '<br class="ag-mobile-break">' -}}
 {%- elsif desktop_break -%}
