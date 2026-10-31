@@ -99,3 +99,8 @@
  .ag-craft-layout--image .ag-craft-item{column-gap:12px}
  .ag-craft-layout--image .ag-craft-item h3{font-size:17px}
 }
+
+@media screen and (min-width:750px){
+ .ag-moment-image{position:relative;height:auto;min-height:380px;align-self:stretch}
+ .ag-moment-image img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+}

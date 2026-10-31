@@ -43,3 +43,5 @@ craft写真の本番反映: clean remote master189fffc90cd23d93b045959eb1059a446
 ## YOUR OWN LITTLE TREATと最終デザインレビュー（2026-10-31）
 
 ユーザー添付と一致するDownloads/me-time-wide.png（1672×941、未加工）をFiles46900919730349へ登録。momentブロックに専用画像設定/日英altを追加し、料理の商品参照から夜の食卓/動画/飲み物の写真へ切替。未設定時は既存moment_productへfallback。他画像・文章・商品・会員機能を保持。設定は「AGARUKE サービス紹介→YOUR OWN LITTLE TREATのブロック→自分の時間を楽しむ写真」。適用tool theme-moment-photo.py。取得した最新indexのmoment画像/alt3設定だけを変更し、他設定一致を確認。Liquid2件成功。schema→indexの2段階で配信する。
+
+最終レビューでmoment写真380pxに対して文章が長く、写真下だけ余白が残ることを検出。750px以上は写真枠を文章高へstretchし、写真を枠いっぱいに表示する。スマホ245pxは保持。CSSを追加検査して反映する。
