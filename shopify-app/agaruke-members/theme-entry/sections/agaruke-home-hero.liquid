@@ -1,9 +1,10 @@
+{% assign ag_hero_alt = 'promise_0' | t %}
 {{ 'agaruke-home-content.css' | asset_url | stylesheet_tag }}
 <div class="ag-home">
   <div class="ag-restored-hero">
     {% if section.settings.image != blank %}
       <div class="banner__media ag-restored-photo">
-        {{ section.settings.image | image_url: width: 2000 | image_tag: widths: '600, 900, 1300, 1600, 2000', sizes: '100vw', loading: 'eager', fetchpriority: 'high', alt: 'AGARUKE 気分があがる一皿。' }}
+        {{ section.settings.image | image_url: width: 2000 | image_tag: widths: '600, 900, 1300, 1600, 2000', sizes: '100vw', loading: 'eager', fetchpriority: 'high', alt: ag_hero_alt }}
       </div>
     {% endif %}
     <a class="ag-hero-cta" href="#ag-products">
@@ -11,10 +12,10 @@
       <svg width="56" height="14" viewBox="0 0 56 14" fill="none" aria-hidden="true"><path d="M1 7h52m-5-4 5 4-5 4" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </a>
   </div>
-  <div class="ag-promise-bar" aria-label="AGARUKEのお届けと楽しみ方">
-    <p><span aria-hidden="true">❄</span> 冷凍でお届け</p>
-    <p><span aria-hidden="true">◷</span> 温めて、盛りつけ</p>
-    <p><span aria-hidden="true">♡</span> 自分のための一皿に</p>
+  <div class="ag-promise-bar" aria-label="{{ 'promise_1' | t }}">
+    <p><span aria-hidden="true">❄</span> {{ 'promise_2' | t }}</p>
+    <p><span aria-hidden="true">◷</span> {{ 'promise_3' | t }}</p>
+    <p><span aria-hidden="true">♡</span> {{ 'promise_4' | t }}</p>
   </div>
 </div>
 {% schema %}
@@ -22,11 +23,44 @@
   "name": "AGARUKE メインビジュアル",
   "tag": "section",
   "class": "ag-hero-section",
-  "enabled_on": {"templates": ["index"]},
+  "enabled_on": {
+    "templates": [
+      "index"
+    ]
+  },
   "settings": [
-    {"type": "image_picker", "id": "image", "label": "料理バナー画像"},
-    {"type": "text", "id": "cta_label", "label": "CTAのテキスト", "default": "VIEW ITEM"}
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "料理バナー画像"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTAのテキスト",
+      "default": "VIEW ITEM"
+    }
   ],
-  "presets": [{"name": "AGARUKE メインビジュアル"}]
+  "presets": [
+    {
+      "name": "AGARUKE メインビジュアル"
+    }
+  ],
+  "locales": {
+    "ja": {
+      "promise_0": "AGARUKE 気分があがる一皿。",
+      "promise_1": "AGARUKEのお届けと楽しみ方",
+      "promise_2": "冷凍でお届け",
+      "promise_3": "温めて、盛りつけ",
+      "promise_4": "自分のための一皿に"
+    },
+    "en": {
+      "promise_0": "AGARUKE — a meal to lift your mood.",
+      "promise_1": "Delivery and preparation",
+      "promise_2": "Delivered frozen",
+      "promise_3": "Heat and plate",
+      "promise_4": "A moment just for you"
+    }
+  }
 }
 {% endschema %}

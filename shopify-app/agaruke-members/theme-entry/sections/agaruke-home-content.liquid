@@ -2,16 +2,16 @@
   <section class="ag-about ag-wrap ag-section" aria-labelledby="ag-about-heading" id="ag-about">
     <div class="ag-about-copy">
       <p class="ag-eyebrow">ABOUT AGARUKE</p>
-      <h2 id="ag-about-heading" style="font-size: clamp(25px, 3vw, 39px);">温めて盛り付けるだけの、簡単ミールキット。</h2>
-      <p>ココロに栄養を、気分が上がる一皿を。</p>
-      <p>AGARUKEは、温めて盛りつけるだけで楽しめる<br class="ag-desktop-break">冷凍ミールキットをお届けします。</p>
-      <p>ハレの日ではない、日常「ケ」のアップデート<br>自分だけの「アガる」時間を食事から盛り上げます。</p>
-      <a class="ag-text-link" href="#ag-products">商品を見る <span aria-hidden="true">↗</span></a>
+      <h2 id="ag-about-heading" style="font-size: clamp(25px, 3vw, 39px);">{{ 'home_18' | t }}</h2>
+      <p>{{ 'home_21' | t }}</p>
+      <p>{{ 'home_2_html' | t }}</p>
+      <p>{{ 'home_8_html' | t }}</p>
+      <a class="ag-text-link" href="#ag-products">{{ 'home_36' | t }} <span aria-hidden="true">↗</span></a>
     </div>
     {% if section.settings.feature_product.featured_image != blank %}
       <div class="ag-about-image">
         {{ section.settings.feature_product.featured_image | image_url: width: 1100 | image_tag: widths: '400, 700, 1100', sizes: '(min-width: 750px) 46vw, 100vw', loading: 'lazy', alt: section.settings.feature_product.title }}
-        <p>あなたらしく、盛りつけて。</p>
+        <p>{{ 'home_25' | t }}</p>
       </div>
     {% endif %}
   </section>
@@ -19,17 +19,17 @@
   <section class="ag-how ag-section" aria-labelledby="ag-how-heading" id="ag-how">
     <div class="ag-wrap">
       <p class="ag-eyebrow">HOW TO ENJOY</p>
-      <h2 id="ag-how-heading">届いてから、<br class="ag-mobile-break">一皿になるまで。</h2>
+      <h2 id="ag-how-heading">{{ 'home_10_html' | t }}</h2>
       <ol class="ag-steps">
-        <li><span class="ag-step-number">01</span><div class="ag-step-art" aria-hidden="true"><svg viewBox="0 0 120 100" fill="none"><path d="M24 35 60 19l36 16v44L60 95 24 79V35Zm0 0 36 17 36-17M60 52v43M41 27l36 17"/><path d="M60 2v12m-6-9 6 5 6-5m-6 9-6-3m6 3 6-3"/></svg></div><h3>冷凍で届く</h3><p>おいしさを閉じ込めて、冷凍でお届け。<br>食べたい時まで、冷凍庫で保存。</p></li>
-        <li><span class="ag-step-number">02</span><div class="ag-step-art" aria-hidden="true"><svg viewBox="0 0 120 100" fill="none"><path d="M21 53h78c-3 27-18 37-39 37S24 80 21 53Zm-6 39h90M43 40c-15-12 12-14 0-29m19 29c-15-12 12-14 0-29m19 29c-15-12 12-14 0-29"/></svg></div><h3>温める</h3><p>商品ごとの方法に合わせて温めます。<br>気負わず楽しむ、ごはんの準備。</p></li>
-        <li><span class="ag-step-number">03</span><div class="ag-step-art" aria-hidden="true"><svg viewBox="0 0 120 100" fill="none"><ellipse cx="60" cy="59" rx="44" ry="27"/><ellipse cx="60" cy="59" rx="29" ry="17"/><path d="m90 8 3 8 9 3-9 4-3 8-4-8-8-4 8-3 4-8ZM20 12v17M12 20h16"/></svg></div><h3>盛りつけて楽しむ</h3><p>お気に入りのお皿に、あなたらしく。<br>自分のための一皿ができあがり。</p></li>
+        <li><span class="ag-step-number">01</span><div class="ag-step-art" aria-hidden="true"><svg viewBox="0 0 120 100" fill="none"><path d="M24 35 60 19l36 16v44L60 95 24 79V35Zm0 0 36 17 36-17M60 52v43M41 27l36 17"/><path d="M60 2v12m-6-9 6 5 6-5m-6 9-6-3m6 3 6-3"/></svg></div><h3>{{ 'home_34' | t }}</h3><p>{{ 'home_13_html' | t }}</p></li>
+        <li><span class="ag-step-number">02</span><div class="ag-step-art" aria-hidden="true"><svg viewBox="0 0 120 100" fill="none"><path d="M21 53h78c-3 27-18 37-39 37S24 80 21 53Zm-6 39h90M43 40c-15-12 12-14 0-29m19 29c-15-12 12-14 0-29m19 29c-15-12 12-14 0-29"/></svg></div><h3>{{ 'home_38' | t }}</h3><p>{{ 'home_14_html' | t }}</p></li>
+        <li><span class="ag-step-number">03</span><div class="ag-step-art" aria-hidden="true"><svg viewBox="0 0 120 100" fill="none"><ellipse cx="60" cy="59" rx="44" ry="27"/><ellipse cx="60" cy="59" rx="29" ry="17"/><path d="m90 8 3 8 9 3-9 4-3 8-4-8-8-4 8-3 4-8ZM20 12v17M12 20h16"/></svg></div><h3>{{ 'home_30' | t }}</h3><p>{{ 'home_15_html' | t }}</p></li>
       </ol>
     </div>
   </section>
 
   <section class="ag-products ag-wrap ag-section" id="ag-products" aria-labelledby="ag-products-heading">
-    <div class="ag-section-top"><div><p class="ag-eyebrow">OUR MENU</p><h2 id="ag-products-heading">気分が上がる<br class="ag-mobile-break">一皿を選ぶ。</h2></div><a class="ag-text-link" href="{{ routes.all_products_collection_url }}">商品一覧を見る <span aria-hidden="true">↗</span></a></div>
+    <div class="ag-section-top"><div><p class="ag-eyebrow">OUR MENU</p><h2 id="ag-products-heading">{{ 'home_11_html' | t }}</h2></div><a class="ag-text-link" href="{{ routes.all_products_collection_url }}">{{ 'home_31' | t }} <span aria-hidden="true">↗</span></a></div>
     {% assign ag_product_count = 0 %}
     {% for block in section.blocks %}{% if block.settings.product != blank %}{% assign ag_product_count = ag_product_count | plus: 1 %}{% endif %}{% endfor %}
     <div class="ag-product-grid{% if ag_product_count == 3 %} ag-product-grid--three{% endif %}">
@@ -37,50 +37,171 @@
         {% assign item = block.settings.product %}
         {% if item != blank %}
           <article class="ag-product" {{ block.shopify_attributes }}>
-            <a class="ag-product-image" href="{{ item.url }}" aria-label="{{ item.title | escape }}の詳細を見る">
+            <a class="ag-product-image" href="{{ item.url }}" aria-label="{{ item.title | escape }}">
               {% if item.featured_image != blank %}{{ item.featured_image | image_url: width: 1000 | image_tag: widths: '350, 600, 1000', sizes: '(min-width: 990px) 27vw, (min-width: 750px) 45vw, 100vw', loading: 'lazy', alt: item.title }}{% endif %}
             </a>
-            <div class="ag-product-copy"><h3><a href="{{ item.url }}">{{ block.settings.title | default: item.title | escape | newline_to_br }}</a></h3><p>{{ block.settings.description | escape }}</p><p class="ag-product-price">{{ item.price | money }}{% if cart.taxes_included %}<span>（税込）</span>{% endif %}</p><a class="ag-button ag-button-small" href="{{ item.url }}">詳しく見る <span aria-hidden="true">↗</span></a></div>
+            <div class="ag-product-copy"><h3><a href="{{ item.url }}">{% if request.locale.iso_code == 'en' %}{{ item.title | escape }}{% else %}{{ block.settings.title | default: item.title | escape | newline_to_br }}{% endif %}</a></h3><p>{% if request.locale.iso_code == 'en' %}{{ item.description | strip_html | truncate: 140 | escape }}{% else %}{{ block.settings.description | escape }}{% endif %}</p><p class="ag-product-price">{{ item.price | money }}{% if cart.taxes_included %}<span>{{ 'home_37' | t }}</span>{% endif %}</p><a class="ag-button ag-button-small" href="{{ item.url }}">{{ 'home_35' | t }} <span aria-hidden="true">↗</span></a></div>
           </article>
         {% endif %}
       {% endfor %}
     </div>
-    <p class="ag-products-note">送料はチェックアウトでご確認いただけます。</p>
+    <p class="ag-products-note">{{ 'home_19' | t }}</p>
   </section>
 
   <section class="ag-moment" aria-labelledby="ag-moment-heading">
     {% if section.settings.moment_product.featured_image != blank %}<div class="ag-moment-image">{{ section.settings.moment_product.featured_image | image_url: width: 1200 | image_tag: widths: '500, 800, 1200', sizes: '(min-width: 750px) 55vw, 100vw', loading: 'lazy', alt: section.settings.moment_product.title }}</div>{% endif %}
-    <div class="ag-moment-copy"><p class="ag-eyebrow">YOUR OWN LITTLE TREAT</p><h2 id="ag-moment-heading">日常の中のひと時に、<br>自分のための時間を</h2><p>仕事や家事でバタバタと過ぎていく毎日。<br>自分を労う時間が後回しに。</p><p>帰宅してから、家事が片付いてからのお楽しみ。<br>好きな一杯とお気に入りの動画に「AGARUKE」の一皿。</p><p>自分だけの時間 &quot;me time&quot; をお楽しみください。</p></div>
+    <div class="ag-moment-copy"><p class="ag-eyebrow">YOUR OWN LITTLE TREAT</p><h2 id="ag-moment-heading">{{ 'home_17_html' | t }}</h2><p>{{ 'home_16_html' | t }}</p><p>{{ 'home_5_html' | t }}</p><p>{{ 'home_12' | t }}</p></div>
   </section>
 
   <section class="ag-guide ag-wrap ag-section" id="ag-guide" aria-labelledby="ag-guide-heading">
-    <div class="ag-guide-intro"><p class="ag-eyebrow">FIRST TIME HERE?</p><h2 id="ag-guide-heading">はじめての方へ</h2><p>お届けや楽しみ方について。<br>気になることは、ご購入前にお気軽にお問い合わせください。</p><a class="ag-text-link" href="{{ section.settings.contact_url }}">お問い合わせ <span aria-hidden="true">↗</span></a></div>
+    <div class="ag-guide-intro"><p class="ag-eyebrow">FIRST TIME HERE?</p><h2 id="ag-guide-heading">{{ 'home_32' | t }}</h2><p>{{ 'home_9_html' | t }}</p><a class="ag-text-link" href="{{ section.settings.contact_url }}">{{ 'home_33' | t }} <span aria-hidden="true">↗</span></a></div>
     <div class="ag-faq">
-      <details><summary>どのような状態で届きますか？<span aria-hidden="true">＋</span></summary><div><p>商品は冷凍でお届けします。お受け取り後は冷凍庫で保存してください。内容量や付け合わせは、各商品ページでご確認いただけます。</p></div></details>
-      <details><summary>どうやって食べますか？<span aria-hidden="true">＋</span></summary><div><p>商品ごとの方法で温め、お好みのお皿に盛りつけてお楽しみください。具体的な加熱方法がわからない場合は、ご購入前にお問い合わせください。</p></div></details>
-      <details><summary>送料やお届け日は確認できますか？<span aria-hidden="true">＋</span></summary><div><p>送料は、お届け先やご注文内容に応じてチェックアウト画面でご確認いただけます。発送時期やお届けについてのご相談は、ご注文前にお問い合わせください。</p>{% if shop.shipping_policy.body != blank %}<a href="{{ shop.shipping_policy.url }}">配送について詳しく見る</a>{% endif %}</div></details>
-      <details><summary>賞味期限やアレルギーについて知りたいです。<span aria-hidden="true">＋</span></summary><div><p>賞味期限・原材料・アレルギーについてご不明な点がある場合は、商品名を添えて、ご購入前にお問い合わせください。</p></div></details>
+      <details><summary>{{ 'home_24' | t }}<span aria-hidden="true">＋</span></summary><div><p>{{ 'home_4' | t }}</p></div></details>
+      <details><summary>{{ 'home_26' | t }}<span aria-hidden="true">＋</span></summary><div><p>{{ 'home_3' | t }}</p></div></details>
+      <details><summary>{{ 'home_23' | t }}<span aria-hidden="true">＋</span></summary><div><p>{{ 'home_1' | t }}</p>{% if shop.shipping_policy.body != blank %}<a href="{{ shop.shipping_policy.url }}">{{ 'home_27' | t }}</a>{% endif %}</div></details>
+      <details><summary>{{ 'home_20' | t }}<span aria-hidden="true">＋</span></summary><div><p>{{ 'home_6' | t }}</p></div></details>
     </div>
   </section>
-  <aside class="ag-line ag-wrap" aria-labelledby="ag-line-heading"><span class="ag-line-mark" aria-hidden="true">LINE</span><div><p class="ag-eyebrow">MEMBERS</p><h2 id="ag-line-heading">LINEポイントカード</h2><p>お持ちのポイントカードを、このショップのお買い物にも。<br>ご購入前に連携状態をご確認いただけます。</p></div><a class="ag-text-link" href="{{ routes.root_url }}apps/members">ポイントカードを確認 <span aria-hidden="true">↗</span></a></aside>
-  <div class="ag-bottom-cta ag-wrap"><p>今日の自分に、気分があがる一皿を。</p><a class="ag-button" href="#ag-products">商品を見る <span aria-hidden="true">↗</span></a></div>
+  <aside class="ag-line ag-wrap" aria-labelledby="ag-line-heading"><span class="ag-line-mark" aria-hidden="true">LINE</span><div><p class="ag-eyebrow">MEMBERS</p><h2 id="ag-line-heading">{{ 'home_28' | t }}</h2><p>{{ 'home_7_html' | t }}</p></div><a class="ag-text-link" href="{{ routes.root_url }}apps/members">{{ 'home_29' | t }} <span aria-hidden="true">↗</span></a></aside>
+  <div class="ag-bottom-cta ag-wrap"><p>{{ 'home_22' | t }}</p><a class="ag-button" href="#ag-products">{{ 'home_36' | t }} <span aria-hidden="true">↗</span></a></div>
 </div>
 {% schema %}
 {
   "name": "AGARUKE サービス紹介",
   "tag": "section",
-  "enabled_on": {"templates": ["index"]},
+  "enabled_on": {
+    "templates": [
+      "index"
+    ]
+  },
   "settings": [
-    {"type": "product", "id": "feature_product", "label": "サービス紹介の料理写真"},
-    {"type": "product", "id": "moment_product", "label": "食卓イメージの料理写真"},
-    {"type": "url", "id": "contact_url", "label": "お問い合わせ先"}
+    {
+      "type": "product",
+      "id": "feature_product",
+      "label": "サービス紹介の料理写真"
+    },
+    {
+      "type": "product",
+      "id": "moment_product",
+      "label": "食卓イメージの料理写真"
+    },
+    {
+      "type": "url",
+      "id": "contact_url",
+      "label": "お問い合わせ先"
+    }
   ],
-  "blocks": [{"type": "product", "name": "おすすめ商品", "limit": 4, "settings": [
-    {"type": "product", "id": "product", "label": "商品"},
-    {"type": "textarea", "id": "title", "label": "表示名"},
-    {"type": "textarea", "id": "description", "label": "短い紹介文"}
-  ]}],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "おすすめ商品",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "商品"
+        },
+        {
+          "type": "textarea",
+          "id": "title",
+          "label": "表示名"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "短い紹介文"
+        }
+      ]
+    }
+  ],
   "max_blocks": 4,
-  "presets": [{"name": "AGARUKE サービス紹介"}]
+  "presets": [
+    {
+      "name": "AGARUKE サービス紹介"
+    }
+  ],
+  "locales": {
+    "ja": {
+      "home_1": "送料は、お届け先やご注文内容に応じてチェックアウト画面でご確認いただけます。発送時期やお届けについてのご相談は、ご注文前にお問い合わせください。",
+      "home_2_html": "AGARUKEは、温めて盛りつけるだけで楽しめる<br class=\"ag-desktop-break\">冷凍ミールキットをお届けします。",
+      "home_3": "商品ごとの方法で温め、お好みのお皿に盛りつけてお楽しみください。具体的な加熱方法がわからない場合は、ご購入前にお問い合わせください。",
+      "home_4": "商品は冷凍でお届けします。お受け取り後は冷凍庫で保存してください。内容量や付け合わせは、各商品ページでご確認いただけます。",
+      "home_5_html": "帰宅してから、家事が片付いてからのお楽しみ。<br>好きな一杯とお気に入りの動画に「AGARUKE」の一皿。",
+      "home_6": "賞味期限・原材料・アレルギーについてご不明な点がある場合は、商品名を添えて、ご購入前にお問い合わせください。",
+      "home_7_html": "お持ちのポイントカードを、このショップのお買い物にも。<br>ご購入前に連携状態をご確認いただけます。",
+      "home_8_html": "ハレの日ではない、日常「ケ」のアップデート<br>自分だけの「アガる」時間を食事から盛り上げます。",
+      "home_9_html": "お届けや楽しみ方について。<br>気になることは、ご購入前にお気軽にお問い合わせください。",
+      "home_10_html": "届いてから、<br class=\"ag-mobile-break\">一皿になるまで。",
+      "home_11_html": "気分が上がる<br class=\"ag-mobile-break\">一皿を選ぶ。",
+      "home_12": "自分だけの時間 &quot;me time&quot; をお楽しみください。",
+      "home_13_html": "おいしさを閉じ込めて、冷凍でお届け。<br>食べたい時まで、冷凍庫で保存。",
+      "home_14_html": "商品ごとの方法に合わせて温めます。<br>気負わず楽しむ、ごはんの準備。",
+      "home_15_html": "お気に入りのお皿に、あなたらしく。<br>自分のための一皿ができあがり。",
+      "home_16_html": "仕事や家事でバタバタと過ぎていく毎日。<br>自分を労う時間が後回しに。",
+      "home_17_html": "日常の中のひと時に、<br>自分のための時間を",
+      "home_18": "温めて盛り付けるだけの、簡単ミールキット。",
+      "home_19": "送料はチェックアウトでご確認いただけます。",
+      "home_20": "賞味期限やアレルギーについて知りたいです。",
+      "home_21": "ココロに栄養を、気分が上がる一皿を。",
+      "home_22": "今日の自分に、気分があがる一皿を。",
+      "home_23": "送料やお届け日は確認できますか？",
+      "home_24": "どのような状態で届きますか？",
+      "home_25": "あなたらしく、盛りつけて。",
+      "home_26": "どうやって食べますか？",
+      "home_27": "配送について詳しく見る",
+      "home_28": "LINEポイントカード",
+      "home_29": "ポイントカードを確認",
+      "home_30": "盛りつけて楽しむ",
+      "home_31": "商品一覧を見る",
+      "home_32": "はじめての方へ",
+      "home_33": "お問い合わせ",
+      "home_34": "冷凍で届く",
+      "home_35": "詳しく見る",
+      "home_36": "商品を見る",
+      "home_37": "（税込）",
+      "home_38": "温める"
+    },
+    "en": {
+      "home_1": "Shipping is calculated at checkout based on your address and order. For questions about dispatch or delivery, please contact us before ordering.",
+      "home_2_html": "AGARUKE delivers frozen meal kits.<br>Simply heat, plate, and enjoy.",
+      "home_3": "Heat each item as directed and arrange on your favorite plate. If you have questions about heating instructions, please contact us before ordering.",
+      "home_4": "Your order arrives frozen. Store it in your freezer upon arrival. Please see each product page for contents and side dishes.",
+      "home_5_html": "Something to look forward to after work or the chores.<br>Your favorite drink, something you love to watch, and a plate from AGARUKE.",
+      "home_6": "For questions about shelf life, ingredients, or allergens, please contact us with the product name before ordering.",
+      "home_7_html": "Use your existing loyalty card when shopping here.<br>Check your link status before purchasing.",
+      "home_8_html": "Make the everyday feel special.<br>Let AGARUKE turn mealtime into a moment just for you.",
+      "home_9_html": "Questions about delivery or preparation?<br>Please contact us before placing your order.",
+      "home_10_html": "From delivery<br>to your plate.",
+      "home_11_html": "Choose a meal<br>to lift your mood.",
+      "home_12": "Enjoy a little me time.",
+      "home_13_html": "Delivered frozen to preserve the flavor.<br>Keep in your freezer until you are ready.",
+      "home_14_html": "Heat each item as directed.<br>Make mealtime easy.",
+      "home_15_html": "Arrange on your favorite plate.<br>A meal to enjoy, just for you.",
+      "home_16_html": "Between work and chores, the days fly by.<br>Time to care for yourself often comes last.",
+      "home_17_html": "Make time for yourself<br>in the everyday.",
+      "home_18": "Easy meal kits. Just heat and plate.",
+      "home_19": "Shipping is calculated at checkout.",
+      "home_20": "What about shelf life and allergens?",
+      "home_21": "Nourish your soul with a meal that lifts your mood.",
+      "home_22": "Treat yourself to a meal that lifts your mood.",
+      "home_23": "Where can I check shipping and delivery?",
+      "home_24": "How will my order arrive?",
+      "home_25": "Plate it your way.",
+      "home_26": "How do I prepare it?",
+      "home_27": "View shipping information",
+      "home_28": "LINE loyalty card",
+      "home_29": "Check loyalty card",
+      "home_30": "Plate and enjoy",
+      "home_31": "View all products",
+      "home_32": "Your first order",
+      "home_33": "Contact us",
+      "home_34": "Delivered frozen",
+      "home_35": "View item",
+      "home_36": "Shop products",
+      "home_37": " (tax included)",
+      "home_38": "Heat"
+    }
+  }
 }
 {% endschema %}

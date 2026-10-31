@@ -152,3 +152,6 @@ agaruke-members/
 2026-10-31: トップのサービス/商品/食卓コピーをユーザー指定へ差替し、紹介CTAを商品一覧アンカーへ変更。状態は[トップ配信記録](docs/SHOPIFY_HOME_CONTENT_RELEASE_20261030.md)。
 
 2026-10-31: おすすめ3商品をPC横3列・価格/CTA下揃えへ調整。ストアの商品設定は保持。[配信記録](docs/SHOPIFY_HOME_CONTENT_RELEASE_20261030.md)。
+
+
+2026-10-31: 商品の日英対応は進行中。日本語既定化・3商品名分離・豚角煮説明保存済み。英語CSV登録はChromeのファイルアクセス設定待ち。トップ翻訳は検査済み未配信。[状態・残作業](docs/SHOPIFY_BILINGUAL_RELEASE_20261031.md)。
