@@ -29,7 +29,7 @@ test('coupon takes priority without LINE, registration is optional and linked sh
   const view=benefitBanner(member,coupon);assert.equal(view.visible,true);assert.equal(view.mode,'applied');assert.equal(view.text,coupon.text);assert.ok(!view.text.includes('pt'));
  }
  assert.equal(benefitBanner(undefined,{selected:false}).visible,false);
- const unlinked=benefitBanner({linked:false},{selected:false});assert.equal(unlinked.mode,'unlinked');assert.match(unlinked.text,/任意/);
+ const unlinked=benefitBanner({linked:false},{selected:false});assert.equal(unlinked.mode,'unlinked');assert.equal(unlinked.text,'LINEポイントカードの登録・連携はこちら');
  assert.equal(benefitBanner({linked:true},{selected:false}).visible,false);
  assert.equal(benefitBanner({linked:false},{...coupon,applicable:false,text:'条件未達'}).mode,'unmet');
 });

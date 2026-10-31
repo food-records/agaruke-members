@@ -22,7 +22,7 @@ export function couponSummary(cart, label = '') {
 export function benefitBanner(member,coupon) {
   if(coupon.selected)return {visible:true,mode:coupon.applicable?'applied':'unmet',text:coupon.text,action:member?.linked===true?'変更':'カートを確認'};
   if(typeof member?.linked!=='boolean')return {visible:false,mode:'pending',text:''};
-  if(!member.linked)return {visible:true,mode:'unlinked',text:'LINEポイントカードの登録・連携はこちら（任意）',action:'LINEで登録・連携'};
+  if(!member.linked)return {visible:true,mode:'unlinked',text:'LINEポイントカードの登録・連携はこちら',action:'LINEで登録・連携'};
   return {visible:false,mode:'linked',text:''};
 }
 if(typeof document!=='undefined') initialize();
