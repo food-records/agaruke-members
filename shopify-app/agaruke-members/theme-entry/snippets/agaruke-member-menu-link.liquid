@@ -1,0 +1,9 @@
+{% doc %}
+  ログイン状態に依存しないポイントカード・クーポンへのメニューリンクを表示する。
+  @param {boolean} [drawer] - スマートフォンのドロワー用スタイルを使う。
+{% enddoc %}
+<li>
+  <a href="{{ routes.root_url }}apps/members" class="{% if drawer %}menu-drawer__menu-item list-menu__item link link--text focus-inset{% else %}header__menu-item list-menu__item link link--text focus-inset{% endif %}"{% if request.path contains '/apps/members' %} aria-current="page"{% endif %}>
+    {{- 'agaruke_members.navigation.members' | t -}}
+  </a>
+</li>

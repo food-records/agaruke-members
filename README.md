@@ -223,3 +223,5 @@ agaruke-members/
 2026-10-31: LINE再認証と同じアカウント詳細内へ「LINE連携を解除する」を本番公開（source 8b13f5e）。残高・取得済み券・既存注文を保持し、旧セッションの復活を防止。検査・配信結果と実アカウント受入の残件は[現行仕様](docs/SHOPIFY_DIRECT_ENTRY.md#line連携解除2026-10-31追加)を参照。
 
 2026-10-31購入導線: 商品ページのbuy_buttons.show_dynamic_checkoutをfalseにして「今すぐ購入」を非表示にし、カートを経由する導線へ統一する。テーマ再生成時にも同設定を適用。Shopify未ログイン・LINE連携済みの恒常入口は、Shopifyアカウントのログインと分離したメニュー「ポイントカード・クーポン」→/apps/membersを推奨。後者は提案で未実装。
+
+2026-10-31: メニュー常設/マイページ内「ポイントカード・クーポン」を実装。Shopify未ログインでも会員ページへ進み、Orders/Profileはログイン済みだけ表示。[現行仕様](docs/SHOPIFY_DIRECT_ENTRY.md)参照。

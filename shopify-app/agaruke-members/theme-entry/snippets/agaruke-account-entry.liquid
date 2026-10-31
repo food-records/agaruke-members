@@ -1,17 +1,69 @@
 {% doc %}
-  未ログイン時はログイン画面へ案内し、ログイン済みの場合だけアカウントメニューを表示する。
+  Shopifyのログイン状態に応じたマイページメニューと、常設の会員ページ入口を表示する。
 {% enddoc %}
-{%- if customer -%}
-  <shopify-account
-    menu="{{ settings.customer_account_menu | default: 'customer-account-main-menu' }}"
-    class="header__icon header__icon--account link focus-inset"
-  >
-    <span slot="signed-out-avatar" class="svg-wrapper">{{ 'icon-account.svg' | inline_asset_content }}</span>
-    <span slot="signed-out-avatar" class="visually-hidden">{{ 'customer.log_in' | t }}</span>
-  </shopify-account>
-{%- else -%}
-  <a href="{{ routes.account_login_url }}" class="header__icon header__icon--account link focus-inset" rel="nofollow">
+<details class="ag-account" data-ag-account>
+  <summary class="header__icon header__icon--account link focus-inset" aria-label="{{ 'agaruke_members.navigation.account' | t }}">
     <span class="svg-wrapper">{{ 'icon-account.svg' | inline_asset_content }}</span>
-    <span class="visually-hidden">{{ 'customer.log_in' | t }}</span>
-  </a>
-{%- endif -%}
+  </summary>
+  <nav class="ag-account__panel gradient" aria-label="{{ 'agaruke_members.navigation.account' | t }}">
+    <p class="ag-account__title">{{ 'agaruke_members.navigation.account' | t }}</p>
+    <ul class="ag-account__links" role="list">
+      {%- if customer -%}
+        {%- assign account_parts = routes.account_url | split: '?' -%}
+        <li><a class="focus-inset" href="{{ routes.account_url }}" rel="nofollow">{{ 'agaruke_members.navigation.orders' | t }}</a></li>
+        <li><a class="focus-inset" href="{{ account_parts.first }}/profile{% if account_parts.size > 1 %}?{{ account_parts.last }}{% endif %}" rel="nofollow">{{ 'agaruke_members.navigation.profile' | t }}</a></li>
+      {%- else -%}
+        <li><a class="focus-inset" href="{{ routes.account_login_url }}" rel="nofollow">{{ 'agaruke_members.navigation.sign_in' | t }}</a></li>
+      {%- endif -%}
+      <li><a class="focus-inset" href="{{ routes.root_url }}apps/members">{{ 'agaruke_members.navigation.members' | t }}</a></li>
+    </ul>
+  </nav>
+</details>
+{% stylesheet %}
+  .ag-account { position: relative; }
+  .ag-account > summary { list-style: none; }
+  .ag-account > summary::-webkit-details-marker { display: none; }
+  .ag-account__panel {
+    position: absolute;
+    inset-inline-end: 0;
+    top: calc(100% + 1rem);
+    z-index: 40;
+    width: 28rem;
+    max-width: calc(100vw - 10rem);
+    padding: 1.2rem;
+    color: rgb(var(--color-foreground));
+    background: rgb(var(--color-background));
+    border: 1px solid rgba(var(--color-foreground), .15);
+    border-radius: 1.2rem;
+    box-shadow: 0 .6rem 2.4rem rgba(0, 0, 0, .12);
+  }
+  .ag-account__title { margin: .4rem 1.2rem .8rem; font-size: 1.3rem; opacity: .7; }
+  .ag-account__links { margin: 0; padding: 0; list-style: none; }
+  .ag-account__links a {
+    display: flex;
+    align-items: center;
+    min-height: 4.8rem;
+    padding: 1rem 1.2rem;
+    border-radius: .6rem;
+    color: inherit;
+    font-size: 1.5rem;
+    line-height: 1.5;
+    text-decoration: none;
+  }
+  .ag-account__links a:hover, .ag-account__links a:focus-visible { background: rgba(var(--color-foreground), .06); text-decoration: underline; }
+  .ag-account__links li + li { border-top: 1px solid rgba(var(--color-foreground), .1); }
+{% endstylesheet %}
+{% javascript %}
+  document.addEventListener('click', (event) => {
+    for (const menu of document.querySelectorAll('[data-ag-account][open]')) {
+      if (!menu.contains(event.target)) menu.open = false;
+    }
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    for (const menu of document.querySelectorAll('[data-ag-account][open]')) {
+      menu.open = false;
+      menu.querySelector('summary').focus();
+    }
+  });
+{% endjavascript %}

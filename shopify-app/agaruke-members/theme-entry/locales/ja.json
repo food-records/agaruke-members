@@ -1,0 +1,11 @@
+{
+  "agaruke_members": {
+    "navigation": {
+      "account": "マイページ",
+      "orders": "注文履歴",
+      "profile": "プロフィール",
+      "sign_in": "ログイン・新規登録",
+      "members": "ポイントカード・クーポン"
+    }
+  }
+}

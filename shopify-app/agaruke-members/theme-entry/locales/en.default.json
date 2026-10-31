@@ -1,0 +1,11 @@
+{
+  "agaruke_members": {
+    "navigation": {
+      "account": "My account",
+      "orders": "Orders",
+      "profile": "Profile",
+      "sign_in": "Sign in or create an account",
+      "members": "Points & coupons"
+    }
+  }
+}
