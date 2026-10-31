@@ -19,7 +19,7 @@
 
 「技術反映済み・告知未配信・実アカウント受入確認待ち」の段階。今回の整理では設定・プログラムの公開変更、実注文、配信を行わない。
 
-本番照合: shopify-members-opening-aa326a8へ100%（source aa326a8）。SHOPIFY_MEMBERS_ENABLED=true / SHOPIFY_LINK_TEST_ONLY=false / SHOPIFY_COUPON_EXCHANGE_ENABLED=true。Members APIはmembers-api-pricing-cc6cc7bへ100%、SHOPIFY_LINE_FIRST_ENABLED=true。一般券表示・所持一覧のsourceはaa326a8、非表示ボタンのCSS補正はd42a9c3。公開記念券は既存operatorのdry-runで全顧客/500円/3,800円/1回/期限を読み戻した。
+本番照合: shopify-members-unlink-8b13f5e / members-api-unlink-8b13f5eへ各100%（source 8b13f5edab01dbe0b4d56afa633c0472373c76f9）。購入pt・通常交換有効、SHOPIFY_LINK_TEST_ONLY=false。Dawn189917102253の解除連動2assetは公開readback一致。割引条件は変更なし。
 
 ## 2. 「顧客情報」「ログイン」「LINE会員」「連携」の区別
 
@@ -292,3 +292,7 @@ EC購入には「商品500円以上」という独自の最低購入額は実装
 本番本人の連携を実際に解除する試験は行わず、Firestore Emulatorでセキュリティ/冪等性/再連携/過去注文の回帰を確認する。
 
 解除の補足: カートが空/購入用tokenがない・期限切れの場合も、Shopifyログイン済み顧客のaccount_statusから認証詳細と解除ボタンを表示する。サーバー発行の現在リンクのhashを照合し、古い確認状態が新しい連携を削除することを防ぐ。ゲストは現在購入tokenとカートで確認。継続リンクの解除はログインが必要。account-only表示では購入pt準備完了とは扱わず、交換/発行再開はLINE再認証等の購入文脈を作ってから行う。Node29件/型/build/Go全package隔離Emulator race/vet/theme2asset検査成功。新たなAdmin GraphQL操作・Shopify権限は追加しない。
+
+
+解除の本番反映: 8b13f5eをorigin/masterへpushしclean/remote一致と直前API cc6cc7b・Node aa326a8包含を確認。API build fa65cab6-1a0e-4d40-9e1c-10011dc2af9f、digest sha256:6c17f3c2484037627437d7741cf3e758d576f74b481bacbe335d79341323577e。Node build c80059cb-25a1-43fb-acfa-4700c066e974、digest sha256:c7d9580ff99958b4bb7a20f69fc6c2a2413e2d064d8662adfbb36af54459521c。上記revisionへ各100%、git-shaラベル・従来リソース構成・有効flagsを照合。Dawnのagaruke-coupons.js / agaruke-members-status.jsだけを配信し2/2 byte一致。
+候補・公開の合成未連携status200、不正unlink400、未連携exchange400。対象revision ERROR標本0。実ブラウザーは購入tokenなしのログイン済み状態でアカウント情報・再認証/解除ボタン・解除確認画面を表示できた。解除の確定は行わない。確認dialogは最後の照合でno longer activeだったが、以後の画面取得がブラウザー操作側でタイムアウトしたためキャンセル後の画面再確認・スクリーンショットは未取得。本番の解除→再連携→注文/決済はユーザー受入として残す。実ポイント変更・発券・注文・LINE配信なし。Secretary orderec、Driveイベント公開未承認保留。.work追加削除なし。
