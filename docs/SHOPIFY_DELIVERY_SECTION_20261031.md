@@ -33,3 +33,5 @@ viewport overrideは390px指定後も実幅1352pxのままでmobile実表示の�
 ユーザーの代替案に従い、冷凍配送の既存アイコンを開いた箱＋3つの密封パックのSVG線画へ差替。既存の2・3番の線画と調和させる。独立deliveryセクションはshow_on_home=falseでトップ非表示とし、登録画像・日英文章は保持。「トップページに表示する」チェックで再表示できる。商品ページへの新規移植は今回行わない。変更はsectionとindexの2ファイル、既存設定は表示フラグ以外すべて保持。
 
 配信元clean remote master9d40191d5de3fd27a421cd35ff73ab89e46e4d97、直前配信e4d985e包含をrelease guardで確認。公開189917102253へsection/index2件のみ反映。Liquid2件成功、直前差分なし。日英で3パックのSVG・3手順・独立セクション非表示、商品3/FAQ4の保持を確認。PC1352px横はみ出しなし、証跡は保護runtime shopify-how-box-20261031。
+
+初回readbackで新しいshow_on_home=falseだけが省略されていたため、schema反映後にindexだけをclean remote930fedfから再送。再取得でfalseの保持とindex意味一致、section一致を確認。
