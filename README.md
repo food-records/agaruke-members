@@ -201,3 +201,5 @@ agaruke-members/
 2026-10-31: ユーザー指定でスマホも透明ヘッダーとVIEW ITEMをメイン画像へ重ねる配置へ変更。[現行配置](docs/SHOPIFY_TASTE_MOBILE_20261031.md)。
 
 2026-10-31: 全クーポンのLINE条件・3状態バナーを検討中。未公開draftはfeature branch edce008。Shopifyログインなしの利用フローを説明し、本人限定の範囲は確認中。[未確定事項](docs/SHOPIFY_LINE_BENEFITS_PLAN_20261031.md)。
+
+2026-10-31: スマホVIEW ITEMをアイボリー背景・読みやすい文字と矢印・48px操作高へ調整。[仕様](docs/SHOPIFY_TASTE_MOBILE_20261031.md)。
