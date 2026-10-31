@@ -11,7 +11,7 @@ test('selected code is replaced or fully removed without changing cart items or 
 test('status uses Shopify applicability, distinguishes unmet requirements and never displays serial codes',()=>{
  const code='AM'+'a'.repeat(64);
  assert.deepEqual(couponSummary({discount_codes:[]}),{selected:false,text:'クーポン未選択'});
- assert.match(couponSummary({discount_codes:[{code,applicable:false}]},'EC 200円OFFクーポン').text,/200円OFF.*条件未達/);
+ assert.match(couponSummary({discount_codes:[{code,applicable:false}]},'EC 200円OFFクーポン').text,/200円OFF.*利用できません/);
  const cart={discount_codes:[{code,applicable:true}],cart_level_discount_applications:[{type:'discount_code',total_allocated_amount:20000}]};
  const text=couponSummary(cart).text;assert.equal(text,'EC 200円OFFクーポン 適用中');assert.ok(!text.includes(code));
  assert.equal(couponTitle('AGARUKE500'),'AGARUKEオープン記念！500円OFF');

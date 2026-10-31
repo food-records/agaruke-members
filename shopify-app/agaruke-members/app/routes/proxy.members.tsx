@@ -6,6 +6,7 @@ import {storefrontPresentation} from '../storefront.server';
 import {couponExchangeEnabled} from '../runtime-mode';
 import {isTestCoupon} from '../test-coupon';
 import client from '../purchase-client.js?raw';
+import {launchCouponStatus} from '../public-coupon.server';
 
 const headers = {'Cache-Control':'no-store', 'Referrer-Policy':'no-referrer', 'X-Content-Type-Options':'nosniff'};
 async function context(request: Request) {
@@ -33,6 +34,14 @@ export async function action({request}: ActionFunctionArgs) {
     const raw = await request.text(); if(raw.length>4096)return new Response(null,{status:413});
     const body = JSON.parse(raw);
     if (body.action === 'start') return Response.json(await purchaseCall('start',{challenge:body.challenge}),{headers});
+    if(body.action==='launch_status') {
+      const customer=proxyCustomer(url);
+      if(!customer)return Response.json({launch_coupon:'guest'},{headers});
+      try {
+        const {admin}=await unauthenticated.admin(process.env.SHOPIFY_SHOP_DOMAIN || '');
+        return Response.json({launch_coupon:await launchCouponStatus(customer,admin.graphql)},{headers});
+      } catch {return Response.json({launch_coupon:'unknown'},{headers});}
+    }
     const cart = cartIdentity(body.cart);
     if(body.action==='storefront_status') {
       const customer=proxyCustomer(url);

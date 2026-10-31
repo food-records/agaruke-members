@@ -46,17 +46,21 @@
     const selected=api.current();
     if(currentTitle){
     currentTitle.textContent=selected?.selected?selected.title:'クーポンは選択されていません';
-    currentBadge.textContent=selected?.selected?(selected.applicable?'適用中':'条件未達'):'未選択';
+    currentBadge.textContent=selected?.selected?(selected.applicable?'適用中':'利用不可'):'未選択';
     currentBadge.dataset.state=selected?.selected?(selected.applicable?'applied':'unmet'):'none';
-    currentHelp.textContent=selected?.selected?(selected.applicable?'このクーポンでお買い物できます。':'商品合計などの利用条件をご確認ください。'):'下の一覧から使うクーポンを選んでください。';
+    currentHelp.textContent=selected?.selected?(selected.applicable?'このクーポンでお買い物できます。':'商品合計・使用済み・有効期限などの条件をご確認ください。'):'下の一覧から使うクーポンを選んでください。';
     clearButton.hidden=!selected?.selected;
     }
     for(const choice of choices){
       const active=api.isSelected(choice.code);choice.card.dataset.selected=String(active);
-      choice.button.textContent=active?'選択中':'このクーポンを使う';choice.button.disabled=active;choice.button.dataset.locked=String(active);
-      choice.badge.hidden=!active;if(choice.clear)choice.clear.hidden=!active;
+      const usage=choice.code==='AGARUKE500'?api.launchStatus?.():null;const used=usage==='used',checking=usage==='checking';
+      choice.button.textContent=used?'使用済み':checking?'確認中…':active?'選択中':'このクーポンを使う';choice.button.disabled=used||checking||active;choice.button.dataset.locked=String(used||checking||active);
+      choice.badge.textContent=used?'使用済み':'選択中';choice.badge.hidden=!active&&!used;if(choice.clear)choice.clear.hidden=!active;
     }
   }
+  window.addEventListener('agaruke:launch-coupon-state',syncSelection);
+  window.addEventListener('agaruke:launch-coupon-removed',()=>say('使用済みの500円クーポンの選択を解除しました。'));
+  window.addEventListener('agaruke:launch-coupon-removal-error',()=>say('使用済みクーポンの選択を解除できませんでした。「選択を解除する」からお試しください。'));
   window.addEventListener('agaruke:coupon-changed',syncSelection);
   window.addEventListener('agaruke:coupons-ready',syncSelection);
   function launchTicket(list){

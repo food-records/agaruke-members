@@ -77,14 +77,17 @@ function initialize(){
     const api=window.agarukeCoupons;const selected=api?.current();
     for(const v of views){
       v.title.textContent=selected?.selected?selected.title:t('クーポンは選択されていません','No coupon selected');
-      v.badge.textContent=selected?.selected?(selected.applicable?t('適用中','Applied'):t('条件未達','Not applicable')):t('未選択','None');
+      v.badge.textContent=selected?.selected?(selected.applicable?t('適用中','Applied'):t('利用不可','Not applicable')):t('未選択','None');
       v.badge.dataset.state=selected?.selected?(selected.applicable?'applied':'unmet'):'none';
       v.clear.hidden=!selected?.selected;v.clear.disabled=false;
-      for(const c of v.choices){const active=api?.isSelected(c.code);c.button.textContent=active?t('選択中','Selected'):t('選択する','Select');c.button.disabled=Boolean(active);}
+      for(const c of v.choices){const active=api?.isSelected(c.code);const usage=c.code==='AGARUKE500'?api?.launchStatus?.():null;const used=usage==='used',checking=usage==='checking';c.button.textContent=used?t('使用済み','Used'):checking?t('確認中…','Checking…'):active?t('選択中','Selected'):t('選択する','Select');c.button.disabled=used||checking||Boolean(active);}
     }
   }
   window.addEventListener('agaruke:benefits-state',e=>{state=e.detail;render();});
   window.addEventListener('agaruke:benefits-error',()=>{for(const v of views)v.feedback.textContent=t('連携・交換券の状態を確認できませんでした。ページを再読み込みしてください。','Unable to check your LINE link and redeemed coupons. Please reload.');});
+  window.addEventListener('agaruke:launch-coupon-state',sync);
+  window.addEventListener('agaruke:launch-coupon-removed',()=>{for(const v of views)v.feedback.textContent=t('使用済みの500円クーポンの選択を解除しました。','The used ¥500 coupon was removed.');});
+  window.addEventListener('agaruke:launch-coupon-removal-error',()=>{for(const v of views)v.feedback.textContent=t('使用済みクーポンの選択を解除できませんでした。「選択を解除」からお試しください。','Unable to remove the used coupon. Please select Remove coupon.');});
   window.addEventListener('agaruke:coupon-changed',sync);
   window.addEventListener('agaruke:coupons-ready',sync);
   document.addEventListener('shopify:section:load',render);
