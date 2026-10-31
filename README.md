@@ -227,3 +227,5 @@ agaruke-members/
 2026-10-31: メニュー常設/マイページ内「ポイントカード・クーポン」を実装。Shopify未ログインでも会員ページへ進み、Orders/Profileはログイン済みだけ表示。[現行仕様](docs/SHOPIFY_DIRECT_ENTRY.md)参照。
 
 2026-10-31: ユーザーがトップデザインfixを確定。速度改善は見た目を維持する。画像配信/初期通信の簡易調査と推奨順は[速度レビュー](docs/SHOPIFY_PERFORMANCE_REVIEW_20261031.md)。改善実装・インフラ変更は未実施。
+
+2026-10-31: 注文完了画面のLINEポイントカード表示を撤去。初回の裏側連携リクエストと購入ポイントWebhookは維持。[現行仕様](docs/SHOPIFY_DIRECT_ENTRY.md)。
