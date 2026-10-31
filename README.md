@@ -237,3 +237,5 @@ agaruke-members/
 2026-10-31 速度改善を本番反映（43179e9）。モバイルPageSpeed64→70、LCP25.5→7.2s。単発ラボ値。詳細はdocs/SHOPIFY_PERFORMANCE_REVIEW_20261031.md。
 
 2026-10-31: オープン記念500円券はShopify本人の支払済み履歴で使用済み表示・選択禁止・現在選択の自動解除を実装。ゲスト/不確実な履歴はShopifyの最終判定を維持。[仕様](docs/SHOPIFY_LAUNCH_USAGE_20261031.md)。
+
+2026-10-31: 使用済み500円券の選択防止を本番公開（26bf1d6）。実会員/カートで使用済み・選択不可・自動解除を確認。Node38件等成功。詳細は[公開記録](docs/SHOPIFY_LAUNCH_USAGE_20261031.md)。

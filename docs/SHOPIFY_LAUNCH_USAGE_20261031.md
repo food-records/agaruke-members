@@ -19,3 +19,11 @@ Shopifyログイン済みの顧客の支払い済み使用履歴を確認し、�
 UIの確認操作ごとに既存サーバーとShopify Adminの読取を1回追加し、同時確認は共有。既存Cloud Run CPU0.08/256Mi/max1/min0/concurrency1を維持し、定期処理・全件走査・追加インスタンスや外部有料APIは増やさない。通常の確認読取のみで大幅な課金増を伴う構成変更はない。
 
 参照: https://shopify.dev/docs/api/admin-graphql/2026-07/queries/orders 、 https://help.shopify.com/en/manual/discounts/discounts-faq
+
+## 本番反映・確認結果
+
+2026-10-31に本番公開。配信元はmasterの`26bf1d630d54cc227ddc0a844864a758dec617ba`、Cloud Run revisionは`shopify-members-used-26bf1d6`（traffic 100%）、image digestは`sha256:70086f2da21baaed3abb3b11ef77b51ebd21cd6d2e53b66dd0419854ec66026b`。直前本番58299ddの包含、clean source、remote SHA一致を配信前に検査。既存CPU/メモリ/最大最小インスタンスを維持。Dawn189917102253の対象3 assetは取得し直して配信元とbyte一致。
+
+Node回帰38件、typecheck/build、Admin GraphQLとテーマschema検査成功。候補・本番の署名/Origin/ゲストなりすまし/不存在顧客smoke、既存status/exchange境界を確認。ERRORログ標本0件。
+
+実ログイン画面で会員ページ・カートの500円券が「使用済み」で選択不可、選択中の同券が自動解除されることを確認。カートの商品4点/税込5,120円と購入100pt案内を維持。既存#1001はPAIDかつキャンセル表示が付いていたため、キャンセル有無だけで除外せず支払い済み履歴で判定する回帰を追加。注文取消/返金/ポイント処理/LINE配信は実施していない。ゲストと不確実な履歴の最終判定は従来どおりShopifyへ委ねる。
