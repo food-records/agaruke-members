@@ -36,7 +36,7 @@
       const p = document.createElement('p'); p.textContent = '連携試験中です。クーポン交換と購入ポイント付与はまだ開始していません。'; actions.append(p);
     } else if (!state.completed) {
       for (const cost of [200, 500, 1000]) {
-        button(`${cost}ptで${cost}円券に交換（商品小計${{200:4000,500:7000,1000:12000}[cost].toLocaleString()}円以上）`, async () => {
+        button(`${cost}ptで${cost}円券に交換（商品小計${{200:3800,500:7000,1000:12000}[cost].toLocaleString()}円以上）`, async () => {
           if (!confirm(`${cost}ポイントを使って交換します。よろしいですか？`)) return;
           const requestKey = `${key}-exchange-${cost}`;
           let requestId = sessionStorage.getItem(requestKey);

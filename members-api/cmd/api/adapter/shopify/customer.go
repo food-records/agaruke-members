@@ -63,7 +63,7 @@ type ecCoupon struct {
 	OrderID    string    `firestore:"order_id" json:"-"`
 }
 
-var ecTiers = map[int]int{200: 4000, 500: 7000, 1000: 12000}
+var ecTiers = map[int]int{200: 3800, 500: 7000, 1000: 12000}
 
 func ecRef(fs *firestore.Client, code string) *firestore.DocumentRef {
 	return config.DataCollection(fs, "shopify_coupons").Doc(tokenHash(configuredShop() + ":" + code))
