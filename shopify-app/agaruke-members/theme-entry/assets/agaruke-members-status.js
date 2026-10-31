@@ -39,13 +39,15 @@ function initialize(config) {
   function show(state) {
     if(typeof state?.linked!=='boolean')return;
     document.documentElement.dataset.agarukeMembersState=state.linked?'linked':'unlinked';
+    window.agarukeMemberPresentation=cacheRecord(state,'display')?.state||{linked:state.linked};
+    window.dispatchEvent(new CustomEvent('agaruke:members-state',{detail:window.agarukeMemberPresentation}));
     for(const anchor of document.querySelectorAll('.announcement-bar a')) {
       const path=new URL(anchor.href,location.origin).pathname.replace(/\/$/,'');
       if(path!==config.path&&path!==root.replace(/\/$/,'')+config.path)continue;
       const section=anchor.closest('.shopify-section');
       const single=section?.querySelectorAll('.announcement-bar__message').length===1&&!section.querySelector('.list-social,localization-form');
       const target=single?section:anchor.closest('.slideshow__slide')||anchor;
-      if(state.linked)target.style.display='none';else target.style.removeProperty('display');
+      target.style.display='none';
     }
     for(const card of document.querySelectorAll('[data-agaruke-member-card]')) {
       card.querySelector('[data-members-unlinked]').hidden=state.linked;

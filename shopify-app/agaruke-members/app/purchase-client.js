@@ -7,11 +7,13 @@
   const proofKey = 'agaruke-line-proof-v2';
   function invalidateDisplay(){try{sessionStorage.removeItem('agaruke-members-display-v3');}catch{}}
   let state = null;
+  let lastCart = null;
   function say(text) { message.textContent = text; }
   async function cart() {
     const response = await fetch('/cart.js', {cache: 'no-store'});
     if (!response.ok) throw new Error('カートを確認できませんでした。');
-    return (await response.json()).token.split('?')[0];
+    lastCart = await response.json();
+    return lastCart.token.split('?')[0];
   }
   async function call(action, fields = {}) {
     const response = await fetch(config.path, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({action, ...fields})});
@@ -62,6 +64,8 @@
   async function refresh() {
     state=await call('status',{token:sessionStorage.getItem(key),cart:await cart()});
     invalidateDisplay();window.dispatchEvent(new Event('agaruke:members-authenticated'));
+    const presentation={linked:true,ready:!state.completed&&lastCart?.item_count>0&&lastCart?.currency==='JPY',link_test_only:state.link_test_only,expected_points:state.link_test_only?0:100};
+    window.agarukeMemberPresentation=presentation;window.dispatchEvent(new CustomEvent('agaruke:members-state',{detail:presentation}));
     actions.replaceChildren();choices=[];say('');
     const membership=el('div','coupon-membership');
     const balance=el('div');balance.append(el('span','coupon-balance-label','利用可能ポイント'),el('strong','coupon-balance',`${state.point.toLocaleString()} pt`));

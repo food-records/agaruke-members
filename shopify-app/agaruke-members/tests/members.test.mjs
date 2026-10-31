@@ -66,7 +66,7 @@ test('coupon UI groups selection, owned tickets and optional exchange; insuffici
  const document={getElementById:id=>id==='members-purchase-config'?{textContent:'{"path":"/apps/members"}'}:id==='members-actions'?actions:id==='members-message'?message:root,createElement:element};
  const state={member_number:1,point:800,permanent:true,link_test_only:true,coupon_exchange_enabled:true,coupons:[{id:'normal',status:'available',cost:200,minimum:3800,code:'test-only-code'}]};
  const storage={getItem:()=> 'test-session',removeItem(){}};
- await runInNewContext(source,{URLSearchParams,document,sessionStorage:storage,window:{dispatchEvent(){},addEventListener(){}},Event:class{},location:{hash:'',search:'?return_to=%2Fsearch%3Fq%3Dcurry'},fetch:async url=>Response.json(url==='/cart.js'?{token:'cart'}:state)});
+ await runInNewContext(source,{URLSearchParams,document,sessionStorage:storage,window:{dispatchEvent(){},addEventListener(){}},Event:class{},CustomEvent:class{constructor(type,options){this.type=type;this.detail=options?.detail}},location:{hash:'',search:'?return_to=%2Fsearch%3Fq%3Dcurry'},fetch:async url=>Response.json(url==='/cart.js'?{token:'cart'}:state)});
  const labels=created.map(n=>n.textContent||'').join(' ');
  for(const text of ['現在の選択','お持ちのクーポン','ポイントでクーポンに交換','このクーポンを使う','選択を解除する','税込商品合計 3,800円以上'])assert.ok(labels.includes(text),text);
  const details=created.find(n=>n.className==='coupon-exchange');assert.equal(details.tag,'details');assert.equal(details.open,undefined);

@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {couponTitle,couponChange,couponSummary} from '../theme-entry/assets/agaruke-coupons.js';
+import {couponTitle,couponChange,couponSummary,benefitBanner} from '../theme-entry/assets/agaruke-coupons.js';
 test('selected code is replaced or fully removed without changing cart items or member attributes',async()=>{
  const patch=await couponChange('AM'+'a'.repeat(64),'EC 200円OFFクーポン');
  assert.equal(patch.discount,'AM'+'a'.repeat(64));assert.equal(patch.attributes._agaruke_coupon_hash.length,64);
@@ -21,4 +21,14 @@ test('status uses Shopify applicability, distinguishes unmet requirements and ne
 test('an old ineligible code never masks the actually applicable code',()=>{
  const cart={discount_codes:[{code:'AM'+'a'.repeat(64),applicable:false},{code:'AGARUKE500',applicable:true}],cart_level_discount_applications:[{type:'discount_code',total_allocated_amount:50000}]};
  assert.equal(couponSummary(cart).text,'初回購入 500円OFFクーポン 適用中');
+});
+
+test('one benefits banner covers unlinked, linked without a coupon, and linked with a coupon',()=>{
+ const coupon={selected:true,applicable:true,text:'EC 200円OFFクーポン 適用中'};
+ assert.equal(benefitBanner(undefined,coupon).visible,false);
+ const unlinked=benefitBanner({linked:false},coupon);assert.equal(unlinked.mode,'unlinked');assert.equal(unlinked.action,'LINEで連携する');assert.ok(!unlinked.text.includes('適用中'));
+ assert.equal(benefitBanner({linked:true},{selected:false}).visible,false);
+ const paused=benefitBanner({linked:true,ready:true,link_test_only:true,expected_points:100},coupon);assert.equal(paused.visible,true);assert.match(paused.text,/0pt（付与停止中）/);
+ const live=benefitBanner({linked:true,ready:true,link_test_only:false,expected_points:100},coupon);assert.match(live.text,/100pt/);
+ assert.match(benefitBanner({linked:true,ready:false,link_test_only:false},coupon).text,/ポイント連携済み/);
 });
