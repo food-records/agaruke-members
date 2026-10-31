@@ -17,3 +17,8 @@ test('status uses Shopify applicability, distinguishes unmet requirements and ne
  assert.equal(couponTitle('AGARUKE500'),'初回購入 500円OFFクーポン');
  assert.equal(couponTitle('AMTEST'+'A'.repeat(32)),'テスト 500円OFFクーポン');
 });
+
+test('an old ineligible code never masks the actually applicable code',()=>{
+ const cart={discount_codes:[{code:'AM'+'a'.repeat(64),applicable:false},{code:'AGARUKE500',applicable:true}],cart_level_discount_applications:[{type:'discount_code',total_allocated_amount:50000}]};
+ assert.equal(couponSummary(cart).text,'初回購入 500円OFFクーポン 適用中');
+});

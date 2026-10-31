@@ -76,7 +76,7 @@ def prepare(directory, page_url):
         raise ValueError('theme layoutのhead終端を確認できないため停止')
     layout = layout.replace('</head>', include + '\n  </head>')
     output['layout/theme.liquid'] = layout
-    for name in ('assets/agaruke-members-status.js', 'snippets/agaruke-members-status.liquid'):
+    for name in ('assets/agaruke-members-status.js', 'assets/agaruke-coupons.js', 'assets/agaruke-coupons.css', 'snippets/agaruke-members-status.liquid'):
         output[name] = (source.parent / name).read_text()
     for name in ('sections/main-cart-footer.liquid', 'sections/main-cart-items.liquid'):
         text=(directory / name).read_text()

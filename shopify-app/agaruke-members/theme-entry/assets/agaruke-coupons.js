@@ -13,7 +13,7 @@ export function couponSummary(cart, label = '') {
   const codes=cart.discount_codes||[];
   const applied=(cart.cart_level_discount_applications||[]).filter(d=>d.type==='discount_code');
   if(!codes.length&&!applied.length)return {selected:false,text:'クーポン未選択'};
-  const code=codes[0]?.code||applied[0]?.title||'';
+  const code=codes.find(c=>c.applicable===true)?.code||codes[0]?.code||applied[0]?.title||'';
   const valid=codes.length?codes.some(c=>c.applicable===true):applied.length>0;
   const amount=(applied.reduce((sum,d)=>sum+Number(d.total_allocated_amount||0),0))/100;
   const title=label||couponTitle(code,amount);
@@ -33,7 +33,7 @@ function initialize(){
     bar.append(text,change,clear);document.body.append(bar);
   }
   async function show(cart){
-    mount();let label='';const code=cart.discount_codes?.[0]?.code;
+    mount();let label='';const code=cart.discount_codes?.find(c=>c.applicable===true)?.code||cart.discount_codes?.[0]?.code;
     if(code&&cart.attributes?._agaruke_coupon_hash){const patch=await couponChange(code);if(patch.attributes._agaruke_coupon_hash===cart.attributes._agaruke_coupon_hash)label=cart.attributes._agaruke_coupon_label||'';}
     const summary=couponSummary(cart,label);text.textContent=summary.text;clear.hidden=!summary.selected;
   }
