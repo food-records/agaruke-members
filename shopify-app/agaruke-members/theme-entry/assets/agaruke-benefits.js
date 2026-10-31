@@ -48,7 +48,7 @@ function initialize(){
     try {
       if(!window.agarukeCoupons)throw Error(t('読み込み中です。少し待ってからお試しください。','Please try again in a moment.'));
       await window.agarukeCoupons.select(code,title);
-      view.feedback.textContent=code?t('クーポンを選択しました。利用条件は下の適用状態で確認できます。','Coupon selected. Check its status above.'):t('選択を解除しました。クーポンは未使用のままです。','Coupon removed. It remains unused.');
+      view.feedback.textContent=code?t('クーポンを選択しました。適用状態をご確認ください。','Coupon selected. Check its status above.'):t('選択を解除しました。クーポンは未使用のままです。','Coupon removed. It remains unused.');
     }catch(e){view.feedback.textContent=e.message;}
     finally {views.forEach(v=>v.card.removeAttribute('aria-busy'));sync();}
   }
