@@ -71,3 +71,11 @@
  .ag-craft-grid{grid-template-columns:1fr;gap:28px;margin-top:30px}
  .ag-craft-item h3{font-size:18px;margin:10px 0}
 }
+
+.ag-craft-header--image{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.8fr);align-items:center;gap:64px}
+.ag-craft-image{margin:0;width:100%;max-width:400px;justify-self:end}
+.ag-craft-image img{display:block;width:100%;height:auto}
+@media screen and (max-width:749px){
+ .ag-craft-header--image{grid-template-columns:1fr;gap:28px}
+ .ag-craft-image{max-width:none;justify-self:stretch}
+}

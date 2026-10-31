@@ -59,8 +59,17 @@
   {% if ag_craft != blank %}
   <section class="ag-craft ag-section" id="ag-craft" {{ ag_craft.shopify_attributes }} aria-labelledby="ag-craft-heading">
     <div class="ag-wrap">
-      <p class="ag-eyebrow">{% render 'agaruke-copy', copy_settings: ag_craft.settings, key: 'eyebrow' %}</p>
-      <h2 id="ag-craft-heading">{% render 'agaruke-copy', copy_settings: ag_craft.settings, key: 'heading' %}</h2>
+      <div class="ag-craft-header{% if ag_craft.settings.image != blank %} ag-craft-header--image{% endif %}">
+        <div>
+          <p class="ag-eyebrow">{% render 'agaruke-copy', copy_settings: ag_craft.settings, key: 'eyebrow' %}</p>
+          <h2 id="ag-craft-heading">{% render 'agaruke-copy', copy_settings: ag_craft.settings, key: 'heading' %}</h2>
+        </div>
+        {% if ag_craft.settings.image != blank %}
+          {% assign ag_craft_alt = ag_craft.settings.image_alt %}
+          {% if request.locale.iso_code == 'en' %}{% assign ag_craft_alt = ag_craft.settings.image_alt_en %}{% endif %}
+          <figure class="ag-craft-image">{{ ag_craft.settings.image | image_url: width: 1000 | image_tag: widths: '350, 500, 750, 1000', sizes: '(min-width: 990px) 400px, (min-width: 750px) 40vw, calc(100vw - 44px)', loading: 'lazy', alt: ag_craft_alt }}</figure>
+        {% endif %}
+      </div>
       <div class="ag-craft-grid">
         {% for number in (1..3) %}
           {% assign title_key = 'reason_' | append: number | append: '_heading' %}
@@ -171,6 +180,23 @@
       "name": "おいしさの理由",
       "limit": 1,
       "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "おいしさの理由の画像"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "画像の代替テキスト（日本語）",
+          "default": "豚角煮と牛すじ煮込み、ほうれん草を器に盛り付けた食卓。"
+        },
+        {
+          "type": "text",
+          "id": "image_alt_en",
+          "label": "画像の代替テキスト（英語）",
+          "default": "Braised pork belly, stewed beef tendon and spinach plated at the dining table."
+        },
         {
           "type": "text",
           "id": "eyebrow",

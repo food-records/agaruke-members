@@ -181,3 +181,5 @@ agaruke-members/
 2026-10-31: おすすめ商品を紹介直後へ移し、日英の「おいしさの理由」3項目と料理別紹介、専用スマホ画像設定を追加。[現行仕様](docs/SHOPIFY_TASTE_MOBILE_20261031.md)。
 
 2026-10-31: ABOUTの写真をユーザー指定moritsuke-image.pngへ変更し、ABOUTブロックに専用画像設定と日英altを追加。[記録](docs/SHOPIFY_TASTE_MOBILE_20261031.md)。
+
+2026-10-31: おいしさの理由にユーザー指定house-meal.pngを追加し、PC見出し横/スマホ見出し下の画像と日英altを設定。[記録](docs/SHOPIFY_TASTE_MOBILE_20261031.md)。
