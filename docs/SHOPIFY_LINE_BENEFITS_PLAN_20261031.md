@@ -17,3 +17,14 @@ LINEからストアの配布リンク/ポイントカード入口を開く→LIN
 決済側で連携済みShopify顧客だけに限定するなら、LINEとShopify顧客の対応付けが必要。初回券をLINE連携tag＋注文0件のsegmentで制限する案ではwrite_customers scopeが追加で必要になる。現行scopeにないため、実際の追加権限は別途確認が必要。ゲスト導線を維持したままの厳密な決済制御は別方式の検討が必要で、Basicのcustom appにFunctionsを導入できると仮定しない（公式docs: public appsは全plan、custom FunctionsはPlus）。追加アプリ/プラン変更/権限追加は実施していない。
 
 現在の共通500円券・既発行交換券の条件は変更していない。LINE配信なし。Secretary記録先orderec、Driveイベント公開は未承認保留。.work追加/削除なし。方針決定後にfeature branchを再確認し、500円券の発行/適格性と既発行券の扱いを具体化してから統合・公開する。
+
+
+## 一般クーポンとLINE特典の併用案・初回セグメントの訂正（2026-10-31）
+
+ユーザーから、万人受け/外国人対応・CRM・任意LINE連携特典を比較した推奨を求められた。提案は「一般向け公開記念500円券＋任意のLINE会員特典」。購入/一般券はLINE・Shopifyログイン不要、LINEはポイント交換/継続利用特典の入口とする。メール配信同意を得たShopify顧客へのメールCRMも併用する。追加の登録ボーナス額は決めていない。ユーザーの採用決定ではなく提案段階なので、設定/コード/配布は変更していない。
+
+一般券の提案条件: 税込商品3,800円以上・500円引き・1人1回・他券併用不可・2026-11-30 23:59 JSTまで。初回注文限定より「公開記念/1人1回」を推奨する。これならLINE未使用者にも同じ条件で案内でき、既存来店客のEC利用にも使える。バナーは一般券の適用状態を未連携者にも表示し、連携者だけポイント情報を加える案になる。edce008の全coupon LINE選択ガード/未連携なら常に案内、のドラフトはそのまま採用しない。
+
+重要な訂正: Shopify公式Discount codes FAQは、顧客segment指定の割引は既存顧客向けで、まだprofileのない初回購入者は初回注文完了までsegmentに含まれないと明記している。現在AGARUKE500に設定したCustomers who haven't purchasedでは、顧客未登録の新規購入者を取りこぼす。以前の「初回購入限定をこのsegmentだけで実現できた」とした案内は不十分だった。LINE配布前に適格性を修正・新規guestで検証する必要がある。実注文テストは未実施、今回native条件の変更なし。
+
+原典: https://help.shopify.com/en/manual/discounts/discounts-faq 、メール同意: https://help.shopify.com/en/manual/promoting-marketing/create-marketing/shopify-messaging/email/subscriber-list-management 。Secretary orderec/Drive event公開は未承認保留、.work変更なし。
