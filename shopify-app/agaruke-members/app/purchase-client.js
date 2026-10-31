@@ -93,7 +93,7 @@
     currentTitle=el('p','coupon-current-title','確認しています…');currentHelp=el('p','coupon-muted');current.append(currentTitle,currentHelp);
     clearButton=button('選択を解除する',async()=>{await couponSelect('');say('選択を解除しました。クーポンは未使用のまま残ります。');},current,true);clearButton.hidden=true;actions.append(current);
     const exchangeEnabled=state.coupon_exchange_enabled??!state.link_test_only;
-    if(!state.completed){
+    {
       const owned=el('section','coupon-owned');owned.append(el('h2','','お持ちのクーポン'),el('p','coupon-muted','選択・解除でポイントが減ることはありません。'));
       const list=el('div','coupon-ticket-grid');let count=0;
       if(launchTicket(list))count++;
