@@ -45,3 +45,28 @@ test('cart identity strips private cart key and rejects arbitrary object input',
  assert.equal(cartIdentity('cart123?key=private'),'cart123');assert.throws(()=>cartIdentity({token:'anything'}));
  assert.equal(proxyCustomer(new URL('https://app.test?logged_in_customer_id=123')),'123');assert.throws(()=>proxyCustomer(new URL('https://app.test?logged_in_customer_id=abc')));
 });
+
+
+test('exchange testing opens independently while paid/refund processing stays paused',async()=>{
+ const {couponExchangeEnabled}=await import('../app/runtime-mode.ts');
+ assert.equal(couponExchangeEnabled({SHOPIFY_LINK_TEST_ONLY:'true'}),false);
+ assert.equal(couponExchangeEnabled({SHOPIFY_LINK_TEST_ONLY:'true',SHOPIFY_COUPON_EXCHANGE_ENABLED:'false'}),false);
+ const env={SHOPIFY_LINK_TEST_ONLY:'true',SHOPIFY_COUPON_EXCHANGE_ENABLED:'true'};
+ assert.equal(couponExchangeEnabled(env),true);
+ assert.equal(env.SHOPIFY_LINK_TEST_ONLY,'true');
+ assert.equal(couponExchangeEnabled({SHOPIFY_LINK_TEST_ONLY:'false'}),true);
+});
+
+test('exchange test UI exposes all tiers and issued coupons without claiming purchase points',async()=>{
+ const {readFile}=await import('node:fs/promises'); const {runInNewContext}=await import('node:vm');
+ const source=await readFile(new URL('../app/purchase-client.js',import.meta.url),'utf8');
+ const nodes=[];const actions={replaceChildren(){nodes.length=0},append(el){nodes.push(el)}};
+ const document={getElementById:id=>id==='members-purchase-config'?{textContent:'{"path":"/apps/members"}'}:id==='members-actions'?actions:{},createElement:tag=>({tag,addEventListener(){}})};
+ const state={member_number:1,point:1000,permanent:true,link_test_only:true,coupon_exchange_enabled:true,coupons:[{id:'normal',status:'available',cost:200,minimum:3800,code:'test-only-code'}]};
+ const storage={getItem:()=> 'test-session',removeItem(){}};
+ await runInNewContext(source,{URLSearchParams,document,sessionStorage:storage,window:{dispatchEvent(){}},Event:class{},location:{hash:''},fetch:async url=>Response.json(url==='/cart.js'?{token:'cart'}:state)});
+ const labels=nodes.map(n=>n.textContent||'').join(' ');
+ for(const amount of ['200pt','500pt','1000pt'])assert.ok(labels.includes(amount));
+ assert.ok(labels.includes('購入ポイント付与は停止'));assert.ok(labels.includes('3,800円以上で200円引き'));
+ assert.ok(nodes.some(n=>n.href==='/discount/test-only-code?redirect=%2Fcart'));
+});

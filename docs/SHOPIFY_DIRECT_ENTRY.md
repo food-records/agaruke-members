@@ -38,7 +38,7 @@
 
 取消/全額返金で100ptを一度だけ取消。一部返金は一注文分を維持する。残高不足時は負残高を許容し、累積ランク値は減算しない。使用券はvoidとして保持し、自動返却・再発行はしない。
 
-本番は本人連携の結合試験を先行するため `SHOPIFY_LINK_TEST_ONLY=true` を維持し、交換とpaid/返金処理をアプリ側で停止する。orders/createは連携照合用の最小情報だけを記録する。Shopify顧客ログインとLINE認証の実機試験は本人操作が必要。
+本番は `SHOPIFY_LINK_TEST_ONLY=true` でpaid/返金処理を停止する。交換は通常同時停止するが、ユーザーの交換テスト指示により `SHOPIFY_COUPON_EXCHANGE_ENABLED=true` のときだけ交換/再発行と通常券表示を有効にできる。購入pt/使用済み券のMembers側同期・返金処理は停止を維持する。orders/createは連携照合用の最小情報だけを記録する。Shopify顧客ログインとLINE認証の実機試験は本人操作が必要。
 
 既存2サービスとFirestoreを使用し、CPU/メモリ/最大instance、定期Job、Cloud SQLは増やさない。承認済みの利用規模内を前提とする。実配信時には既配信SHAを包含したcleanなremote master、全関連回帰検査、image digest、revision/trafficを照合する。
 

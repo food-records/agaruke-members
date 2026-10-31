@@ -32,9 +32,11 @@
     invalidateDisplay(); window.dispatchEvent(new Event('agaruke:members-authenticated'));
     actions.replaceChildren();
     say(`会員番号 FR${String(state.member_number).padStart(6, '0')} ／ ${state.point}ポイント。${state.permanent ? 'Shopifyアカウントと連携済みです。' : '今回のお買い物にポイントカードを設定しました。'}`);
+    const exchangeEnabled = state.coupon_exchange_enabled ?? !state.link_test_only;
     if (state.link_test_only) {
-      const p = document.createElement('p'); p.textContent = '連携試験中です。クーポン交換と購入ポイント付与はまだ開始していません。'; actions.append(p);
-    } else if (!state.completed) {
+      const p = document.createElement('p'); p.textContent = exchangeEnabled ? 'クーポン交換のテスト中です。購入ポイント付与は停止しています。' : '連携試験中です。クーポン交換と購入ポイント付与はまだ開始していません。'; actions.append(p);
+    }
+    if (exchangeEnabled && !state.completed) {
       for (const cost of [200, 500, 1000]) {
         button(`${cost}ptで${cost}円券に交換（商品小計${{200:3800,500:7000,1000:12000}[cost].toLocaleString()}円以上）`, async () => {
           if (!confirm(`${cost}ポイントを使って交換します。よろしいですか？`)) return;
@@ -49,7 +51,7 @@
     if (!state.completed) {
       for (const c of state.coupons || []) {
         const testCoupon=(state.test_coupon_ids||[]).includes(c.id);
-        if(state.link_test_only&&!testCoupon)continue;
+        if(!exchangeEnabled&&!testCoupon)continue;
         if (c.status === 'pending') button(`${c.cost}円券の発行を再開`, async () => { await call('retry', {token: sessionStorage.getItem(key), cart: await cart(), coupon_id: c.id}); await refresh(); });
         else if (c.status === 'available') {
           if(testCoupon){const p=document.createElement('p');p.textContent='テストクーポン：500円引き（商品小計3,000円以上）。カートで自動適用されます。';actions.append(p);continue;}

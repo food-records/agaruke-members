@@ -175,3 +175,5 @@ agaruke-members/
 トップの通知バナーとモバイル画像・SVGアイコンの表示仕様は[記録](docs/SHOPIFY_BANNER_MOBILE_20261031.md)を参照。
 
 2026-10-31: LINE初回500円券`AGARUKE500`を11月30日23:59 JSTまで・商品税込3,800円以上で作成済み。ポイント交換3種は既存の個別発行設定を確認、通常交換は試験modeで停止中。LINE配信未実施。[条件と状態](docs/SHOPIFY_PRICING_RELEASE_20261031.md)。
+
+2026-10-31: ユーザー指示で交換だけを一時公開する独立フラグを追加。購入pt/paid/返金は試験停止を維持、配信なし。[交換テスト反映記録](docs/SHOPIFY_EXCHANGE_TEST_RELEASE_20261031.md)。

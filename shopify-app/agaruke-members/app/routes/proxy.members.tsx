@@ -3,6 +3,7 @@ import {authenticate, unauthenticated} from '../shopify.server';
 import {cartIdentity, proxyCustomer, purchaseCall} from '../purchase.server';
 import {provisionPurchaseCoupon} from '../members.server';
 import {storefrontPresentation} from '../storefront.server';
+import {couponExchangeEnabled} from '../runtime-mode';
 import {isTestCoupon} from '../test-coupon';
 import client from '../purchase-client.js?raw';
 
@@ -48,13 +49,13 @@ export async function action({request}: ActionFunctionArgs) {
     if(customer && !state.completed) {await purchaseCall('bind',{...fields,customer});state = await purchaseCall('status',fields);}
     const testOnly = process.env.SHOPIFY_LINK_TEST_ONLY === 'true';
     if(body.action !== 'status') {
-      if(testOnly)return Response.json({error:'連携試験中のため、クーポン交換は停止しています。'},{status:403,headers});
+      if(!couponExchangeEnabled())return Response.json({error:'連携試験中のため、クーポン交換は停止しています。'},{status:403,headers});
       const coupon = body.action === 'exchange' ? (await purchaseCall('exchange',{...fields,cost:body.cost,request_id:body.request_id})).coupon : state.coupons?.find((c:{id:string})=>c.id===body.coupon_id);
       if(!coupon)throw new Error('COUPON_NOT_FOUND');
       const {admin} = await unauthenticated.admin(process.env.SHOPIFY_SHOP_DOMAIN || '');
       await provisionPurchaseCoupon(coupon, fields, admin.graphql);
       state = await purchaseCall('status',fields);
     }
-    return Response.json({...state,link_test_only:testOnly,test_coupon_ids:(state.coupons||[]).filter(isTestCoupon).map((c:{id:string})=>c.id)},{headers});
+    return Response.json({...state,link_test_only:testOnly,coupon_exchange_enabled:couponExchangeEnabled(),test_coupon_ids:(state.coupons||[]).filter(isTestCoupon).map((c:{id:string})=>c.id)},{headers});
   } catch {return Response.json({error:'処理できませんでした。連携状態を確認するか、LINE認証をやり直してください。'},{status:400,headers});}
 }
