@@ -45,3 +45,13 @@ craft写真の本番反映: clean remote master189fffc90cd23d93b045959eb1059a446
 ユーザー添付と一致するDownloads/me-time-wide.png（1672×941、未加工）をFiles46900919730349へ登録。momentブロックに専用画像設定/日英altを追加し、料理の商品参照から夜の食卓/動画/飲み物の写真へ切替。未設定時は既存moment_productへfallback。他画像・文章・商品・会員機能を保持。設定は「AGARUKE サービス紹介→YOUR OWN LITTLE TREATのブロック→自分の時間を楽しむ写真」。適用tool theme-moment-photo.py。取得した最新indexのmoment画像/alt3設定だけを変更し、他設定一致を確認。Liquid2件成功。schema→indexの2段階で配信する。
 
 最終レビューでmoment写真380pxに対して文章が長く、写真下だけ余白が残ることを検出。750px以上は写真枠を文章高へstretchし、写真を枠いっぱいに表示する。スマホ245pxは保持。CSSを追加検査して反映する。
+
+### 最終確認とレビュー結果
+
+画像はclean remote master cbd14ac57a1aa08875dfc074e226d2aada448824、写真高さ補正CSSは197a1c961be77082c38162cadd2d7e763efb842eから公開Dawn189917102253へ反映。各fetch/remote SHA一致・既配信祖先guard、直前差分なし、section/CSS完全一致・index意味一致。検査section/index2件＋CSS1件成功。トップ以外のbackend/会員/クーポンassetは配信していない。
+
+PC1352pxで写真とセクション高431.9px一致、スマホ390pxの写真245px、日英の横はみ出しなし/画像読込/代替テキスト/全7見出し/3商品と価格・リンク/VIEW ITEM→商品/商品詳細へ遷移/FAQ4の開閉/Company別タブを確認。メインPC画像と専用スマホ画像、ABOUT/商品のこだわり/既存文言を保持。viewport復元。証跡moment-pc.pngは保護runtime shopify-home-final-20261031。
+
+デザイン判断: メイン（食欲）、ABOUT（盛り付け）、craft（料理・食卓）、moment（動画/飲み物と過ごす夜）の役割が分かれ、写真・色・余白と購入導線がまとまった。現行トップはデザインfixの基準としてよい。購入率の改善効果は未計測で、実機全機種/実決済の検証完了を意味しない。
+
+残る情報面の改善候補: FAQの送料/発送目安と賞味期限/アレルギー回答は会計画面/問い合わせ中心。確定情報を案内する余地がある。また公開英語ページで現在のクーポン状態「EC 200円OFFクーポン 適用中」「選択・変更」「解除」が日本語であることを確認。会員・クーポン全体の英訳は今回の画像変更から分離し、今後の改善事項とする（このレビュー時点の公開状態）。通常購入pt/paid/返金試験や注文決済の営業確認とは別。Secretary Drive公開保留。
