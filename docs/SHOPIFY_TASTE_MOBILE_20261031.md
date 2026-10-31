@@ -17,3 +17,5 @@
 ## ABOUT画像の差し替え（2026-10-31）
 
 ユーザー添付と一致するDownloads/moritsuke-image.png（1254×1254、未加工）をShopify Files46900562526381へ登録。ABOUTは商品の写真参照から専用image_pickerの写真へ変更し、日英の代替テキストを追加した。専用画像が未設定の場合は従来のfeature_product画像/タイトルへfallbackする。メイン/メニュー/下部の画像や文章・商品・会員導線は保持する。「AGARUKE サービス紹介→ABOUTブロック→ABOUTの画像」で変更可能。適用ツールtheme-about-photo.py、配信対象section/indexの2件。indexはABOUTのimage/image_alt/image_alt_enだけ変更し、その他設定一致を確認。Liquid2件検査成功。
+
+ABOUT写真の本番反映: clean remote master75a5fa77209ec2740bdaa76b5b5f27cf2e61f91a、remote fetch/SHA一致と既配信bdc2b6e/b2b8453包含guard成功。公開189917102253へsection/index2件を反映。初回readbackで新規画像/alt設定だけ未保存だったため、schema反映後に同clean SHAからindexのみ再送。最終section完全一致/index意味一致、公開写真の読込と日英altを確認。PC1352px/スマホ390px（横幅=scroll幅）で手元/真空パック/料理が見えることを確認しviewport復元。ABOUT以外の画像/商品/設定を保持。証跡about-pc.pngは保護runtime shopify-about-photo-20261031へ保存。管理画面の新設定欄でのUI保存操作は未実施。注文/決済操作なし。
