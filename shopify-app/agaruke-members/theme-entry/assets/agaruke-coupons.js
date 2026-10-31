@@ -54,7 +54,9 @@ function initialize(){
     if(busy){pendingReconcile=true;return;}
     reconciling=true;busy=true;
     try{
-      const patch=launchRemoval(await getCart({fresh:true}));
+      const currentCart=await getCart({fresh:true});
+      if(launch.current()!=='used')return;
+      const patch=launchRemoval(currentCart);
       if(!patch)return;
       await show(await request('cart/update.js',patch));
       window.dispatchEvent(new Event('agaruke:launch-coupon-removed'));
