@@ -6,7 +6,7 @@ from pathlib import Path
 
 FILES = ['header-dropdown-menu.liquid', 'header-mega-menu.liquid', 'header-drawer.liquid']
 HREF = 'href="{{ link.url }}"'
-ATTRIBUTES = '''{% if link.url == 'https://food-records.com/' or link.url == 'https://food-records.com' %}
+ATTRIBUTES = '''{% if link.url == 'https://food-records.com/' or link.url == 'https://food-records.com' or link.url == 'http://food-records.com/' or link.url == 'http://food-records.com' %}
               target="_blank" rel="noopener noreferrer"
             {% endif %}'''
 
