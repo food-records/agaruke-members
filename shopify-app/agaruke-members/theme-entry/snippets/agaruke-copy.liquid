@@ -1,0 +1,19 @@
+{% doc %}
+  管理画面の日本語・英語欄から、現在の表示言語の文章を出力する。
+  @param {object} copy_settings - セクションまたはブロックの設定
+  @param {string} key - 日本語欄の設定ID
+  @param {boolean} [mobile_break] - 日本語の改行をスマートフォンだけに表示
+  @param {boolean} [desktop_break] - 改行をPCだけに表示
+{% enddoc %}
+{%- assign copy_key = key -%}
+{%- if request.locale.iso_code == 'en' -%}
+  {%- assign copy_key = key | append: '_en' -%}
+{%- endif -%}
+{%- capture copy_value -%}{{ copy_settings[copy_key] | escape | newline_to_br }}{%- endcapture -%}
+{%- if mobile_break and request.locale.iso_code != 'en' -%}
+  {{- copy_value | replace: '<br />', '<br class="ag-mobile-break">' -}}
+{%- elsif desktop_break -%}
+  {{- copy_value | replace: '<br />', '<br class="ag-desktop-break">' -}}
+{%- else -%}
+  {{- copy_value -}}
+{%- endif -%}

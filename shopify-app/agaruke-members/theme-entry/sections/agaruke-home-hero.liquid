@@ -1,4 +1,4 @@
-{% assign ag_hero_alt = 'promise_0' | t %}
+{% assign ag_hero_alt = section.settings.promise_0 %}{% if request.locale.iso_code == 'en' %}{% assign ag_hero_alt = section.settings.promise_0_en %}{% endif %}
 {{ 'agaruke-home-content.css' | asset_url | stylesheet_tag }}
 <div class="ag-home">
   <div class="ag-restored-hero">
@@ -7,15 +7,15 @@
         {{ section.settings.image | image_url: width: 2000 | image_tag: widths: '600, 900, 1300, 1600, 2000', sizes: '100vw', loading: 'eager', fetchpriority: 'high', alt: ag_hero_alt }}
       </div>
     {% endif %}
-    <a class="ag-hero-cta" href="#ag-products">
-      <span>{{ section.settings.cta_label | default: 'VIEW ITEM' | escape }}</span>
+    <a class="ag-hero-cta" href="{{ section.settings.cta_url | default: '#ag-products' }}">
+      <span>{% render 'agaruke-copy', copy_settings: section.settings, key: 'cta_label' %}</span>
       <svg width="56" height="14" viewBox="0 0 56 14" fill="none" aria-hidden="true"><path d="M1 7h52m-5-4 5 4-5 4" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </a>
   </div>
-  <div class="ag-promise-bar" aria-label="{{ 'promise_1' | t }}">
-    <p><span aria-hidden="true">❄</span> {{ 'promise_2' | t }}</p>
-    <p><span aria-hidden="true">◷</span> {{ 'promise_3' | t }}</p>
-    <p><span aria-hidden="true">♡</span> {{ 'promise_4' | t }}</p>
+  <div class="ag-promise-bar" aria-label="{% render 'agaruke-copy', copy_settings: section.settings, key: 'promise_1' %}">
+    <p><span aria-hidden="true">❄</span> {% render 'agaruke-copy', copy_settings: section.settings, key: 'promise_2' %}</p>
+    <p><span aria-hidden="true">◷</span> {% render 'agaruke-copy', copy_settings: section.settings, key: 'promise_3' %}</p>
+    <p><span aria-hidden="true">♡</span> {% render 'agaruke-copy', copy_settings: section.settings, key: 'promise_4' %}</p>
   </div>
 </div>
 {% schema %}
@@ -37,30 +37,85 @@
     {
       "type": "text",
       "id": "cta_label",
-      "label": "CTAのテキスト",
+      "label": "CTAのテキスト（日本語）",
       "default": "VIEW ITEM"
+    },
+    {
+      "type": "text",
+      "id": "cta_label_en",
+      "label": "CTAのテキスト（英語）",
+      "default": "VIEW ITEM"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "CTAリンク先（空欄なら商品エリア）"
+    },
+    {
+      "type": "text",
+      "id": "promise_0",
+      "label": "画像の代替テキスト（日本語）",
+      "default": "AGARUKE 気分があがる一皿。"
+    },
+    {
+      "type": "text",
+      "id": "promise_0_en",
+      "label": "画像の代替テキスト（英語）",
+      "default": "AGARUKE — a meal to lift your mood."
+    },
+    {
+      "type": "text",
+      "id": "promise_1",
+      "label": "案内欄の読み上げ名（日本語）",
+      "default": "AGARUKEのお届けと楽しみ方"
+    },
+    {
+      "type": "text",
+      "id": "promise_1_en",
+      "label": "案内欄の読み上げ名（英語）",
+      "default": "Delivery and preparation"
+    },
+    {
+      "type": "text",
+      "id": "promise_2",
+      "label": "案内①（日本語）",
+      "default": "冷凍でお届け"
+    },
+    {
+      "type": "text",
+      "id": "promise_2_en",
+      "label": "案内①（英語）",
+      "default": "Delivered frozen"
+    },
+    {
+      "type": "text",
+      "id": "promise_3",
+      "label": "案内②（日本語）",
+      "default": "温めて、盛りつけ"
+    },
+    {
+      "type": "text",
+      "id": "promise_3_en",
+      "label": "案内②（英語）",
+      "default": "Heat and plate"
+    },
+    {
+      "type": "text",
+      "id": "promise_4",
+      "label": "案内③（日本語）",
+      "default": "自分のための一皿に"
+    },
+    {
+      "type": "text",
+      "id": "promise_4_en",
+      "label": "案内③（英語）",
+      "default": "A moment just for you"
     }
   ],
   "presets": [
     {
       "name": "AGARUKE メインビジュアル"
     }
-  ],
-  "locales": {
-    "ja": {
-      "promise_0": "AGARUKE 気分があがる一皿。",
-      "promise_1": "AGARUKEのお届けと楽しみ方",
-      "promise_2": "冷凍でお届け",
-      "promise_3": "温めて、盛りつけ",
-      "promise_4": "自分のための一皿に"
-    },
-    "en": {
-      "promise_0": "AGARUKE — a meal to lift your mood.",
-      "promise_1": "Delivery and preparation",
-      "promise_2": "Delivered frozen",
-      "promise_3": "Heat and plate",
-      "promise_4": "A moment just for you"
-    }
-  }
+  ]
 }
 {% endschema %}
