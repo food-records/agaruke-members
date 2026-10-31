@@ -21,3 +21,20 @@
 .ag-hero-cta:hover svg{transform:translateX(5px)}
 @media(max-width:749px){.ag-restored-hero{height:340px}.ag-home .ag-hero-cta{left:24px;bottom:24px;font-size:11px;gap:22px}.ag-hero-cta svg{width:48px}}
 @media(prefers-reduced-motion:reduce){.ag-hero-cta svg{transition:none}}
+
+/* Three selected products: consistent photos and bottom-aligned prices/actions. */
+@media(min-width:990px){
+  .ag-product-grid--three{grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;align-items:stretch}
+  .ag-product-grid--three .ag-product{display:flex;flex-direction:column;align-items:stretch;min-width:0}
+  .ag-product-grid--three .ag-product-image{flex:none;aspect-ratio:1}
+  .ag-product-grid--three .ag-product-image img{width:100%;height:100%;aspect-ratio:1;object-fit:cover}
+  .ag-product-grid--three .ag-product-copy{display:flex;flex:1;flex-direction:column;align-items:flex-start;padding:22px 0 0}
+  .ag-product-grid--three .ag-product-copy h3{font-size:19px;line-height:1.65;margin-bottom:16px}
+  .ag-product-grid--three .ag-product-copy>p:not(.ag-product-price){flex:1;width:100%;margin-bottom:20px}
+  .ag-product-grid--three .ag-product-price{margin-top:auto;margin-bottom:16px}
+}
+@media(min-width:750px) and (max-width:989px){
+  .ag-product-grid--three{grid-template-columns:1fr;gap:34px}
+  .ag-product-grid--three .ag-product{grid-template-columns:38% 62%;align-items:center}
+  .ag-product-grid--three .ag-product-copy{padding:0 0 0 30px}
+}

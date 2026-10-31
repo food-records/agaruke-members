@@ -30,7 +30,9 @@
 
   <section class="ag-products ag-wrap ag-section" id="ag-products" aria-labelledby="ag-products-heading">
     <div class="ag-section-top"><div><p class="ag-eyebrow">OUR MENU</p><h2 id="ag-products-heading">気分が上がる<br class="ag-mobile-break">一皿を選ぶ。</h2></div><a class="ag-text-link" href="{{ routes.all_products_collection_url }}">商品一覧を見る <span aria-hidden="true">↗</span></a></div>
-    <div class="ag-product-grid">
+    {% assign ag_product_count = 0 %}
+    {% for block in section.blocks %}{% if block.settings.product != blank %}{% assign ag_product_count = ag_product_count | plus: 1 %}{% endif %}{% endfor %}
+    <div class="ag-product-grid{% if ag_product_count == 3 %} ag-product-grid--three{% endif %}">
       {% for block in section.blocks %}
         {% assign item = block.settings.product %}
         {% if item != blank %}
