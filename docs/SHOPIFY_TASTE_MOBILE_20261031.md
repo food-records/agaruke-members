@@ -71,3 +71,5 @@ CTA視認性の本番反映: clean remote master3cc7c2b910e1cbd0a334f435def30e43
 ## PCメイン画像を横幅100%で全体表示（2026-10-31）
 
 ユーザー指摘の狭いPC幅で画像内ロゴが切れる問題を修正。750px以上のhero固定560px高とcoverを解除し、写真/pictureを通常フロー、画像width100%/height auto・containへ変更。画面横幅に応じて画像の自然な縦横比で高さも変わる。透明ヘッダー/VIEW ITEMの重ね配置、スマホ専用画像/CTA背景、他セクション/設定は保持。CSS1件のみ。
+
+PC全体画像の本番反映: clean remote master818683011bd4368a5370da8758dd0c272afa0707から公開Dawn189917102253へcontent CSS1件。fetch/remote一致・既配信3cc7c2b/現行base6946a3d包含guard、直前差分なし、Liquid1件/readback一致。公開820pxで画像820×461.9/containとロゴ全体、1024pxで1024×576.6、通常幅復元後1083pxで1083×609.5、横はみ出しなしを確認。スマホ390pxは専用画像692.96px高/アイボリーCTAを維持。ヘッダー/CTA重ね配置も保持、viewport復元。証跡desktop-820.pngは保護runtime shopify-desktop-hero-fit-20261031。注文/クーポン選択操作なし。
