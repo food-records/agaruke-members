@@ -88,7 +88,7 @@ function initialize(config) {
       remember(state);
       if(config.is_cart||config.legacy_note)await cleanupLegacyNote(await request(root+'cart.js'));
     })().catch(()=>{
-      window.dispatchEvent(new Event('agaruke:benefits-error')); 
+      window.dispatchEvent(new Event('agaruke:benefits-error'));
     }).finally(()=>{running=null;if(again){const force=forceAgain;again=false;forceAgain=false;schedule(force);}});
     return running;
   }
