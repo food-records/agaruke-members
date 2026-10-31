@@ -7,5 +7,9 @@
       "sign_in": "Sign in or create an account",
       "members": "Points & coupons"
     }
+  },
+  "agaruke_shipping": {
+    "dispatch": "Orders usually ship within 3–5 calendar days after payment confirmation.",
+    "arrival": "Delivery time after dispatch varies by destination and carrier conditions."
   }
 }
