@@ -38,10 +38,10 @@ function initialize(){
   const launch=createLaunchCouponState({
     initial:'unknown',
     lookup:async()=>{
-      const response=await fetch(ROOT.replace(/\/$/,'')+'/apps/members',{method:'POST',cache:'no-store',signal:AbortSignal.timeout(12000),headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'launch_status'})});
+      const response=await fetch(ROOT.replace(/\/$/,'')+'/apps/members?agaruke_coupon_status=1',{method:'POST',cache:'no-store',signal:AbortSignal.timeout(12000),headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({action:'launch_status'})});
       if(!response.ok)throw Error('LAUNCH_STATUS_UNAVAILABLE');
       const result=(await response.json()).launch_coupon;
-      console.debug('AGARUKE_LAUNCH_CHECK', ['guest','used','not_used','unknown','expired'].includes(result)?result:'unknown');
+      console.debug('AGARUKE_LAUNCH_CHECK', ['guest','used','not_used','unknown','expired'].includes(result)?result:'unexpected_response');
       return result;
     },
     onChange:state=>{
