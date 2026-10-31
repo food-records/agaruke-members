@@ -321,4 +321,7 @@ EC購入には「商品500円以上」という独自の最低購入額は実装
 
 2026-10-31注文完了ポイントカード表示の撤去公開: source8e6140798f455b5dec34677947fbc6aa70371492をMembers origin/masterへpush/clean/remote一致/直前app6807ab8包含で検査。checkout extensionを常にnull renderへ変更し、見出し・状態文・確認中・手動再確認ボタン・初回登録案内を撤去。初回の自動bindリクエストだけ保持。CLI app build（両UI拡張・theme check）/当該拡張typecheck/2026-07 purchase.thank-you schema検査成功。public-coupon-6807ab8と比較して他拡張とapp設定のsource差分なし。Shopify app version hide-order-card-8e61407（1189299453953）を公開しactive1件をreadback。配信bundleから案内文字列がなく、自動連携endpointが残ることを確認。Cloud Run/テーマ/割引/ポイントWebhook/権限変更なし。既存注文完了タブが見つからず、実注文画面の再読込による最終確認はユーザー側に残る。新規注文・支払・LINE配信はしない。背景API409の診断は残件だが画面表示は出ない。Secretary orderec/Driveイベント公開未承認保留。.work追加削除なし。
 
-2026-10-31: 商品/カート/トップFAQの発送目安を「ご入金確認後、通常3〜5日以内に発送」（暦日）で準備。到着日とは区別。[仕様・公式情報確認](SHOPIFY_DISPATCH_WINDOW_20261031.md)。
+2026-10-31: 商品/カート/トップFAQの発送目安「ご入金確認後、通常3〜5日以内に発送」（暦日）を公開。到着日とは区別。[仕様・公式情報確認](SHOPIFY_DISPATCH_WINDOW_20261031.md)。
+
+
+2026-10-31発送目安の本番反映: source6ec54bd/文字サイズ補正00f46aeをMembers origin/masterへpushし、clean/remote一致/既配信8e61407・6ec54bd包含をrelease_guardで検査。元checkoutには別件のカート/font最適化の未commit差分があったため、変更を触らずGit外.runtime/shopify-dispatch-window-20261031/sourceのclean cloneから配信。Dawn189917102253の対象6ファイルだけ反映、直前5原本一致/新規snippet競合なし/公開6ファイルbyte一致。Liquid検査6ファイル+最終snippet検査成功、パッチ冪等/既存locale不変。商品とカートに通常3〜5日以内発送・到着日別案内、トップ配送FAQと英語カートを実ブラウザー確認。証跡.runtime/shopify-dispatch-window-20261031/product.jpg。3〜5日は暦日（営業日の希望は未回答のため明示した既定案）。新規配送ポリシー全文・自動到着予定・送料・バックエンド/注文・決済・ポイント・LINE配信は変更しない。公式の遅延/Paymentsリスク/日本チャージバック1,300円の根拠は本仕様のリンクに保存。Secretary orderec/Driveイベント公開未承認保留。.work追加削除なし。

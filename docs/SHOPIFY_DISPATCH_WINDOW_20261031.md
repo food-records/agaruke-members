@@ -15,3 +15,6 @@
 - Shop Promiseは米国ストア向けの別制度。今回有効化しない。https://help.shopify.com/en/manual/fulfillment/setup/shop-promise
 
 通常3〜5日で処理できる運用を前提とする。5日を超える見込みが判明した時点で、理由と新しい発送目安を顧客へ連絡し、キャンセル/返金希望へ対応する運用を推奨。これは今回自動実装/配信する通知ではない。
+
+
+2026-10-31発送目安の本番反映: source6ec54bd/文字サイズ補正00f46aeをMembers origin/masterへpushし、clean/remote一致/既配信8e61407・6ec54bd包含をrelease_guardで検査。元checkoutには別件のカート/font最適化の未commit差分があったため、変更を触らずGit外.runtime/shopify-dispatch-window-20261031/sourceのclean cloneから配信。Dawn189917102253の対象6ファイルだけ反映、直前5原本一致/新規snippet競合なし/公開6ファイルbyte一致。Liquid検査6ファイル+最終snippet検査成功、パッチ冪等/既存locale不変。商品とカートに通常3〜5日以内発送・到着日別案内、トップ配送FAQと英語カートを実ブラウザー確認。証跡.runtime/shopify-dispatch-window-20261031/product.jpg。3〜5日は暦日（営業日の希望は未回答のため明示した既定案）。新規配送ポリシー全文・自動到着予定・送料・バックエンド/注文・決済・ポイント・LINE配信は変更しない。公式の遅延/Paymentsリスク/日本チャージバック1,300円の根拠は本仕様のリンクに保存。Secretary orderec/Driveイベント公開未承認保留。.work追加削除なし。
