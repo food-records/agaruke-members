@@ -15,7 +15,7 @@
       {%- else -%}
         <li><a class="focus-inset" href="{{ routes.account_login_url }}" rel="nofollow">{{ 'agaruke_members.navigation.sign_in' | t }}</a></li>
       {%- endif -%}
-      <li><a class="focus-inset" href="{{ routes.root_url }}apps/members">{{ 'agaruke_members.navigation.members' | t }}</a></li>
+      <li><a class="focus-inset" href="{{ routes.root_url | append: '/apps/members' | replace: '//', '/' }}">{{ 'agaruke_members.navigation.members' | t }}</a></li>
     </ul>
   </nav>
 </details>
