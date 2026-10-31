@@ -122,7 +122,11 @@
 
   {% if ag_moment != blank %}
   <section class="ag-moment" {{ ag_moment.shopify_attributes }} aria-labelledby="ag-moment-heading">
-    {% if section.settings.moment_product.featured_image != blank %}<div class="ag-moment-image">{{ section.settings.moment_product.featured_image | image_url: width: 1200 | image_tag: widths: '500, 800, 1200', sizes: '(min-width: 750px) 55vw, 100vw', loading: 'lazy', alt: section.settings.moment_product.title }}</div>{% endif %}
+    {% assign ag_moment_image = ag_moment.settings.image | default: section.settings.moment_product.featured_image %}
+    {% assign ag_moment_alt = ag_moment.settings.image_alt %}
+    {% if request.locale.iso_code == 'en' %}{% assign ag_moment_alt = ag_moment.settings.image_alt_en %}{% endif %}
+    {% if ag_moment.settings.image == blank %}{% assign ag_moment_alt = section.settings.moment_product.title %}{% endif %}
+    {% if ag_moment_image != blank %}<div class="ag-moment-image">{{ ag_moment_image | image_url: width: 1600 | image_tag: widths: '400, 750, 1100, 1600', sizes: '(min-width: 750px) 55vw, 100vw', loading: 'lazy', alt: ag_moment_alt }}</div>{% endif %}
     <div class="ag-moment-copy"><p class="ag-eyebrow">{% render 'agaruke-copy', copy_settings: ag_moment.settings, key: 'eyebrow' %}</p><h2 id="ag-moment-heading">{% render 'agaruke-copy', copy_settings: ag_moment.settings, key: 'heading' %}</h2><p>{% render 'agaruke-copy', copy_settings: ag_moment.settings, key: 'body' %}</p><p>{% render 'agaruke-copy', copy_settings: ag_moment.settings, key: 'body_two' %}</p><p>{% render 'agaruke-copy', copy_settings: ag_moment.settings, key: 'closing' %}</p></div>
   </section>
   {% endif %}
@@ -764,6 +768,24 @@
       "name": "自分の時間の紹介",
       "limit": 1,
       "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "自分の時間を楽しむ写真",
+          "info": "未設定時は食卓用商品の画像を使用します。"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "画像の代替テキスト（日本語）",
+          "default": "好きな動画と飲み物、スパイスカレーを楽しむ夜のひととき。"
+        },
+        {
+          "type": "text",
+          "id": "image_alt_en",
+          "label": "画像の代替テキスト（英語）",
+          "default": "An evening with a favorite show, a drink and a plate of spice curry."
+        },
         {
           "type": "paragraph",
           "content": "日本語・英語をそれぞれ編集できます。文章欄の改行は表示にも反映されます。"
