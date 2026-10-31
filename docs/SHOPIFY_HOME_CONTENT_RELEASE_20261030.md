@@ -21,4 +21,6 @@ PC/390px幅でhero、紹介、step、2商品、FAQ/LINE案内の表示を確認�
 
 ## トップコピー差替（2026-10-31）
 
-ユーザー指定に従い、サービス見出しを「温めて盛り付けるだけの、簡単ミールキット。」、説明をココロ/冷凍ミールキット/日常「ケ」と「アガる」の文面へ差替。紹介CTAは「商品を見る」→#ag-productsへ変更。商品見出しを「気分が上がる一皿を選ぶ。」へ、食卓提案の見出し・説明を「日常の中のひと時」「me time」の指定文面へ差替。変更はcontent section1ファイル。元画像/VIEW ITEM・他機能は維持。Liquid検査成功、配信/PC/mobile確認は進行中。
+ユーザー指定に従い、サービス見出しを「温めて盛り付けるだけの、簡単ミールキット。」、説明をココロ/冷凍ミールキット/日常「ケ」と「アガる」の文面へ差替。紹介CTAは「商品を見る」→#ag-productsへ変更。商品見出しを「気分が上がる一皿を選ぶ。」へ、食卓提案の見出し・説明を「日常の中のひと時」「me time」の指定文面へ差替。変更はcontent section1ファイル。元画像/VIEW ITEM・他機能は維持。Liquid検査成功、公開反映・PC/mobile確認完了。
+
+コピー配信元はclean remote master `4498bcaa7f24251d9e1d331aca0d6f2d573febcc`（文言5b8e680、長い見出しのresponsive文字サイズ4498bca）。直前fetch/remote一致と既配信bd1c917包含を確認、live189917102253へsection1件だけをpush。直前差分なし/readback一致。指定文面、me timeの引用符、PC/390px幅の改行/横はみ出しなし（390/390）、紹介CTA→#ag-productsと新商品見出しを確認。viewport復元、PC/mobile/食卓copy画面を保護runtimeへ保存し紹介部分のtabを保持。画像・価格・LINE/カート・API/台帳/試験modeは変更なし。
