@@ -1,20 +1,15 @@
 {{ 'agaruke-home-content.css' | asset_url | stylesheet_tag }}
 <div class="ag-home">
-  <div class="ag-home-hero">
-    <div class="ag-hero-copy">
-      <p class="ag-eyebrow">A LITTLE JOY, ON YOUR PLATE.</p>
-      <h1>{{ section.settings.heading | escape | newline_to_br }}</h1>
-      <p class="ag-hero-lead">{{ section.settings.description | escape | newline_to_br }}</p>
-      <a class="ag-button" href="#ag-products">商品を見る <span aria-hidden="true">↗</span></a>
-    </div>
+  <div class="ag-restored-hero">
     {% if section.settings.image != blank %}
-      <div class="banner__media ag-hero-photo">
-        <picture>
-        {% if section.settings.mobile_product.featured_image != blank %}<source media="(max-width: 749px)" srcset="{{ section.settings.mobile_product.featured_image | image_url: width: 900 }}">{% endif %}
-        {{ section.settings.image | image_url: width: 1800 | image_tag: widths: '600, 900, 1200, 1800', sizes: '(min-width: 750px) 55vw, 100vw', loading: 'eager', fetchpriority: 'high', alt: 'AGARUKEのチキンオーバースパイスカレー' }}
-        </picture>
+      <div class="banner__media ag-restored-photo">
+        {{ section.settings.image | image_url: width: 2000 | image_tag: widths: '600, 900, 1300, 1600, 2000', sizes: '100vw', loading: 'eager', fetchpriority: 'high', alt: 'AGARUKE 気分があがる一皿。' }}
       </div>
     {% endif %}
+    <a class="ag-hero-cta" href="#ag-products">
+      <span>{{ section.settings.cta_label | default: 'VIEW ITEM' | escape }}</span>
+      <svg width="56" height="14" viewBox="0 0 56 14" fill="none" aria-hidden="true"><path d="M1 7h52m-5-4 5 4-5 4" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
   </div>
   <div class="ag-promise-bar" aria-label="AGARUKEのお届けと楽しみ方">
     <p><span aria-hidden="true">❄</span> 冷凍でお届け</p>
@@ -29,10 +24,8 @@
   "class": "ag-hero-section",
   "enabled_on": {"templates": ["index"]},
   "settings": [
-    {"type": "image_picker", "id": "image", "label": "既存の料理バナー画像"},
-    {"type": "product", "id": "mobile_product", "label": "スマートフォンの料理写真"},
-    {"type": "textarea", "id": "heading", "label": "見出し", "default": "気分があがる、\n一皿。"},
-    {"type": "textarea", "id": "description", "label": "紹介文", "default": "温めて、盛りつけて。\n自分のための、おいしい時間。"}
+    {"type": "image_picker", "id": "image", "label": "料理バナー画像"},
+    {"type": "text", "id": "cta_label", "label": "CTAのテキスト", "default": "VIEW ITEM"}
   ],
   "presets": [{"name": "AGARUKE メインビジュアル"}]
 }
