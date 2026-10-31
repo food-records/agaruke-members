@@ -27,6 +27,10 @@
       finally { for (const el of root.querySelectorAll('button')) el.disabled = false; }
     }); actions.append(b);
   }
+  async function couponSelect(code,title='') {
+    if(!window.agarukeCoupons)await new Promise(resolve=>window.addEventListener('agaruke:coupons-ready',resolve,{once:true}));
+    return window.agarukeCoupons.select(code,title);
+  }
   async function refresh() {
     state = await call('status', {token: sessionStorage.getItem(key), cart: await cart()});
     invalidateDisplay(); window.dispatchEvent(new Event('agaruke:members-authenticated'));
@@ -49,15 +53,16 @@
       }
     }
     if (!state.completed) {
+      const current = document.createElement('p'); current.className='agaruke-coupon-current'; current.textContent='適用状態は画面下のクーポン欄で確認できます。'; actions.append(current);
+      button('クーポンを使わない（解除）', async()=>{await couponSelect('');say('クーポンを解除しました。ポイントや交換済みの券はそのままです。');});
       for (const c of state.coupons || []) {
         const testCoupon=(state.test_coupon_ids||[]).includes(c.id);
         if(!exchangeEnabled&&!testCoupon)continue;
         if (c.status === 'pending') button(`${c.cost}円券の発行を再開`, async () => { await call('retry', {token: sessionStorage.getItem(key), cart: await cart(), coupon_id: c.id}); await refresh(); });
         else if (c.status === 'available') {
-          if(testCoupon){const p=document.createElement('p');p.textContent='テストクーポン：500円引き（商品小計3,000円以上）。カートで自動適用されます。';actions.append(p);continue;}
-          const note = document.createElement('p'); note.textContent = 'クーポンは一回限りです。コード・適用URLを他の人へ共有しないでください。'; actions.append(note);
-          const a = document.createElement('a'); a.className = 'button'; a.textContent = `${testCoupon?'【テスト】':''}${c.minimum.toLocaleString()}円以上で${c.cost}円引きを適用してカートへ`;
-          a.href = `/discount/${encodeURIComponent(c.code)}?redirect=%2Fcart`; actions.append(a);
+          const title = testCoupon ? 'テスト 500円OFFクーポン' : `EC ${c.cost.toLocaleString()}円OFFクーポン`;
+          const note = document.createElement('p'); note.textContent = `${title} ／ 税込商品合計${c.minimum.toLocaleString()}円以上・1回限り・併用不可`; actions.append(note);
+          button(`${title}を使う`, async()=>{await couponSelect(c.code,title);say(`${title}を選択しました。実際の適用状態は画面下で確認できます。`);});
         }
       }
     }

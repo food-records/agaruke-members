@@ -88,3 +88,5 @@ Go全packageのFirestore Emulator `go test -race ./...` / `go vet ./...`、Node�
 管理画面で作成成功・有効・0回使用・金額/条件/期限を確認。画面証跡は共有workspaceのGit外`.runtime/shopify-pricing-20261031/line-500-coupon.png`。Secretary記録先orderec、Driveイベント公開は未承認で保留。
 
 2026-10-31追記: 交換のみの一時公開を完了。backend shopify-members-exchange-f4c07e3、100%。購入pt/paid/返金は停止、LINE配信なし。[現行状態・復旧](SHOPIFY_EXCHANGE_TEST_RELEASE_20261031.md)。
+
+2026-10-31: テスト券を含むEC券は手動選択/解除方式へ変更。各ページの状態欄で適用中/条件未達/未選択を表示。交換券の管理titleとカート表示は金額付き名称へ統一。[詳細](SHOPIFY_COUPON_CONTROLS_RELEASE_20261031.md)。

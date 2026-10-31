@@ -11,7 +11,7 @@ const coupon={id:'test-coupon',code:'AMTEST',cost:200,minimum:4000,status:'pendi
 test('discount is one-use, customer-restricted, has the correct threshold and cannot combine',()=>{
  const input=discountInput(coupon,'123');
  assert.deepEqual(input.context,{customers:{add:['gid://shopify/Customer/123']}});
- assert.equal(input.usageLimit,1);assert.equal(input.customerGets.value.discountAmount.amount,'200');
+ assert.equal(input.title,'EC 200円OFFクーポン（商品合計4,000円以上）');assert.equal(input.usageLimit,1);assert.equal(input.customerGets.value.discountAmount.amount,'200');
  assert.equal(input.minimumRequirement.subtotal.greaterThanOrEqualToSubtotal,'4000');
  assert.deepEqual(input.combinesWith,{orderDiscounts:false,productDiscounts:false,shippingDiscounts:false});
 });
@@ -67,6 +67,6 @@ test('exchange test UI exposes all tiers and issued coupons without claiming pur
  await runInNewContext(source,{URLSearchParams,document,sessionStorage:storage,window:{dispatchEvent(){}},Event:class{},location:{hash:''},fetch:async url=>Response.json(url==='/cart.js'?{token:'cart'}:state)});
  const labels=nodes.map(n=>n.textContent||'').join(' ');
  for(const amount of ['200pt','500pt','1000pt'])assert.ok(labels.includes(amount));
- assert.ok(labels.includes('購入ポイント付与は停止'));assert.ok(labels.includes('3,800円以上で200円引き'));
- assert.ok(nodes.some(n=>n.href==='/discount/test-only-code?redirect=%2Fcart'));
+ assert.ok(labels.includes('購入ポイント付与は停止'));assert.ok(labels.includes('税込商品合計3,800円以上'));assert.ok(labels.includes('クーポンを使わない（解除）'));
+ assert.ok(labels.includes('EC 200円OFFクーポンを使う'));
 });

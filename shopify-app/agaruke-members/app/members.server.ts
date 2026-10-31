@@ -28,7 +28,7 @@ export async function membersCall(customer: string, action: string, fields: Reco
 export interface Coupon {id: string; code: string; cost: number; minimum: number; status: string; expires_at: string}
 export function discountInput(c: Coupon, customer: string) {
   return {
-    title: `AGARUKE Members ${c.cost}円券 ${c.id}`, code: c.code,
+    title: `EC ${c.cost.toLocaleString("ja-JP")}円OFFクーポン（商品合計${c.minimum.toLocaleString("ja-JP")}円以上）`, code: c.code,
     context: customer ? {customers: {add: [`gid://shopify/Customer/${customer}`]}} : {all: "ALL"},
     customerGets: {value: {discountAmount: {amount: String(c.cost), appliesOnEachItem: false}}, items: {all: true}},
     minimumRequirement: {subtotal: {greaterThanOrEqualToSubtotal: String(c.minimum)}},

@@ -1,10 +1,15 @@
 {% doc %}
-  割引コードを顧客向けの名称へ変換する。他の割引は元の表示を維持する。
+  個別コードを顧客向けのクーポン名称へ変換する。
   @param {string} title - Shopifyが返す割引表示名
 {% enddoc %}
-{%- assign members_discount_prefix = title | slice: 0, 6 -%}
-{%- if members_discount_prefix == 'AMTEST' and title.size == 38 -%}
-  テストクーポン：500円引き
+{%- assign prefix = title | slice: 0, 2 -%}
+{%- assign test_prefix = title | slice: 0, 6 -%}
+{%- if title == 'AGARUKE500' -%}
+  初回購入 500円OFFクーポン
+{%- elsif test_prefix == 'AMTEST' and title.size == 38 -%}
+  テスト 500円OFFクーポン
+{%- elsif prefix == 'AM' and title.size == 66 -%}
+  {%- if cart.total_discount > 0 -%}EC {{ cart.total_discount | money_without_currency }}円OFFクーポン{%- else -%}ECポイント交換クーポン{%- endif -%}
 {%- else -%}
   {{- title | escape -}}
 {%- endif -%}

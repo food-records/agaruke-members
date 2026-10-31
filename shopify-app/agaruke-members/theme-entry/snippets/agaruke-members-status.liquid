@@ -31,5 +31,7 @@
     } catch (_) {}
   </script>
   <noscript><style>.shopify-section:has(.announcement-bar a[href*="/apps/members"]) { display: block !important; } [data-agaruke-member-card] { visibility: visible !important; }</style></noscript>
+  {{ 'agaruke-coupons.css' | asset_url | stylesheet_tag }}
+  <script type="module" src="{{ 'agaruke-coupons.js' | asset_url }}"></script>
   <script type="module" src="{{ 'agaruke-members-status.js' | asset_url }}"></script>
 {% endunless %}

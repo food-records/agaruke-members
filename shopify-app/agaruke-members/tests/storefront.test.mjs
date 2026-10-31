@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {storefrontPresentation} from '../app/storefront.server.ts';
-import {automaticDiscount,clearLegacyAnnotation,POINT_PROPERTY,DISPLAY_CACHE_KEY,DISPLAY_CACHE_TTL,cacheRecord,readDisplayCache} from '../theme-entry/assets/agaruke-members-status.js';
+import {clearLegacyAnnotation,POINT_PROPERTY,DISPLAY_CACHE_KEY,DISPLAY_CACHE_TTL,cacheRecord,readDisplayCache} from '../theme-entry/assets/agaruke-members-status.js';
 const cart={item_count:3,total_price:360000,currency:'JPY'};
 test('cart benefits remain accurate while old scripts receive no checkout annotation amount',()=>{
  const state={linked:true,ready:true,permanent:true,coupons:[{status:'available',minimum:4000}]};
@@ -57,17 +57,10 @@ test('test coupon visibility is limited to exact issued coupon while ordinary ex
  assert.equal(storefrontPresentation({linked:false,coupons:[c]},cart,true).test_coupon_count,0);
 });
 
-test('automatic coupon sets only a verified test code on an empty discount selection',()=>{
+test('test coupons are never automatically applied or stored in the display cache',()=>{
  const code='AMTEST'+'A'.repeat(32);
- assert.deepEqual(automaticDiscount({},code),{discount:code});
- assert.equal(automaticDiscount({discount_codes:[{code,applicable:false}]},code),null);
- assert.equal(automaticDiscount({discount_codes:[{code:'OTHER'}]},code),null);
- assert.equal(automaticDiscount({cart_level_discount_applications:[{title:'automatic'}]},code),null);
- assert.equal(automaticDiscount({},'OTHER'),null);
  const state=storefrontPresentation({linked:true,ready:true,coupons:[{id:'test-500-3000-20261028',code,cost:500,minimum:3000,status:'available'}]},cart,true);
- assert.equal(state.automatic_coupon,code);
- assert.ok(!JSON.stringify(cacheRecord(state,'scope')).includes(code));
- assert.equal(storefrontPresentation({linked:false},cart,true).automatic_coupon,'');
+ assert.equal(state.automatic_coupon,'');assert.ok(!JSON.stringify(cacheRecord(state,'scope')).includes(code));
 });
 
 test('identity cache survives cart changes without reusing purchase benefits',()=>{
