@@ -7,3 +7,7 @@ Shopify標準shopify-accountは未ログイン時にもメニューを表示す�
 変更はsections/header.liquidの既存アカウント部分を新規snippets/agaruke-account-entry.liquidのrenderへ置換するだけ。他のヘッダー/写真/配置変更を維持。未ログイン時はストア内パネルではなくShopifyログイン画面へ遷移する。
 
 原典: https://shopify.dev/docs/storefronts/themes/customer-engagement/account-component 、https://shopify.dev/docs/api/storefront-web-components/components/shopify-account 。
+
+## 公開確認
+
+実装a78fea06c53876a8b985e166c3870b8586b167a5をmaster/origin一致・clean・直前6807ab8包含で確認。Shopify Liquid検証2ファイル成功、直前headerの変更なしを確認してDawn 189917102253へ対象2ファイルだけ公開。ブラウザーの未ログイン状態でアイコンがlogin linkになり、Shopifyのログイン画面へ遷移し3メニューがないことを確認。メール/Shopログインの選択は維持。ログイン実行・個人情報入力・LINE送信なし。ログイン済み分岐は従来markup維持を確認、実ログイン後の操作試験は未実施。Cloud Run/app versionの変更なし。.work追加削除なし。Secretary orderec/Drive event公開未承認保留。
