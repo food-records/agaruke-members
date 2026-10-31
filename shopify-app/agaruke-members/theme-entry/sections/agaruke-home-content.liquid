@@ -21,9 +21,13 @@
       <p>{% render 'agaruke-copy', copy_settings: ag_about.settings, key: 'closing' %}</p>
       <a class="ag-text-link" href="{{ ag_about.settings.cta_url | default: '#ag-products' }}">{% render 'agaruke-copy', copy_settings: ag_about.settings, key: 'cta' %} <span aria-hidden="true">↗</span></a>
     </div>
-    {% if section.settings.feature_product.featured_image != blank %}
+    {% assign ag_about_image = ag_about.settings.image | default: section.settings.feature_product.featured_image %}
+    {% assign ag_about_alt = ag_about.settings.image_alt %}
+    {% if request.locale.iso_code == 'en' %}{% assign ag_about_alt = ag_about.settings.image_alt_en %}{% endif %}
+    {% if ag_about.settings.image == blank %}{% assign ag_about_alt = section.settings.feature_product.title %}{% endif %}
+    {% if ag_about_image != blank %}
       <div class="ag-about-image">
-        {{ section.settings.feature_product.featured_image | image_url: width: 1100 | image_tag: widths: '400, 700, 1100', sizes: '(min-width: 750px) 46vw, 100vw', loading: 'lazy', alt: section.settings.feature_product.title }}
+        {{ ag_about_image | image_url: width: 1100 | image_tag: widths: '400, 700, 1100', sizes: '(min-width: 750px) 46vw, 100vw', loading: 'lazy', alt: ag_about_alt }}
         <p>{% render 'agaruke-copy', copy_settings: ag_about.settings, key: 'caption' %}</p>
       </div>
     {% endif %}
@@ -270,6 +274,24 @@
       "name": "サービス紹介",
       "limit": 1,
       "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "ABOUTの画像",
+          "info": "未設定の場合は紹介用商品の画像を使用します。"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "画像の代替テキスト（日本語）",
+          "default": "ミートボールと付け合わせを、お気に入りの器に盛り付けるひととき。"
+        },
+        {
+          "type": "text",
+          "id": "image_alt_en",
+          "label": "画像の代替テキスト（英語）",
+          "default": "Plating meatballs and accompaniments on a favorite dish."
+        },
         {
           "type": "paragraph",
           "content": "日本語・英語をそれぞれ編集できます。文章欄の改行は表示にも反映されます。"

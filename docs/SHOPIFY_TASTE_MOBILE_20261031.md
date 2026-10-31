@@ -13,3 +13,7 @@
 公開Dawn189917102253へclean remote master bdc2b6e760adb0b4db16ec91f0a42e73b51a0c61から4件のみ反映。fetch/local・remote SHA一致と既配信1f63e60/直前base d03871d包含guard成功（並行記録f4c07e3もmasterで包含）。配信直前対象4件に変更なし。取得済み最新indexから指定箇所だけ変更し、その他設定/順序/商品/配送非表示を保持した。配信後section2/CSS完全一致・index意味一致。Shopify検査4件、アプリtest17件成功。
 
 公開JA/ENの順序about→products→craft→how、商品3件の日英の説明・価格・リンク、FAQ4/Company別タブ/linked告知非表示を確認。PC1352pxは従来agaruke_header.png/560px、390pxスマホはheader-image-sp.png/全体390×692.96px、双方横はみ出しなし。VIEW ITEMクリックで商品欄へ移動、craft3列/スマホ1列と全文章を確認し、viewportを復元した。証跡craft-live.png/mobile-live.pngは保護runtime shopify-taste-mobile-20261031へ保持。管理画面での新しい設定欄のUI保存操作は未確認、schema・readback・公開表示は確認済み。注文/決済操作なし。
+
+## ABOUT画像の差し替え（2026-10-31）
+
+ユーザー添付と一致するDownloads/moritsuke-image.png（1254×1254、未加工）をShopify Files46900562526381へ登録。ABOUTは商品の写真参照から専用image_pickerの写真へ変更し、日英の代替テキストを追加した。専用画像が未設定の場合は従来のfeature_product画像/タイトルへfallbackする。メイン/メニュー/下部の画像や文章・商品・会員導線は保持する。「AGARUKE サービス紹介→ABOUTブロック→ABOUTの画像」で変更可能。適用ツールtheme-about-photo.py、配信対象section/indexの2件。indexはABOUTのimage/image_alt/image_alt_enだけ変更し、その他設定一致を確認。Liquid2件検査成功。
