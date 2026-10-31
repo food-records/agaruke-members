@@ -27,3 +27,7 @@ ABOUT写真の本番反映: clean remote master75a5fa77209ec2740bdaa76b5b5f27cf2
 管理場所は「AGARUKE サービス紹介→おいしさの理由→おいしさの理由の画像」。適用ツールtheme-craft-photo.py。indexの変更はcraft画像/日英altの3設定のみ、それ以外の設定一致を確認。Liquid/CSS/index3件検査成功。schemaの反映後にindexを設定する2段階の配信とする。
 
 craft写真の本番反映: clean remote master189fffc90cd23d93b045959eb1059a446c967e4b、fetch/remote SHA一致と既配信75a5fa7/720b48e包含guard成功。直前3件変更なし。公開Dawn189917102253へsection/CSS→indexの順に反映し、readbackはsection/CSS完全一致、index意味一致。公開PC1352px（画像400×400）/スマホ390px（画像346×346）で写真全体と3理由・横はみ出しなしを確認。英語alt確認、viewport復元。証跡craft-pc.pngは保護runtime shopify-craft-photo-20261031。注文/決済操作なし。管理画面で新しい設定欄のUI保存操作は未実施、schema/readback/公開表示を検証した。
+
+## craft配置余白の見直し（2026-10-31）
+
+ユーザー指摘の見出し周囲の空白を解消するため、見出しを上段に独立させ、下段は写真左（最大460px）/3理由を縦に右へ並べる2列へ変更。写真と説明の上端を揃え、上下paddingを96→72px、スマホ48pxへ調整。989px以下は写真→理由の1列とし、写真全体と既存文章を保持。画像なしは従来の3理由グリッド。変更はsection/CSSのみでschema/設定値/画像/日英コピー/他セクションを維持する。

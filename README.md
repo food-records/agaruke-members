@@ -183,3 +183,5 @@ agaruke-members/
 2026-10-31: ABOUTの写真をユーザー指定moritsuke-image.pngへ変更し、ABOUTブロックに専用画像設定と日英altを追加。[記録](docs/SHOPIFY_TASTE_MOBILE_20261031.md)。
 
 2026-10-31: おいしさの理由にユーザー指定house-meal.pngを追加し、PC見出し横/スマホ見出し下の画像と日英altを設定。[記録](docs/SHOPIFY_TASTE_MOBILE_20261031.md)。
+
+2026-10-31: おいしさの理由の余白を修正し、見出しの下に写真左/3理由右をまとめた配置へ変更。[現行配置](docs/SHOPIFY_TASTE_MOBILE_20261031.md)。
