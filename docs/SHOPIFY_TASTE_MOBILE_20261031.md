@@ -37,3 +37,5 @@ craft写真の本番反映: clean remote master189fffc90cd23d93b045959eb1059a446
 ## craftタイトル右寄せ配置（2026-10-31）
 
 ユーザー指定でPCのタイトルを写真の右、3理由の上へ移動。画像を左列の2行にまたがせ、右列に見出し→説明を24px間隔で配置。989px以下は見出し→写真→説明の順を維持する。文言/写真/設定値は変更せず、section/CSSの2件のみ変更。
+
+タイトル位置の本番反映: clean remote master6920c41312d93ec4fd33bd891ce3f7c37dffcf14から公開Dawn189917102253へsection/CSS2件。fetch/remote一致・直前本番6e75766/3f7a555包含guard成功、直前差分なし、Liquid2件/readback一致、index変更なし。公開PC1352pxで写真と右タイトル上端73.1px一致、スマホ390pxでタイトル→写真→3説明と横はみ出しなし、英語タイトル確認。viewport復元、証跡title-pc.pngを保護runtime shopify-craft-title-right-20261031へ保存。注文操作なし。
