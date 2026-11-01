@@ -18,7 +18,7 @@
 
 LINE本人の`shopify_coupons`を読み、Shopify画面で既に取得した券も所持欄へ表示する。使用済み・期限切れは利用不可。旧Customer限定券は発行時のShopifyアカウントへのログインが必要と明記する。旧券の発行条件・顧客制限は書き換えない。今回のLIFF交換券は既存のゲスト対応1回限りコードを発行し、Shopifyログインは要求しない。
 
-「AGARUKEで使用する」はShopify標準`/discount/{code}?redirect=...`でショップトップへ遷移し、`utm_source=line&utm_medium=pointcard&utm_campaign=point_exchange`を付ける。クリックでは使用済みや追加ポイント消費にしない。最終適用条件/1回制限はShopify、支払後の使用済み同期は既存Webhookが担当。LINE購入ポイントの条件・購入前連携の導線は従来どおりで、この遷移だけで購入セッションを作らない。
+「AGARUKEで使用する」は本人の券IDを持つ`/apps/members?entry=ticket`から既存LINE認証を経て、今回カートの購入セッションを連携し、所持券を照合・適用したショップトップへ遷移する。UTMは`source=line / medium=social / campaign=point_exchange / content=pointcard_ticket_200|500|1000`。クリックでは使用済みや追加ポイント消費にしない。最終適用条件/1回制限はShopify、支払後の使用済み同期は既存Webhookが担当。リッチメニュー入口・認証・最新公開状態は[LINEショップ入口仕様](LINE_SHOP_ENTRY_20261101.md)を正本とする。
 
 ## 実装と境界
 
