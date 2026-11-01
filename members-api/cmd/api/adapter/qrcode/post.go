@@ -38,20 +38,24 @@ type PostResp struct {
 }
 
 type memberDoc struct {
-	Number            int64     `firestore:"number"`
-	Name              string    `firestore:"name"`
-	Point             int       `firestore:"point"`
-	TotalEarnedPoint  int       `firestore:"total_earned_point"`
-	LastCheckinDate   string    `firestore:"last_checkin_date,omitempty"`
-	LastAccumulatedAt time.Time `firestore:"last_accumulated_at,omitempty"`
+	Number            int64      `firestore:"number"`
+	Name              string     `firestore:"name"`
+	Point             int        `firestore:"point"`
+	TotalEarnedPoint  int        `firestore:"total_earned_point"`
+	LastCheckinDate   string     `firestore:"last_checkin_date,omitempty"`
+	LastAccumulatedAt time.Time  `firestore:"last_accumulated_at,omitempty"`
+	ConsentedAt       *time.Time `firestore:"consented_at,omitempty"`
+	DeletedAt         *time.Time `firestore:"deleted_at,omitempty"`
 }
 
 type serialDoc struct {
-	Point      int    `firestore:"point"`
-	Used       bool   `firestore:"used"`
-	UsedID     string `firestore:"used_id"`
-	Type       string `firestore:"type"`       // "once" (default) or "recurring"
-	Accumulate *bool  `firestore:"accumulate"` // nil = true (backward compat)
+	Point      int        `firestore:"point"`
+	Used       bool       `firestore:"used"`
+	UsedID     string     `firestore:"used_id"`
+	Type       string     `firestore:"type"`       // "once" (default) or "recurring"
+	Accumulate *bool      `firestore:"accumulate"` // nil = true (backward compat)
+	CampaignID string     `firestore:"campaign_id,omitempty"`
+	ExpiresAt  *time.Time `firestore:"expires_at,omitempty"`
 }
 
 type userScanDoc struct {
@@ -195,18 +199,17 @@ func (h handler) Post(w http.ResponseWriter, r *http.Request) {
 		presenter.BadRequest(w, "INVALID_BODY")
 		return
 	}
+	idToken := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	prof, err := getProfile(idToken)
+	if err != nil || prof == nil || prof.UserID == "" {
+		presenter.BadRequest(w, "INVALID_TOKEN")
+		return
+	}
 
 	if strings.HasPrefix(body.Code, dailyCheckinPrefix) {
 		token := body.Code[len(dailyCheckinPrefix):]
 		if !totp.Validate(config.CheckinSecret, token) {
 			presenter.BadRequest(w, "QRコードの有効期限が切れています。店舗のQRコードをスキャンしてください")
-			return
-		}
-		idToken := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-		prof, err := getProfile(idToken)
-		if err != nil {
-			logger.Error(err.Error())
-			presenter.BadRequest(w, "INVALID_TOKEN")
 			return
 		}
 		h.postDailyCheckin(ctx, w, prof)
@@ -232,130 +235,21 @@ func (h handler) Post(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if s.Type == "recurring" {
-		idToken := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-		prof, err := getProfile(idToken)
-		if err != nil {
-			logger.Error(err.Error())
-			presenter.BadRequest(w, "INVALID_TOKEN")
-			return
-		}
 		h.postRecurringSerial(ctx, w, body.Code, s.Point, serialAccumulate(s), prof)
 		return
 	}
 
-	if s.Used {
-		presenter.BadRequest(w, "このシリアルナンバーは既に使われています")
-		return
-	}
-
-	idToken := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	prof, err := getProfile(idToken)
+	result, err := redeemOnceSerial(ctx, h.fs, body.Code, prof.UserID, time.Now().UTC())
 	if err != nil {
-		logger.Error(err.Error())
-		presenter.BadRequest(w, "INVALID_TOKEN")
-		return
-	}
-
-	accumulate := serialAccumulate(s)
-	now := time.Now()
-	memberRef := config.DataCollection(h.fs, "members").Doc(prof.UserID)
-	memberSnap, err := memberRef.Get(ctx)
-	if err != nil && status.Code(err) != codes.NotFound {
+		if errors.Is(err, errSerialUsed) || errors.Is(err, errSerialExpired) || errors.Is(err, errSerialDuplicate) || errors.Is(err, errSerialRegister) || errors.Is(err, errSerialConsent) || errors.Is(err, errSerialDeleted) || errors.Is(err, errSerialInvalid) {
+			presenter.BadRequest(w, err.Error())
+			return
+		}
 		logger.Error(err.Error())
 		presenter.Error(w, err)
 		return
 	}
-
-	var memberNumber int64
-	var newPoint, newTotalEarned int
-	batch := h.fs.Batch()
-
-	if memberSnap != nil && memberSnap.Exists() {
-		var m memberDoc
-		if err := memberSnap.DataTo(&m); err != nil {
-			logger.Error(err.Error())
-			presenter.Error(w, err)
-			return
-		}
-		memberNumber = m.Number
-		newPoint = m.Point + s.Point
-		currentTotal := effectiveTotalEarned(m)
-		if shouldReset(m) {
-			currentTotal = 0
-		}
-		if accumulate {
-			newTotalEarned = currentTotal + s.Point
-		} else {
-			newTotalEarned = currentTotal
-		}
-		memberUpdates := []firestore.Update{
-			{Path: "point", Value: newPoint},
-			{Path: "total_earned_point", Value: newTotalEarned},
-		}
-		if accumulate {
-			memberUpdates = append(memberUpdates, firestore.Update{Path: "last_accumulated_at", Value: now})
-		}
-		batch.Update(memberRef, memberUpdates)
-	} else {
-		var err error
-		memberNumber, err = generateUniqueNumber(ctx, h.fs)
-		if err != nil {
-			logger.Error(err.Error())
-			presenter.Error(w, err)
-			return
-		}
-		newPoint = s.Point
-		if accumulate {
-			newTotalEarned = s.Point
-		} else {
-			newTotalEarned = 0
-		}
-		m := memberDoc{
-			Number:           memberNumber,
-			Name:             prof.DisplayName,
-			Point:            newPoint,
-			TotalEarnedPoint: newTotalEarned,
-		}
-		if accumulate {
-			m.LastAccumulatedAt = now
-		}
-		batch.Set(memberRef, m)
-		batch.Set(config.DataCollection(h.fs, "member_numbers").Doc(fmt.Sprintf("%06d", memberNumber)), map[string]interface{}{"user_id": prof.UserID})
-		addWelcomeCoupon(ctx, h.fs, h.pool, prof.UserID, batch, memberRef)
-	}
-
-	if body.Code != "FR1234567890" {
-		batch.Update(config.DataCollection(h.fs, "serials").Doc(body.Code), []firestore.Update{
-			{Path: "used", Value: true},
-			{Path: "used_id", Value: fmt.Sprintf("%06d", memberNumber)},
-		})
-	}
-
-	batch.Set(memberRef.Collection("point_logs").NewDoc(), pointLogDoc{
-		Amount:     s.Point,
-		Source:     "serial_once",
-		Accumulate: accumulate,
-		AcquiredAt: now,
-		ExpiresAt:  now.AddDate(1, 0, 0),
-		SerialCode: body.Code,
-	})
-
-	if _, err := batch.Commit(ctx); err != nil {
-		logger.Error(err.Error())
-		presenter.Error(w, err)
-		return
-	}
-
-	ri := rank.Calc(newTotalEarned)
-	presenter.EncodeWithMessage(w, PostResp{
-		Number:           fmt.Sprintf("FR%06d", memberNumber),
-		GetPoint:         s.Point,
-		Point:            newPoint,
-		TotalEarnedPoint: newTotalEarned,
-		Rank:             ri.Current,
-		NextRank:         ri.Next,
-		NextRankPoint:    ri.NextThreshold,
-	})
+	presenter.EncodeWithMessage(w, result)
 }
 
 func (h handler) postDailyCheckin(ctx context.Context, w http.ResponseWriter, prof *GetProfileResp) {

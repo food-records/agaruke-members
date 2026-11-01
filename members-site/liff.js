@@ -352,6 +352,10 @@ function checkCode(token, code) {
         error: function (jqXHR) {
             var msg = jqXHR.responseJSON && jqXHR.responseJSON.message || jqXHR.statusText || 'network error (status=' + jqXHR.status + ')';
             console.error('[API] /qrcode error:', jqXHR.status, msg);
+            if (msg === 'MEMBER_REGISTRATION_REQUIRED' || msg === 'CAMPAIGN_CONSENT_REQUIRED') {
+                openRegistrationDialog(token, function () { checkCode(token, code); });
+                return;
+            }
             showAlert(msg);
         }
     });

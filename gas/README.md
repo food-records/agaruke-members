@@ -16,6 +16,8 @@ Google スプレッドシートを開き、「拡張機能 > Apps Script」か�
 |---|---|
 | `FIREBASE_PROJECT_ID` | Firebase プロジェクト ID（例: `fr-agaruke`） |
 | `SERVICE_ACCOUNT_JSON` | Firestore 書き込み権限を持つサービスアカウントの JSON キー（全文） |
+| `ORGANIZATION_UUID` | organization配下で運用する場合に設定。本番は`35095fe0-1efc-40ff-bd13-9720c6d09e0f`。未設定なら従来のroot `serials`へ書き込む |
+| `LIFF_ID` | 受取に使うLIFF ID |
 
 ## 使い方
 
@@ -23,25 +25,27 @@ Google スプレッドシートを開き、「拡張機能 > Apps Script」か�
 
 1. スプレッドシートのアクティブシートに以下の形式で入力する（1行目はヘッダー）
 
-   | A: count | B: point |
+   | A: count | B: point | C: type | D: accumulate | E: campaign_id | F: expires_at |
    |---|---|
-   | 50 | 100 |
+   | 25 | 700 | once | FALSE | agaruke-2026-survey-500 | 2026-11-24T23:59:00+09:00 |
 
 2. メニュー「シリアル管理 > シリアルナンバー生成」を実行
 
 3. 「生成結果」シートに以下が出力される
 
-   | A: シリアルナンバー | B: ポイント | C: 生成日時 | D: QRコード |
-   |---|---|---|---|
-   | FRABCD1234 | 100 | 2026/05/06 | （画像） |
+   | A: シリアルナンバー | B: ポイント | C: タイプ | D: 累積対象 | E: 生成日時 | F: QRコード |
+   |---|---|---|---|---|---|
+   | FRABCD1234 | 700 | once | FALSE | 2026/11/01 | （画像） |
 
 ### 生成されるデータ
 
 - シリアルナンバーは `FR` + 英数字8文字（例: `FRABCD1234`）
-- Firestore の `serials` コレクションに `{point, used: false, used_id: ""}` で保存される
-- QRコードにはシリアルナンバー文字列がそのままエンコードされる
+- Firestore の `serials` コレクションに`point`、`used:false`、任意の`campaign_id`・`expires_at`等を保存する。既存コードの上書きは拒否する
+- QRコードには`?code=FR...`のLIFF URLをエンコードする
+- `once`はLINE会員の登録・同意後に原子的に1回だけ引き換える。`campaign_id`が同じ場合は1会員1回まで
 
 ## 注意
 
 - スプレッドシートの「生成結果」シートは自動作成される
-- 同一コードを500件超生成する場合は自動的に複数リクエストに分割される
+- 1行の発行上限は400枚。多い場合は行を分ける
+- QR画像の生成にはQuickChartを利用し、同サービスへ個別コードを含むURLが渡る
