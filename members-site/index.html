@@ -3,6 +3,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="referrer" content="no-referrer">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <title>AGARUKE POINT CARD</title>
@@ -50,6 +51,11 @@
         </div>
 
         <div class="coupon-tabs" id="coupon-tabs">
+            <div class="ticket-channel-tabs" role="tablist" aria-label="チケットの利用先">
+                <button id="channel-store" role="tab" aria-selected="true" onclick="switchTicketChannel('store')">店舗・モバイルオーダー</button>
+                <button id="channel-shopify" role="tab" aria-selected="false" onclick="switchTicketChannel('shopify')">AGARUKE通販</button>
+            </div>
+            <p id="ticket-channel-help" class="ticket-channel-help">店舗・モバイルオーダーで使えるチケットです。</p>
             <div class="coupon-tab-header">
                 <button class="coupon-tab-btn is-active" id="tab-acquired" onclick="switchTab('acquired')">獲得済みの特典</button>
                 <button class="coupon-tab-btn" id="tab-exchange" onclick="switchTab('exchange')">ポイントを使う</button>
@@ -205,6 +211,7 @@
             <div class="coupon-modal-footer">
                 <p id="modal-used-note" class="coupon-modal-used-note"></p>
                 <button id="modal-reward-exchange-btn" class="coupon-modal-exchange-btn" style="display:none"></button>
+                <button id="modal-shopify-btn" class="coupon-modal-mobile-btn" style="display:none">AGARUKEで使用する</button>
                 <button id="modal-mobile-btn" class="coupon-modal-mobile-btn">モバイルオーダーで使用する</button>
                 <p id="modal-store-prep" class="coupon-modal-store-prep">セルフレジでは、QR読取後にこの注文に利用できるクーポンが自動で選択・適用されます。必要に応じて端末で変更できます。</p>
                 <button id="modal-store-btn" class="coupon-modal-store-btn">セルフレジのQRコードを読み取る</button>

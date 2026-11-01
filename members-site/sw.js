@@ -1,6 +1,6 @@
 // Bump this whenever a cached UI asset changes. LINE's in-app browser can
 // otherwise keep an older liff.js and bind obsolete coupon actions.
-const CACHE_NAME = 'agaruke-vc9f4e21';
+const CACHE_NAME = 'agaruke-vliff-tickets-20261101';
 const ASSETS = [
     '/',
     '/index.html',

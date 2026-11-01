@@ -1342,3 +1342,10 @@ main {
 .rename-input:focus {
     border-color: #388e3c;
 }
+
+/* チケットの利用先は、所持/交換の両画面で共通。 */
+.ticket-channel-tabs {display:flex;gap:8px;padding:12px 0 4px;}
+.ticket-channel-tabs button {flex:1;min-height:48px;padding:10px 8px;border:1px solid #cbd3ca;border-radius:10px;background:#fff;color:#364638;font:inherit;font-size:13px;cursor:pointer;}
+.ticket-channel-tabs button[aria-selected="true"] {background:#364638;color:white;border-color:#364638;font-weight:bold;}
+.ticket-channel-tabs button:focus-visible {outline:3px solid #789580;outline-offset:2px;}
+.ticket-channel-help {font-size:12px;line-height:1.7;color:#646d65;margin:8px 0 16px;}

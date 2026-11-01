@@ -156,6 +156,12 @@ func (h handler) unlinkPurchase(ctx context.Context, token, cart, customer strin
 	})
 }
 func (h handler) requireCouponContext(ctx context.Context, tx *firestore.Transaction, b customerActionRequest, uid string, now time.Time) error {
+	if b.LIFF {
+		if b.Customer != "" || b.Purchase != "liff:"+tokenHash(uid) {
+			return errors.New("INVALID_LIFF_CONTEXT")
+		}
+		return nil // Only LIFFAction can set this flag after channel-bound LINE verification.
+	}
 	if b.Purchase != "" {
 		s, e := tx.Get(config.DataCollection(h.fs, "shopify_purchase_sessions").Doc(b.Purchase))
 		if e != nil {

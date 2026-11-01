@@ -82,6 +82,7 @@ func activeMember(tx *firestore.Transaction, ref *firestore.DocumentRef) (member
 }
 
 type customerActionRequest struct {
+	LIFF             bool   `json:"-"`
 	Confirm          bool   `json:"confirm"`
 	LinkHint         string `json:"link_hint"`
 	IncludePurchase  bool   `json:"-"`
@@ -269,7 +270,7 @@ func (h handler) memberAction(w http.ResponseWriter, r *http.Request, b customer
 			if e := h.requireCouponContext(ctx, tx, b, uid, now); e != nil {
 				return e
 			}
-			if b.Purchase != "" {
+			if b.Purchase != "" && !b.LIFF {
 				s, e := tx.Get(config.DataCollection(h.fs, "shopify_purchase_sessions").Doc(b.Purchase))
 				if e != nil {
 					return e
@@ -339,7 +340,7 @@ func (h handler) memberAction(w http.ResponseWriter, r *http.Request, b customer
 			if e = s.DataTo(&c); e != nil {
 				return e
 			}
-			if c.Customer != b.Customer || (c.Purchase == "") != (b.Purchase == "") || c.UID != uid || !c.ExpiresAt.After(now) || (c.Status != "pending" && c.Status != "available") || !strings.HasPrefix(b.DiscountID, "gid://shopify/DiscountCodeNode/") {
+			if c.Customer != b.Customer || (c.Purchase == "") != (b.Purchase == "") || (b.LIFF && c.Purchase != b.Purchase) || c.UID != uid || !c.ExpiresAt.After(now) || (c.Status != "pending" && c.Status != "available") || !strings.HasPrefix(b.DiscountID, "gid://shopify/DiscountCodeNode/") {
 				return errors.New("INVALID_COUPON")
 			}
 			if c.DiscountID != "" && c.DiscountID != b.DiscountID {

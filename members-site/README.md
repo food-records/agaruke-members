@@ -56,3 +56,5 @@ monorepoの`master`ブランチへ`members-site/**`の変更をpushすると、G
 |---|---|
 | 本番 | `https://members-api-438247672947.us-central1.run.app` |
 | ローカル開発 | ngrok 等で公開したローカル API の URL |
+
+2026-11-01: LIFF通販チケットの利用先タブ・本人LINE認証によるEC券取得/交換/発行再開を実装。本番未反映。[仕様](../docs/LIFF_SHOPIFY_TICKETS_20261101.md)。

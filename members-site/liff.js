@@ -1,3 +1,7 @@
+var ticketChannel = 'store';
+var storeCoupons = [], storeRewards = [], shopifyCoupons = [], shopifyRewards = [];
+var shopifyLoading = false, shopifyLoaded = false, shopifyFailed = false, shopifyBusy = false;
+var pendingShopifyExchange = null, shopifyGeneration = 0;
 var newlyAcquiredIds = {};
 var couponDataMap = {};
 var rewardDataMap = {};
@@ -17,6 +21,7 @@ $(document).ready(function () {
     $('#modal-store-btn').on('click', scanKioskQRFromCoupon);
     $('#modal-manual-use-btn').on('click', markCouponUsedManually);
     $('#modal-mobile-btn').on('click', useCouponMobile);
+    $('#modal-shopify-btn').on('click', useShopifyCoupon);
     $('#modal-reward-exchange-btn').on('click', function () {
         var id = $(this).data('reward-id');
         if (rewardDataMap[id]) {
@@ -405,7 +410,9 @@ function showCoupons(token) {
         url: apiurl + '/coupons',
         success: function (data) {
             if (data.data) {
-                renderCoupons(data.data.coupons);
+                storeCoupons = data.data.coupons || [];
+                renderTicketChannel();
+                showShopifyTickets();
             }
         },
         error: function (jqXHR) {
@@ -426,7 +433,8 @@ function showRewards(token) {
         url: apiurl + '/rewards',
         success: function (data) {
             if (data.data) {
-                renderRewards(data.data);
+                storeRewards = data.data;
+                renderTicketChannel();
             }
         },
         error: function (jqXHR) {
@@ -470,7 +478,7 @@ function renderCoupons(coupons) {
         else if (expired) classes += ' coupon-card--expired';
         if (isNew) classes += ' coupon-card--new';
 
-        var badgeHtml = coupon.used
+        var badgeHtml = coupon.status === 'pending' ? '<span class="coupon-badge">発行処理中</span>' : coupon.used
             ? '<span class="coupon-badge coupon-badge--used">使用済み</span>'
             : (isNew ? '<span class="coupon-badge coupon-badge--new">NEW</span>' : '');
 
@@ -546,6 +554,7 @@ function buildRewardCard(reward) {
         thumbHtml +
         '<div class="reward-card-body">' +
         '<p class="reward-card-title">' + reward.title + '</p>' +
+        (reward.channel === 'shopify' ? '<p class="ticket-channel-help">商品合計税込' + Number(reward.minimum).toLocaleString('ja-JP') + '円以上</p>' : '') +
         '<p class="reward-card-cost"><span class="reward-card-cost-value">' + reward.required_points + '</span> pt</p>' +
         '</div>' +
         '<button class="' + btnClass + '" ' + (canAfford ? '' : 'disabled') + '>' + btnText + '</button>' +
@@ -566,6 +575,7 @@ function refreshRewardButtons() {
 }
 
 function confirmExchange(reward) {
+    if (reward.channel === 'shopify') { confirmShopifyExchange(reward); return; }
     showConfirm(
         '「' + reward.title + '」と交換しますか？\n' + reward.required_points + ' ポイントを消費します。',
         function () {
@@ -710,6 +720,14 @@ function openCouponModal(coupon) {
     }
 
     $('#modal-reward-exchange-btn').hide();
+    $('#modal-shopify-btn').hide();
+    if (coupon.channel === 'shopify') {
+        $('#modal-store-btn, #modal-store-prep, #modal-store-help, #modal-manual-use-btn, #modal-mobile-btn').hide();
+        var pending = coupon.status === 'pending';
+        $('#modal-used-note').text(coupon.used ? '使用済み' : (expired ? '期限切れ' : (pending ? '発行処理中です。再開してもポイントは重複消費しません。' : 'ボタンからショップへ移動し、クーポンを適用します。注文完了前は使用済みになりません。'))).show();
+        $('#modal-shopify-btn').text(pending ? (coupon.retryable ? '発行を再開' : 'ショップで発行を再開') : 'AGARUKEで使用する').prop('disabled', !!coupon.used || !!expired || (!pending && !coupon.use_url)).show();
+        $('#coupon-modal').addClass('is-open'); $('body').addClass('modal-open'); return;
+    }
 
     if (coupon.used) {
         var usedLabel = '使用済み';
@@ -737,6 +755,7 @@ function openCouponModal(coupon) {
 }
 
 function openRewardModal(reward) {
+    $('#modal-shopify-btn').hide();
     var canAfford = _currentPoint >= reward.required_points;
 
     $('#modal-title').text(reward.title);
@@ -1036,3 +1055,76 @@ function authorizeShopifyPurchase(accessToken, token) {
         });
     }, null, {okLabel: '同意してショップへ戻る'});
 }
+
+
+// 通販券は既存の店舗券APIと分離。LINE tokenはヘッダーだけに送り、URL/保存領域へ残さない。
+function shopifyTicketRequest(body) {
+    return $.ajax({url:window.APP_CONFIG.shopifyCouponsUrl, type:'POST', contentType:'application/json', dataType:'json', timeout:60000, headers:{Authorization:'Bearer '+_couponToken}, data:JSON.stringify(body)});
+}
+function acceptShopifyTickets(data) {
+    shopifyCoupons = data.coupons || []; shopifyRewards = data.rewards || [];
+    _currentPoint = data.point;
+    $('#point-card-balance span').text(_currentPoint);
+    shopifyLoaded = true; shopifyFailed = false;
+    renderTicketChannel();
+}
+function showShopifyTickets() {
+    if (shopifyBusy || shopifyLoading || !_couponToken || !window.APP_CONFIG.shopifyCouponsUrl) return;
+    shopifyLoading = true;
+    var generation = ++shopifyGeneration;
+    shopifyTicketRequest({action:'status'}).done(function (data) {if (generation === shopifyGeneration) acceptShopifyTickets(data);}).fail(function () {
+        if (generation !== shopifyGeneration) return;
+        shopifyFailed = true;
+        if (ticketChannel === 'shopify') renderTicketChannel();
+    }).always(function () { shopifyLoading = false; });
+}
+function renderTicketChannel() {
+    var ec = ticketChannel === 'shopify';
+    renderCoupons(ec ? shopifyCoupons : storeCoupons);
+    renderRewards(ec ? shopifyRewards : storeRewards);
+    if (ec && (shopifyFailed || !shopifyLoaded)) {
+        var message = shopifyFailed ? '通販チケットを取得できませんでした。' : '通販チケットを確認しています…';
+        $('#coupon-list, #reward-list').empty().append($('<p class="coupon-empty">').text(message));
+        if (shopifyFailed) $('#coupon-list, #reward-list').append($('<button type="button" class="reward-exchange-btn">').text('再読み込み').on('click', showShopifyTickets));
+    }
+}
+function switchTicketChannel(channel) {
+    ticketChannel = channel === 'shopify' ? 'shopify' : 'store';
+    $('#channel-store').attr('aria-selected',ticketChannel === 'store' ? 'true' : 'false');
+    $('#channel-shopify').attr('aria-selected',ticketChannel === 'shopify' ? 'true' : 'false');
+    $('#ticket-channel-help').text(ticketChannel === 'shopify' ? 'AGARUKE通販専用です。店舗・モバイルオーダーでは使えません。送料は利用条件に含まれません。' : '店舗・モバイルオーダーで使えるチケットです。');
+    renderTicketChannel();
+    if (ticketChannel === 'shopify') showShopifyTickets();
+}
+function confirmShopifyExchange(reward) {
+    if (shopifyBusy || _currentPoint < reward.required_points) return;
+    showConfirm('「'+reward.title+'」と交換しますか？\n'+reward.required_points+'ポイントを消費します。\n'+reward.description, function () {
+        if (shopifyBusy) return;
+        // Retry of an ambiguous request retains its id. Another tier must not consume again.
+        if (pendingShopifyExchange && pendingShopifyExchange.cost !== reward.required_points) {
+            showAlert('先ほどの交換を先に再開してください。'); return;
+        }
+        if (!pendingShopifyExchange) pendingShopifyExchange={action:'exchange',cost:reward.required_points,request_id:crypto.randomUUID()};
+        shopifyBusy = true; shopifyGeneration++;
+        shopifyTicketRequest(pendingShopifyExchange).done(function (data) {
+            pendingShopifyExchange = null; acceptShopifyTickets(data); closeCouponModal(); switchTab('acquired'); showCouponToast(reward.title);
+        }).fail(function () {
+            showAlert('交換結果を確認できませんでした。同じ券の交換を再試行するか、獲得済みの「発行を再開」を選んでください。');
+        }).always(function () {shopifyBusy = false; if (pendingShopifyExchange) showShopifyTickets();});
+    });
+}
+function useShopifyCoupon() {
+    var c = currentModalCoupon;
+    if (!c || c.channel !== 'shopify' || c.used || new Date(c.expires_at) <= new Date() || shopifyBusy) return;
+    if (c.status === 'pending' && c.retryable) {
+        shopifyBusy = true; shopifyGeneration++; $('#modal-shopify-btn').prop('disabled',true);
+        shopifyTicketRequest({action:'retry',coupon_id:c.id}).done(function (data) {pendingShopifyExchange = null;acceptShopifyTickets(data);closeCouponModal();}).fail(function () {showAlert('発行を再開できませんでした。時間をおいて再試行してください。');}).always(function () {shopifyBusy=false;$('#modal-shopify-btn').prop('disabled',false);}); return;
+    }
+    var target = c.status === 'pending' ? 'https://shop.agaruke.com/apps/members' : c.use_url;
+    try {
+        var url = new URL(target);
+        if (url.origin !== 'https://shop.agaruke.com' || (url.pathname !== '/apps/members' && !url.pathname.startsWith('/discount/'))) throw Error('URL');
+        location.href = url.href;
+    } catch (_) { showAlert('ショップのリンクを取得できませんでした。再読み込みしてください。'); }
+}
+window.addEventListener('pageshow', function (event) {if (event.persisted) showShopifyTickets();});
