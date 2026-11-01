@@ -22,4 +22,8 @@ Schema.orgでセットのOrganization/Productを取得し、エラー0・警告0
 
 ## 本番反映
 
-未反映。clean commitをorigin/masterへ統合・pushしSHA一致を確認後、原本一致を再照合して上記2ファイルだけをコードエディタから保存する。保存後、コードreadback・公開HTML・PC/スマホ表示を確認する。その他のテーマ設定やファイルは配信しない。
+source 56f7766633aaac29f44873a7d4fa9815dc068687をorigin/masterへpushしSHA一致・cleanを確認後、原本一致を照合して2ファイルだけをブラウザコードエディタで保存。保存前に編集全文がcandidateと一致することをclipboardで確認し、公開HTMLで650/320px候補・空値のないsameAsを確認した。公開900px表示と商品リンクを確認。保存後のコードエディタ再読込が完了せず、再読込後の全文readbackは未実施。viewport指定がChromeに反映されず独立390px実表示は未完了。
+
+再計測21:00 JST：mobile62 / accessibility96 / best100 / SEO100、FCP2.0s、LCP17.6s、TBT210ms、CLS0、SI9.1s。https://pagespeed.web.dev/analysis/https-shop-agaruke-com/005niev6o8?form_factor=mobile 。明確な速度改善は確認できず、LCPは継続課題。Google検証の接続不可と390px検証制約を未完了として残す。
+
+商品4ページの相互リンクも公開確認済み。Merchant Centerは無料アカウント作成まで完了、住所/配送/返品の新情報と商品連携は保留。詳細正本は共有workspaceのAGARUKE SEO監査記録。注文/決済/会員機能やその他テーマファイルは変更しない。

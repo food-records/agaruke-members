@@ -2,7 +2,7 @@
 
 ## SEO技術改善（2026-11-01）
 
-[Shopify SEO技術改善](docs/SHOPIFY_SEO_TECHNICAL_20261101.md)：商品間リンク、レスポンシブ画像候補、Organizationの空SNS除外を対象に検証中。食品表示の新情報・決済条件は追加しない。
+[Shopify SEO技術改善](docs/SHOPIFY_SEO_TECHNICAL_20261101.md)：商品間リンク、レスポンシブ画像候補、Organizationの空SNS除外を公開済み（source56f7766）。Node53件成功、公開HTMLを確認。LCP17.6秒・390px実表示の再確認は残課題。食品表示の新情報・決済条件は追加しない。
 
 ## おかずチケットの対象（2026-11-01）
 

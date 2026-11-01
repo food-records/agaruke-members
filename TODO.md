@@ -1,6 +1,7 @@
 # agaruke-members TODO
 
-- [ ] 2026-11-01: [SEO技術改善](docs/SHOPIFY_SEO_TECHNICAL_20261101.md)の画像サイズ候補・Organization空SNS除外を2ファイル限定で反映し、公開readbackとPC/スマホ導線を検証する。
+- [x] 2026-11-01: [SEO技術改善](docs/SHOPIFY_SEO_TECHNICAL_20261101.md)の画像サイズ候補・Organization空SNS除外を2ファイル限定で公開、公開HTMLと900px表示を確認（56f7766）。
+- [ ] LCP17.6秒の追加調査、390px実表示と保存後テーマ全文readbackを再確認。
 
 - [x] 2026-11-01: おかずチケットの説明文を「780円以下のおかず1点無料」、所持券の価格ラベルを「780円以下のおかず無料」へ統一。対象カテゴリ・価格上限・700pt交換は維持。
 
