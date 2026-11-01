@@ -576,9 +576,12 @@ function refreshRewardButtons() {
 
 function confirmExchange(reward) {
     if (reward.channel === 'shopify') { confirmShopifyExchange(reward); return; }
+    if (shopifyBusy) return;
     showConfirm(
         '「' + reward.title + '」と交換しますか？\n' + reward.required_points + ' ポイントを消費します。',
         function () {
+            if (shopifyBusy) return;
+            shopifyBusy = true; shopifyGeneration++;
             var apiurl = window.APP_CONFIG.apiUrl;
             $.ajax({
                 beforeSend: function (request) {
@@ -597,6 +600,7 @@ function confirmExchange(reward) {
                         refreshRewardButtons();
                     }
                 },
+                complete: function () { shopifyBusy = false; showShopifyTickets(); },
                 error: function (jqXHR) {
                     var msg = jqXHR.responseJSON && jqXHR.responseJSON.message || 'エラーが発生しました';
                     showErrorBanner(msg);
