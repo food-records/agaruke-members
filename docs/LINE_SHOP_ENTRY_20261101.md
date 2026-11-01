@@ -2,9 +2,23 @@
 
 2026-11-01、本番公開・実アカウントの両導線確認まで完了。既存のLIFF/Shopify購入連携を再利用し、新しいLIFF ID/権限/Go API変更は不要。
 
-## 入口URL
+## リッチメニューの外部ブラウザー問題（修正実装済み・公開承認待ち）
 
-リッチメニューには以下を設定する。リッチメニュー自体の変更・LINE配信は今回行わない。
+2026-11-01、利用者から旧URLで外部ブラウザーが開きLINE再ログインを求められるとの報告。旧URLはLIFF URLではなくShopifyへの直接URLであり、LIFFブラウザーを起動する保証がなかった。既存検証はログイン済みWebブラウザーであり、実LINEリッチメニューからの起動確認を代替していなかった。
+
+修正後に設定するURL（**まだ本番未反映**）:
+
+https://liff.line.me/2000938587-06YmdyJ5/?shopify_entry=rich_menu&utm_source=line&utm_medium=social&utm_campaign=agaruke_ec&utm_content=rich_menu_shop
+
+既存LIFFでSDK初期化とLINE認証を終え、同じWebViewのlocation.replaceで固定Shopify入口へ進む。会員登録/ポイント取得APIは入口では呼ばず、LINE tokenはURLへ渡さない。ショップ以降の同一ブラウザーproof・本人確認・購入連携への同意・カート安定化・UTM復元は維持。既存のシリアル/購入認証等とqueryが重なれば既存処理を優先。新規LIFF/権限/サーバー/料金構成変更なし。
+
+Node53件（既存49＋入口4）・JS構文・差分検査成功。LINE実機からの起動、ショップ→本人同意→ショップ復帰のWebView維持と再入力なし、既存カート保持は公開後に要確認。初回のLINE権限同意や、外部ブラウザーから意図的に開いた場合のLINEログインは省略しない。Shopifyアカウントの自動ログインを行うものではない。
+
+本番公開は今回の明示承認待ち。masterへのmembers-site変更pushは自動公開を起動するため、feature branchにのみ保存する。リッチメニュー設定・配信も変更していない。
+
+## 旧入口URL（Shopify直接アクセス）
+
+旧案は以下。新しい設定には上記LIFF URLを使用する。リッチメニュー自体の変更・LINE配信は今回行わない。
 
 https://shop.agaruke.com/apps/members?entry=rich_menu&utm_source=line&utm_medium=social&utm_campaign=agaruke_ec&utm_content=rich_menu_shop
 

@@ -86,6 +86,7 @@ function initializeLiff(liffId) {
             } else {
                 const accessToken = liff.getAccessToken();
                 if (accessToken) {
+                    if (openShopifyRichMenu()) return;
                     _couponToken = accessToken;
                     showRewards(accessToken);
                     var code = getParam('code');
@@ -125,6 +126,20 @@ function initializeLiff(liffId) {
         .catch((err) => {
             showAlert('LIFF Initialization failed: ' + err);
         });
+}
+
+// Start inside the LIFF browser before visiting Shopify. No LINE credentials
+// or caller-controlled redirect destination cross this navigation.
+function openShopifyRichMenu() {
+    var params = new URLSearchParams(location.search);
+    var state = params.get('liff.state') || '';
+    var nested = new URLSearchParams(state.indexOf('/?') === 0 ? state.slice(2) : state.charAt(0) === '?' ? state.slice(1) : '');
+    if ((params.get('shopify_entry') || nested.get('shopify_entry')) !== 'rich_menu') return false;
+    if (['shopify_purchase', 'shopify_link', 'kiosk_token', 'survey_reward', 'code'].some(function (key) {
+        return params.has(key) || nested.has(key);
+    })) return false;
+    location.replace('https://shop.agaruke.com/apps/members?entry=rich_menu&utm_source=line&utm_medium=social&utm_campaign=agaruke_ec&utm_content=rich_menu_shop');
+    return true;
 }
 
 function scanQR() {

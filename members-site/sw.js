@@ -1,5 +1,5 @@
 // GitHub Pages replaces this value with the release commit SHA.
-const CACHE_NAME = 'agaruke-vliff-coherent-20261101';
+const CACHE_NAME = 'agaruke-vliff-shop-entry-20261101';
 const ASSETS = [
     '/', '/index.html', '/index.css', '/liff.js', '/index.js', '/config.js',
     '/foodrecords_logo.png', '/images/agaruke_icon.svg', '/images/agaruke_icon.png',
