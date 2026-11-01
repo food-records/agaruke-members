@@ -53,7 +53,7 @@ function syncRewardCatalog() {
       skipped++;
       continue;
     }
-    if (id === '750_side_dish' && description !== '780円以下のおかずカテゴリの商品1点無料') {
+    if (id === '750_side_dish' && description !== '780円以下のおかず1点無料') {
       throw new Error('おかずチケットの説明文を本番定義に更新してから同期してください。');
     }
 
@@ -192,7 +192,7 @@ function createRewardCatalogSheet() {
   var sample = [
     ['topping_basic',   '基本トッピングチケット', 200,  '店舗スタッフにこの画面をご提示ください。', true,  '', 1, '', ''],
     ['topping_deluxe',  '豪華トッピングチケット', 400,  '店舗スタッフにこの画面をご提示ください。', true,  '', 2, '', ''],
-    ['750_side_dish',   'おかずチケット',         700,  '780円以下のおかずカテゴリの商品1点無料', true,  '', 3, '', ''],
+    ['750_side_dish',   'おかずチケット',         700,  '780円以下のおかず1点無料', true,  '', 3, '', ''],
     ['bento',           'お弁当チケット',          1200, '店舗スタッフにこの画面をご提示ください。', true,  '', 4, '', '']
   ];
   sheet.getRange(2, 1, sample.length, 9).setValues(sample);
