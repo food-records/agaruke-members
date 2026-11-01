@@ -1,0 +1,320 @@
+{
+  "sections": {
+    "agaruke_hero": {
+      "type": "agaruke-home-hero",
+      "settings": {
+        "image": "shopify://shop_images/agaruke_header.png",
+        "cta_label": "VIEW ITEM",
+        "cta_label_en": "VIEW ITEM",
+        "cta_url": "",
+        "promise_0": "AGARUKE 気分があがる一皿。",
+        "promise_0_en": "AGARUKE — a meal to lift your mood.",
+        "promise_1": "AGARUKEのお届けと楽しみ方",
+        "promise_1_en": "Delivery and preparation",
+        "promise_2": "冷凍でお届け",
+        "promise_2_en": "Delivered frozen",
+        "promise_3": "温めて、盛りつけ",
+        "promise_3_en": "Heat and plate",
+        "promise_4": "自分のための一皿に",
+        "promise_4_en": "A moment just for you",
+        "mobile_image": "shopify://shop_images/header-image-sp.png"
+      }
+    },
+    "agaruke_content": {
+      "type": "agaruke-home-content",
+      "blocks": {
+        "ag_about": {
+          "type": "about",
+          "settings": {
+            "eyebrow": "ABOUT AGARUKE",
+            "eyebrow_en": "ABOUT AGARUKE",
+            "heading": "温めて盛り付けるだけの、簡単ミールキット。",
+            "heading_en": "Easy meal kits. Just heat and plate.",
+            "lead": "ココロに栄養を、気分が上がる一皿を。",
+            "lead_en": "Nourish your soul with a meal that lifts your mood.",
+            "body": "AGARUKEは、温めて盛りつけるだけで楽しめる\n冷凍ミールキットをお届けします。",
+            "body_en": "AGARUKE delivers frozen meal kits.\nSimply heat, plate, and enjoy.",
+            "closing": "ハレの日ではない、日常「ケ」のアップデート\n自分だけの「アガる」時間を食事から盛り上げます。",
+            "closing_en": "Make the everyday feel special.\nLet AGARUKE turn mealtime into a moment just for you.",
+            "cta": "商品を見る",
+            "cta_en": "Shop products",
+            "caption": "あなたらしく、盛りつけて。",
+            "caption_en": "Plate it your way.",
+            "cta_url": "",
+            "image": "shopify://shop_images/moritsuke-image.png",
+            "image_alt": "ミートボールと付け合わせを、お気に入りの器に盛り付けるひととき。",
+            "image_alt_en": "Plating meatballs and accompaniments on a favorite dish."
+          }
+        },
+        "ag_delivery": {
+          "type": "delivery",
+          "disabled": true,
+          "settings": {
+            "image": "shopify://shop_images/box-image.png",
+            "eyebrow": "DELIVERY",
+            "eyebrow_en": "DELIVERY",
+            "heading": "こんなかたちで、\nお届けします。",
+            "heading_en": "Delivered frozen,\nready for your moment.",
+            "body": "冷凍ミールキットを、箱に詰めてお届け。\n届いたら冷凍庫で保存し、食べたいときにお楽しみください。",
+            "body_en": "Your frozen meal kits arrive packed in a box.\nStore them in your freezer and enjoy whenever you like.",
+            "closing": "温めて、お気に入りのお皿に。\nいつもの食卓で、AGARUKEの一皿を。",
+            "closing_en": "Simply heat and arrange on your favorite plate.\nEnjoy a little AGARUKE at your everyday table.",
+            "note": "写真はお届けイメージです。内容はご注文の商品によって異なります。",
+            "note_en": "Delivery image for illustration. Contents vary depending on the items ordered.",
+            "image_alt": "冷凍ミールキットを箱に詰めたお届けイメージ",
+            "image_alt_en": "An open box containing packaged frozen meal kits",
+            "show_on_home": false
+          }
+        },
+        "ag_how": {
+          "type": "how",
+          "settings": {
+            "eyebrow": "HOW TO ENJOY",
+            "eyebrow_en": "HOW TO ENJOY",
+            "heading": "届いてから、\n一皿になるまで。",
+            "heading_en": "From delivery\nto your plate."
+          }
+        },
+        "ag_step_one": {
+          "type": "step_one",
+          "settings": {
+            "heading": "冷凍で届く",
+            "heading_en": "Delivered frozen",
+            "body": "おいしさを閉じ込めて、冷凍でお届け。\n食べたい時まで、冷凍庫で保存。",
+            "body_en": "Delivered frozen to preserve the flavor.\nKeep in your freezer until you are ready."
+          }
+        },
+        "ag_step_two": {
+          "type": "step_two",
+          "settings": {
+            "heading": "温める",
+            "heading_en": "Heat",
+            "body": "商品ごとの方法に合わせて温めます。\n気負わず楽しむ、ごはんの準備。",
+            "body_en": "Heat each item as directed.\nMake mealtime easy."
+          }
+        },
+        "ag_step_three": {
+          "type": "step_three",
+          "settings": {
+            "heading": "盛りつけて楽しむ",
+            "heading_en": "Plate and enjoy",
+            "body": "お気に入りのお皿に、あなたらしく。\n自分のための一皿ができあがり。",
+            "body_en": "Arrange on your favorite plate.\nA meal to enjoy, just for you."
+          }
+        },
+        "ag_menu": {
+          "type": "menu",
+          "settings": {
+            "eyebrow": "OUR MENU",
+            "eyebrow_en": "OUR MENU",
+            "heading": "気分が上がる\n一皿を選ぶ。",
+            "heading_en": "Choose a meal\nto lift your mood.",
+            "list_cta": "商品一覧を見る",
+            "list_cta_en": "View all products",
+            "detail_cta": "詳しく見る",
+            "detail_cta_en": "View item",
+            "shipping_note": "送料はチェックアウトでご確認いただけます。",
+            "shipping_note_en": "Shipping is calculated at checkout.",
+            "tax_note": "（税込）",
+            "tax_note_en": "(tax included)"
+          }
+        },
+        "product_QU8qiR": {
+          "type": "product",
+          "settings": {
+            "product": "チキンオーバースパイスカレー-chicken-over-spice-curry",
+            "description": "7種のスパイスを使った濃厚なカレーに、オーブンで焼き上げたジューシーなスパイスチキン。香りと食べ応えを楽しむ、お店の看板メニューです。",
+            "description_en": "A rich curry made with seven spices, topped with juicy oven-roasted spiced chicken. Our signature dish brings together aromatic flavor and a satisfying bite."
+          }
+        },
+        "meatball": {
+          "type": "product",
+          "settings": {
+            "product": "肉汁ミートボール-トマトソース-meatball-with-tomato-sauce",
+            "description": "肉感たっぷりの大きなミートボールを、定番のトマトソースで。付け合わせのドフィノアとともに、お皿の上で一皿が完成します。",
+            "description_en": "Generous, meaty meatballs in a classic tomato sauce. Plate them with the accompanying potato dauphinois to complete the dish."
+          }
+        },
+        "product_LrJNrU": {
+          "type": "product",
+          "settings": {
+            "product": "トロじゅわ豚角煮と牛すじ煮込み-braised-pork-belly-and-stewed-beef-tendon",
+            "description": "とろりとした豚角煮と、2日間かけて煮込んだやわらかな牛すじ。ほうれん草のにんにくナムルを添え、じっくり仕上げた味わいを楽しむ和の一皿です。",
+            "description_en": "Tender braised pork belly and beef tendon simmered over two days, served with garlic-seasoned spinach namul. A Japanese-style plate to savor slowly."
+          }
+        },
+        "ag_moment": {
+          "type": "moment",
+          "settings": {
+            "eyebrow": "YOUR OWN LITTLE TREAT",
+            "eyebrow_en": "YOUR OWN LITTLE TREAT",
+            "heading": "日常の中のひと時に、\n自分のための時間を",
+            "heading_en": "Make time for yourself\nin the everyday.",
+            "body": "仕事や家事でバタバタと過ぎていく毎日。\n自分を労う時間が後回しに。",
+            "body_en": "Between work and chores, the days fly by.\nTime to care for yourself often comes last.",
+            "body_two": "帰宅してから、家事が片付いてからのお楽しみ。\n好きな一杯とお気に入りの動画に「AGARUKE」の一皿。",
+            "body_two_en": "Something to look forward to after work or the chores.\nYour favorite drink, something you love to watch, and a plate from AGARUKE.",
+            "closing": "自分だけの時間 \"me time\" をお楽しみください。",
+            "closing_en": "Enjoy a little me time.",
+            "image": "shopify://shop_images/me-time-wide.png",
+            "image_alt": "好きな動画と飲み物、スパイスカレーを楽しむ夜のひととき。",
+            "image_alt_en": "An evening with a favorite show, a drink and a plate of spice curry."
+          }
+        },
+        "ag_guide": {
+          "type": "guide",
+          "settings": {
+            "eyebrow": "FIRST TIME HERE?",
+            "eyebrow_en": "FIRST TIME HERE?",
+            "heading": "はじめての方へ",
+            "heading_en": "Your first order",
+            "body": "お届けや楽しみ方について。\n気になることは、ご購入前にお気軽にお問い合わせください。",
+            "body_en": "Questions about delivery or preparation?\nPlease contact us before placing your order.",
+            "contact_cta": "お問い合わせ",
+            "contact_cta_en": "Contact us"
+          }
+        },
+        "ag_faq_1": {
+          "type": "faq",
+          "settings": {
+            "question": "どのような状態で届きますか？",
+            "question_en": "How will my order arrive?",
+            "answer": "商品は冷凍でお届けします。お受け取り後は冷凍庫で保存してください。内容量や付け合わせは、各商品ページでご確認いただけます。",
+            "answer_en": "Your order arrives frozen. Store it in your freezer upon arrival. Please see each product page for contents and side dishes.",
+            "shipping_cta": "配送について詳しく見る",
+            "shipping_cta_en": "View shipping information",
+            "show_shipping_policy": false
+          }
+        },
+        "ag_faq_2": {
+          "type": "faq",
+          "settings": {
+            "question": "どうやって食べますか？",
+            "question_en": "How do I prepare it?",
+            "answer": "商品ごとの方法で温め、お好みのお皿に盛りつけてお楽しみください。具体的な加熱方法は同梱するリーフレットに記載しております。",
+            "answer_en": "Heat each item as directed and arrange on your favorite plate. Specific heating instructions are provided in the included leaflet.",
+            "shipping_cta": "配送について詳しく見る",
+            "shipping_cta_en": "View shipping information",
+            "show_shipping_policy": false
+          }
+        },
+        "ag_faq_3": {
+          "type": "faq",
+          "settings": {
+            "question": "送料やお届け日は確認できますか？",
+            "question_en": "Where can I check shipping and delivery?",
+            "answer": "ご入金確認後、通常3〜5日以内に発送します。お届け日は、地域や配送状況により異なります。送料は、お届け先やご注文内容に応じて会計画面でご確認いただけます。",
+            "answer_en": "Orders usually ship within 3–5 calendar days after payment confirmation. Delivery time after dispatch varies by destination and carrier conditions. Shipping is calculated at checkout based on your address and order.",
+            "shipping_cta": "配送について詳しく見る",
+            "shipping_cta_en": "View shipping information",
+            "show_shipping_policy": true
+          }
+        },
+        "ag_faq_4": {
+          "type": "faq",
+          "settings": {
+            "question": "賞味期限やアレルギーについて知りたいです。",
+            "question_en": "What about shelf life and allergens?",
+            "answer": "賞味期限・原材料・アレルギーについてご不明な点がある場合は、商品名を添えて、ご購入前にお問い合わせください。",
+            "answer_en": "For questions about shelf life, ingredients, or allergens, please contact us with the product name before ordering.",
+            "shipping_cta": "配送について詳しく見る",
+            "shipping_cta_en": "View shipping information",
+            "show_shipping_policy": false
+          }
+        },
+        "ag_members": {
+          "type": "members",
+          "settings": {
+            "eyebrow": "MEMBERS",
+            "eyebrow_en": "MEMBERS",
+            "heading": "LINEポイントカード",
+            "heading_en": "LINE loyalty card",
+            "body": "お持ちのポイントカードを、このショップのお買い物にも。\nご購入前に連携状態をご確認いただけます。",
+            "body_en": "Use your existing loyalty card when shopping here.\nCheck your link status before purchasing.",
+            "cta": "ポイントカードを確認",
+            "cta_en": "Check loyalty card"
+          }
+        },
+        "ag_bottom": {
+          "type": "bottom",
+          "settings": {
+            "body": "今日の自分に、気分があがる一皿を。",
+            "body_en": "Treat yourself to a meal that lifts your mood.",
+            "cta": "商品を見る",
+            "cta_en": "Shop products",
+            "cta_url": ""
+          }
+        },
+        "ag_craft": {
+          "type": "craft",
+          "settings": {
+            "eyebrow": "WHY AGARUKE",
+            "eyebrow_en": "WHY AGARUKE",
+            "heading": "お店のおいしさを、\nあなたの一皿へ。",
+            "heading_en": "From our kitchen\nto your table.",
+            "reason_1_heading": "お店で人気の味を、冷凍でも。",
+            "reason_1_heading_en": "Restaurant favorites, made for your freezer.",
+            "reason_1_body": "実店舗で親しまれている人気メニューを、ご自宅でも。料理ごとの持ち味を大切に、冷凍してもおいしさを楽しめるよう工夫を重ねています。",
+            "reason_1_body_en": "Enjoy popular dishes from our restaurant at home. We adapt each recipe for freezing, with care to preserve the flavors and textures that make it special.",
+            "reason_2_heading": "個別の真空パックで、おいしさを守る。",
+            "reason_2_heading_en": "Individually vacuum-packed to preserve flavor.",
+            "reason_2_body": "料理や付け合わせを、それぞれ真空パックに。おいしさと冷凍での保存性に配慮し、食べたいときまで大切にお届けします。",
+            "reason_2_body_en": "Each dish and accompaniment is vacuum-packed separately, with care for flavor and frozen storage, ready for you to enjoy when you choose.",
+            "reason_3_heading": "盛り付けた姿まで、おいしく。",
+            "reason_3_heading_en": "Designed to look as good as it tastes.",
+            "reason_3_body": "主菜と付け合わせの組み合わせ、彩り、盛り付けたときのバランスまで。お皿の上で一皿が完成するよう、目でも楽しめるおいしさを考えています。",
+            "reason_3_body_en": "From the main dish and accompaniments to their colors and balance on the plate, every element is considered. Finish it on your favorite plate and enjoy a meal that delights the eyes, too.",
+            "image": "shopify://shop_images/house-meal.png",
+            "image_alt": "豚角煮と牛すじ煮込み、ほうれん草を器に盛り付けた食卓。",
+            "image_alt_en": "Braised pork belly, stewed beef tendon and spinach plated at the dining table."
+          }
+        },
+        "featured_set": {
+          "type": "featured_set",
+          "settings": {
+            "product": "agaruke-3種セット-1",
+            "eyebrow": "はじめての方に",
+            "eyebrow_en": "A first taste of AGARUKE",
+            "description": "カレー、ミートボール、豚角煮と牛すじ煮込み。\n3種類の一皿を、それぞれ1個ずつ楽しめるセットです。",
+            "description_en": "Discover three dishes: spice curry, meatballs, and braised pork belly with stewed beef tendon. One of each, in one set.",
+            "cta": "セットの内容を見る",
+            "cta_en": "Explore the set",
+            "single_heading": "お好みの一皿を、単品でも。",
+            "single_heading_en": "Choose your favorites individually."
+          }
+        }
+      },
+      "block_order": [
+        "ag_about",
+        "ag_delivery",
+        "ag_how",
+        "ag_step_one",
+        "ag_step_two",
+        "ag_step_three",
+        "ag_menu",
+        "ag_craft",
+        "product_QU8qiR",
+        "meatball",
+        "product_LrJNrU",
+        "ag_moment",
+        "ag_guide",
+        "ag_faq_1",
+        "ag_faq_2",
+        "ag_faq_3",
+        "ag_faq_4",
+        "ag_members",
+        "ag_bottom",
+        "featured_set"
+      ],
+      "settings": {
+        "feature_product": "チキンオーバースパイスカレー-chicken-over-spice-curry",
+        "moment_product": "肉汁ミートボール-トマトソース-meatball-with-tomato-sauce",
+        "contact_url": "shopify://pages/contact"
+      }
+    }
+  },
+  "order": [
+    "agaruke_hero",
+    "agaruke_content"
+  ]
+}

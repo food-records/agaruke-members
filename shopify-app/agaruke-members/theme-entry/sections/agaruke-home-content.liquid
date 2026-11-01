@@ -37,14 +37,31 @@
   {% if ag_menu != blank %}
   <section class="ag-products ag-wrap ag-section" id="ag-products" aria-labelledby="ag-products-heading">
     <div class="ag-section-top" {{ ag_menu.shopify_attributes }}><div><p class="ag-eyebrow">{% render 'agaruke-copy', copy_settings: ag_menu.settings, key: 'eyebrow' %}</p><h2 id="ag-products-heading">{% render 'agaruke-copy', copy_settings: ag_menu.settings, key: 'heading', mobile_break: true %}</h2></div><a class="ag-text-link" href="{{ routes.all_products_collection_url }}">{% render 'agaruke-copy', copy_settings: ag_menu.settings, key: 'list_cta' %} <span aria-hidden="true">↗</span></a></div>
+    {% assign ag_set = section.blocks | where: 'type', 'featured_set' | first %}
+    {% assign ag_set_product = ag_set.settings.product %}
+    {% if ag_set_product != blank %}
+      <article class="ag-featured-set" {{ ag_set.shopify_attributes }} aria-labelledby="ag-set-heading">
+        <a class="ag-set-image" href="{{ ag_set_product.url }}" aria-label="{{ ag_set_product.title | escape }}">
+          {% if ag_set_product.featured_image != blank %}{{ ag_set_product.featured_image | image_url: width: 1000 | image_tag: widths: '350, 500, 750, 1000', sizes: '(min-width: 1256px) 570px, (min-width: 750px) calc(50vw - 40px), calc(100vw - 44px)', loading: 'lazy', alt: ag_set_product.title }}{% endif %}
+        </a>
+        <div class="ag-set-copy">
+          <p class="ag-eyebrow">{% render 'agaruke-copy', copy_settings: ag_set.settings, key: 'eyebrow' %}</p>
+          <h3 id="ag-set-heading"><a href="{{ ag_set_product.url }}">{{ ag_set_product.title | escape }}</a></h3>
+          <p class="ag-set-description">{% render 'agaruke-copy', copy_settings: ag_set.settings, key: 'description' %}</p>
+          <p class="ag-product-price">{% if ag_set_product.compare_at_price > ag_set_product.price %}<s class="ag-set-original">{{ ag_set_product.compare_at_price | money }}</s> {% endif %}{{ ag_set_product.price | money }}{% if cart.taxes_included %}<span>{% render 'agaruke-copy', copy_settings: ag_menu.settings, key: 'tax_note' %}</span>{% endif %}</p>
+          <a class="ag-button ag-button-small" href="{{ ag_set_product.url }}">{% render 'agaruke-copy', copy_settings: ag_set.settings, key: 'cta' %} <span aria-hidden="true">↗</span></a>
+        </div>
+      </article>
+      <p class="ag-single-heading">{% render 'agaruke-copy', copy_settings: ag_set.settings, key: 'single_heading' %}</p>
+    {% endif %}
     {% assign ag_product_count = 0 %}
-    {% for block in section.blocks %}{% if block.settings.product != blank %}{% assign ag_product_count = ag_product_count | plus: 1 %}{% endif %}{% endfor %}
+    {% for block in section.blocks %}{% if block.type == 'product' and block.settings.product != blank %}{% assign ag_product_count = ag_product_count | plus: 1 %}{% endif %}{% endfor %}
     {% assign ag_product_sizes = '(min-width: 990px) 27vw, (min-width: 750px) 45vw, 100vw' %}
     {% if ag_product_count == 3 %}{% assign ag_product_sizes = '(min-width: 1256px) 366px, (min-width: 990px) calc(33.333vw - 53.333px), (min-width: 750px) calc(38vw - 36.48px), calc(46vw - 20.24px)' %}{% endif %}
     <div class="ag-product-grid{% if ag_product_count == 3 %} ag-product-grid--three{% endif %}">
       {% for block in section.blocks %}
         {% assign item = block.settings.product %}
-        {% if item != blank %}
+        {% if block.type == 'product' and item != blank %}
           <article class="ag-product" {{ block.shopify_attributes }}>
             <a class="ag-product-image" href="{{ item.url }}" aria-label="{{ item.title | escape }}">
               {% if item.featured_image != blank %}{{ item.featured_image | image_url: width: 1000 | image_tag: widths: '200, 350, 500, 600, 750, 1000', sizes: ag_product_sizes, loading: 'lazy', alt: item.title }}{% endif %}
@@ -1066,6 +1083,66 @@
           "type": "url",
           "id": "cta_url",
           "label": "CTAリンク先（空欄なら商品エリア）"
+        }
+      ]
+    },
+    {
+      "type": "featured_set",
+      "name": "おすすめセット",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "セット商品"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "eyebrow（日本語）",
+          "default": "はじめての方に"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow_en",
+          "label": "eyebrow（英語）",
+          "default": "A first taste of AGARUKE"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "description（日本語）",
+          "default": "カレー、ミートボール、豚角煮と牛すじ煮込み。\n3種類の一皿を、それぞれ1個ずつ楽しめるセットです。"
+        },
+        {
+          "type": "textarea",
+          "id": "description_en",
+          "label": "description（英語）",
+          "default": "Discover three dishes: spice curry, meatballs, and braised pork belly with stewed beef tendon. One of each, in one set."
+        },
+        {
+          "type": "text",
+          "id": "cta",
+          "label": "cta（日本語）",
+          "default": "セットの内容を見る"
+        },
+        {
+          "type": "text",
+          "id": "cta_en",
+          "label": "cta（英語）",
+          "default": "Explore the set"
+        },
+        {
+          "type": "text",
+          "id": "single_heading",
+          "label": "single_heading（日本語）",
+          "default": "お好みの一皿を、単品でも。"
+        },
+        {
+          "type": "text",
+          "id": "single_heading_en",
+          "label": "single_heading（英語）",
+          "default": "Choose your favorites individually."
         }
       ]
     }
