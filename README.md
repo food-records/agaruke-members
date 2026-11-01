@@ -4,6 +4,8 @@
 
 本番`reward_catalog/750_side_dish`は700ptで交換し、公開メニューの「おかずメニュー Single Item」カテゴリ（`564ffe32-da1b-4d4e-b4cf-b9c6d0285b8e`）に属する780円以下の商品1点を無料にする。説明文は「780円以下のおかず1点無料」、所持券の価格ラベルは「780円以下のおかず無料」。一般会員の交換済み券は0件で、既存テストUIDの券1件も同じ条件へ更新済み。カテゴリ条件と価格上限はMembers APIからKiosk/Mobileへ渡し、会計見積で判定する。
 
+2026-11-01にAPI source `48b1c7c`をCloud Run revision `members-api-side-label-48b1c7c2`へ100%反映。公開`/rewards`の説明文、revisionのSHA・image digest、トラフィックを確認。実LINE会員の所持券画面は未確認。
+
 **Shopifyの現行仕様と実アカウント受入チェックリスト:** [顧客・LINE連携・全クーポン・ポイント条件](docs/SHOPIFY_DIRECT_ENTRY.md)（2026-10-31照合）。購入pt/交換/返金は本番有効、LINE配信未実施。旧報告の試験停止記述と区別する。
 
 Organization顧客台帳への会員状態投影は`LINE_PROVIDER_ID=food-records-line`を設定した場合だけ有効です。`POST /members/register`成功時に会員フラグを更新し、退会申請時に解除します。顧客台帳の失敗で会員登録・ポイント処理は取り消しません。
