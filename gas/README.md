@@ -27,7 +27,7 @@ Google スプレッドシートを開き、「拡張機能 > Apps Script」か�
 
    | A: count | B: point | C: type | D: accumulate | E: campaign_id | F: expires_at |
    |---|---|
-   | 25 | 500 | once | FALSE | agaruke-2026-survey-500 | 2026-11-24T23:59:00+09:00 |
+   | 25 | 700 | once | FALSE | agaruke-2026-survey-500 | 2026-11-24T23:59:00+09:00 |
 
 2. メニュー「シリアル管理 > シリアルナンバー生成」を実行
 
@@ -35,7 +35,7 @@ Google スプレッドシートを開き、「拡張機能 > Apps Script」か�
 
    | A: シリアルナンバー | B: ポイント | C: タイプ | D: 累積対象 | E: 生成日時 | F: QRコード |
    |---|---|---|---|---|---|
-   | FRABCD1234 | 500 | once | FALSE | 2026/11/01 | （画像） |
+   | FRABCD1234 | 700 | once | FALSE | 2026/11/01 | （画像） |
 
 ### 生成されるデータ
 
