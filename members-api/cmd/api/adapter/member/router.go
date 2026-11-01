@@ -20,7 +20,6 @@ func NewRouter() http.Handler {
 	r.Post("/restore", h.Restore)
 	r.Post("/register", h.Register)
 	r.Post("/survey-reward/claim", h.ClaimSurveyReward)
-	r.Post("/point-vouchers/claim", h.ClaimPointVoucher)
 
 	return r
 }

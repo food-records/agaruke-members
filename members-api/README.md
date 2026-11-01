@@ -1,7 +1,5 @@
 # members-api
 
-UID非依存のポイント引換券APIは`POST /members/point-vouchers/claim`。コード発行CLIと運用手順はrepositoryの[使い切りポイント引換券](../docs/POINT_VOUCHERS.md)を参照する。
-
 ## アンケート回答特典（テスト用1件のみ有効）
 
 `POST /members/survey-reward/claim`はLINEアクセストークンでUIDを検証し、`organizations/{organization_uuid}/point_campaigns/agaruke-2026-survey-500/eligible/{uid}`を照合する。キャンペーンが有効期間内で、会員登録と規約同意が済んでいる場合に限り、500ptを会員残高へ一回だけ加算する。ポイント履歴IDはキャンペーンIDで固定し、対象文書の`claimed_at`と同一Transactionで更新する。再送は`already_claimed`を返し、追加加算しない。特典は`total_earned_point`へ加算しない。
