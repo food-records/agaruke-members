@@ -23,3 +23,9 @@
 
 - `sakuma@food-records.com`のGmail画面で`agaruke@food-records.com`を送信元として追加・確認した。
 - 個別メール送信CLIとローカル台帳を実装。OAuthクライアントとトークンは未設定で、回答者へのメール送信は未実施。6・11・18行目は宛先確認済み、16行目は保留。
+
+## Gmail API送信テスト（2026-11-01）
+
+- `food-records-prod`でGmail APIが有効なことを確認し、AGARUKE個別送信用のDesktop OAuthクライアントを追加。AIエージェント用の指定を付け、`sakuma@food-records.com`で`gmail.send`のみ認可した。クライアントJSON・トークンはGit管理外で保管。既存の他クライアントとOAuth対象設定は変更していない。
+- 6・11・18行目の宛先・本文・個別リンクを非公開マニフェストへ変換して検証。16行目は含めていない。
+- 指定テストアドレスへ、配布文面から個別リンクを除き送信テストと明記した文章だけを1通Gmail APIで送信。APIのmessage IDをローカル台帳へ記録。回答者3名へのメールは未送信。

@@ -268,4 +268,4 @@ agaruke-members/
 
 ## AGARUKEメール個別送信（Gmail API）
 
-確認済みGoogleグループの送信元`agaruke@food-records.com`を、`sakuma@food-records.com`のGmailから使う手動CLIを`tools/gmail_sender/`に追加した。`gmail.send`のみを要求し、既定は検証だけ。個別本文・リンクはGit管理外の権限制限付きマニフェストに置き、送信状態をローカルSQLite台帳へ先に記録する。送信結果が不明な場合は自動再送しない。手順は[個別メール送信](tools/gmail_sender/README.md)を参照。OAuthクライアント・トークンの準備と実送信は未実施。
+確認済みGoogleグループの送信元`agaruke@food-records.com`を、`sakuma@food-records.com`のGmailから使う手動CLIを`tools/gmail_sender/`に追加した。`gmail.send`のみを要求し、既定は検証だけ。個別本文・リンクはGit管理外の権限制限付きマニフェストに置き、送信状態をローカルSQLite台帳へ先に記録する。送信結果が不明な場合は自動再送しない。手順は[個別メール送信](tools/gmail_sender/README.md)を参照。専用OAuthクライアントを作成し、`sakuma@food-records.com`で`gmail.send`を認可済み。指定テストアドレスへ受取リンクなしの文章を1通API送信し、Gmail送信IDを確認した。回答者への実送信は未実施。

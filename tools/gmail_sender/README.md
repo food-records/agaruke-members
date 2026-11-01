@@ -4,7 +4,7 @@
 
 ## 準備
 
-1. Google Cloud ConsoleでDesktop型OAuthクライアントを作り、Gmail APIを有効化する。OAuth同意画面は組織内アプリに設定する。発行したクライアントJSONはGit管理外の権限制限付きディレクトリに`0600`で置く。
+1. Google Cloud ConsoleでDesktop型OAuthクライアントを作り、Gmail APIを有効化する。今回の専用クライアントは`food-records-prod`に作成済み。既存のOAuth対象設定は外部・本番のまま変更していない。発行したクライアントJSONはGit管理外の権限制限付きディレクトリに`0600`で置く。
 2. `python3 -m venv .venv`、`.venv/bin/pip install -r tools/gmail_sender/requirements.txt`を実行する。初回送信時にブラウザで`sakuma@food-records.com`として認証する。トークンもGit管理外に`0600`で保存する。
 3. 送信マニフェストを次の形式でGit管理外に作る。`id`は配布ごと・宛先ごとに一意の公開可能な識別子にする。個別の受取リンクを本文に含める。ファイルは`0600`、格納ディレクトリは`0700`。
 
@@ -35,3 +35,5 @@ python3 tools/gmail_sender/send.py \
 既定は検証のみ。`--send`を付けた場合だけGmail APIへ送る。1宛先ずつ送信し、成功時はGmail message IDを台帳へ記録して再送をスキップする。送信前に結果不明の状態を台帳へ保存するため、通信エラーや強制終了後の自動再試行はしない。Gmail送信済みを調べてから手動で台帳を修復する。マニフェスト・トークン・台帳・受取リンクはGitに入れない。
 
 このCLIは手動実行専用。定期ジョブやCloud Runは追加しない。今回のアンケート配布では16行目の宛先が未確認のためマニフェストに含めない。回答者メール送信には個別の実行指示が必要。
+
+2026-11-01に`gmail.send`認可と、指定テストアドレスへの受取リンクなし文章1通のAPI送信を確認。回答者宛の本番メールは未送信。
