@@ -2,7 +2,7 @@
 
 ## 現在状態
 
-実装・ローカル検証済み。本番未反映、配信承認待ち。作業branchは`feat/liff-shopify-tickets-20261101`、origin master `7ea7783`を基点とする。ユーザーが開いていた`.work/point-vouchers-20261101`のポイント配布作業は変更しない。
+2026-11-01、ユーザーの公開承認により本番反映・実会員の読取確認まで完了。最新masterのシリアル配布/受取確認・店頭券仕様も統合して保持した。API配信元はmaster `7d4c2b0`、LIFF初回公開は`cf8478e`、キャッシュ補正を含む最終画面公開は`70a17ac`。元の`.work/point-vouchers-20261101`は保持。
 
 ## 利用者の流れ
 
@@ -46,3 +46,24 @@ LINE本人の`shopify_coupons`を読み、Shopify画面で既に取得した券�
 4. LINE実端末で既存券表示→交換確認→減算1回→発行→使用ボタン→トップへ適用を確認する。実会員のポイント消費・注文は事前承認を得る。LINE告知は行わない。
 
 公式参照: https://shopify.dev/docs/api/admin-graphql/2026-07/mutations/discountCodeBasicCreate 、 https://shopify.dev/changelog/posts/scannable-discount-codes
+
+
+## 本番反映結果
+
+| 対象 | 配信元/識別子 | 公開状態 |
+|---|---|---|
+| Go API | `7d4c2b093c06d7e0d0bdb0533a64c49b537260c3` / `members-api-liff-7d4c2b0` | 100% |
+| Node app | 同上 / `shopify-members-liff-7d4c2b0` | 100% |
+| LIFF Pages | `70a17ac922d6bcd154ce702c77c15501b33cce6f` / Actions run `41288460578` | success |
+
+Go image: `sha256:fe55480c4e9ad82721d16fcf8f88acde3ed70ffe5c0b169b32da5e048c09800f`。Node image: `sha256:fff9e2a7e91079c5442e4a11431fec42bed37fb1fd19e4e43e2d9bfdbc63e74f`。Go build `88682e1e-bf16-4012-a263-fee354485de7`、Node build `1ccc3340-bcac-4420-9eda-bfba0b15260e`。直前の本番Go8faff2b/Node26bf1d6の包含・clean source・remote SHA一致を切替前に検査。追加pushでSHAが変わった2回は候補0%のまま停止し、最新masterから再ビルドした。旧候補は0%で保持。
+
+既存environment/secret参照/resources/concurrency/maxScaleの一致を機械確認。Go 1CPU/512Mi/concurrency80/max20、Node0.08CPU/256Mi/concurrency1/max1を維持、min追加なし。Go→Nodeの順で100%切替後、LIFFをmasterへ統合してPages公開。最終画面commitとAPI sourceのbackendコード差分0を照合した。Shopify拡張・テーマ・GAS本番設定は配信していない。
+
+Go全tests/vet/隔離Emulator、Node43 tests（キャッシュ回帰2件含む）・型/build成功。候補/公開URLでroot/サービス鍵/不正LINE/Origin/CORS/Bearer境界、既存署名proxy/500円使用履歴/交換境界を確認。ERRORログ標本0件。
+
+実LINEログイン済み会員で、既存通販券2件・200円券詳細の使用ボタン・3種の条件/残高不足・主タブを切り替えてもECフィルター維持を確認。新規ポイント消費/発券/使用遷移/注文/配信は実施せず、実交換から注文までの操作は利用者の確認に残す。index.html/index.css/liff.js/config.js/sw.jsの公開bytesを配信元と照合（swのCACHE_NAMEはPagesでSHAに置換）。
+
+### 公開時に検出したキャッシュ混在の補正
+
+旧Service Workerが新HTMLと旧liff.jsを同時に返し、switchTicketChannelが未定義となる実画面を確認。キャッシュ名更新だけでは古いHTTP/CDN応答を新cacheへ格納し得るため、install時はrelease付きURLをreload取得して通常keyに保存。主要HTML/JS/CSS/configはnetwork優先・再検証、失敗時だけ現行cacheへfallbackする。OAuth code/シリアル等のquery付きnavigationはcache保存しない。画像は現行cache内で優先し、API/LINE通信は対象外。回帰テストと実会員で補正後の動作を確認。旧画面を開き続けている場合は閉じて開き直すか再読み込みする。
