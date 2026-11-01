@@ -1,6 +1,6 @@
 # LINEポイントカード・リッチメニューからショップへ（2026-11-01）
 
-実装・検査済み、公開準備中。既存のLIFF/Shopify購入連携を再利用し、新しいLIFF ID/権限/Go API変更は不要。
+2026-11-01、本番公開・実アカウントの両導線確認まで完了。既存のLIFF/Shopify購入連携を再利用し、新しいLIFF ID/権限/Go API変更は不要。
 
 ## 入口URL
 
@@ -28,3 +28,13 @@ Node49 tests: 既存機能43件＋入口/同一ブラウザーproof/認証前の
 既存のstart/LINE認証/consume/statusをユーザー遷移ごとに実行する。新規scope/有料アプリ/定期Job/scan/instance増なし。Nodeの現行0.08CPU/256Mi/concurrency1/max1/min0とGoの構成を維持する。大幅な費用増を伴う構成変更なし。
 
 参照: https://shopify.dev/docs/api/ajax/reference/cart 、 https://support.google.com/analytics/answer/9756891 、 https://developers.line.biz/en/reference/liff/
+
+
+## 公開記録
+
+- source master `895942bf87183dc372cca80597af3098420cc6bd`、Node revision `shopify-members-entry-895942b`、traffic100%。image digest `sha256:af3a51aec3bad6b8a98b02adc6248cb9113d26a2606bd88f56f5bac80b49d323`、Cloud Build `0c5c6acb-09dd-44ce-9046-155436018e02`。直前Node source7d4c2b0包含、clean/remote一致を候補作成・切替前に検査。既存env/secret/resources/concurrency/maxScale一致、Goは配信せず保持。
+- Node49件、型検査/build、JS構文、差分検査成功。候補/公開先のCORS/Origin/Bearer/署名proxy/使用済み500円券照会/交換境界を確認。ERROR標本0。
+- LIFF確認文言のPagesはActions `41289526140`（source895942b）成功。リッチメニュー実設定・LINE配信は行っていない。
+- 実LINEとShopifyが既に継続連携済みのアカウントで、リッチメニューURL→LINE同意→トップへのUTM復元、4商品/5,120円/クーポン未選択を維持して購入100pt案内を確認。
+- 実ポイントカードの既存200円券「使用する」→LINE同意→本人券照合→トップで適用中を確認。最終URLは`/?utm_source=line&utm_medium=social&utm_campaign=point_exchange&utm_content=pointcard_ticket_200`。カート4商品/4,920円/100pt案内を確認後、選択を解除し4商品/5,120円/未選択へ復元。LINE連携は保持。新規交換・発券・実注文・決済・ポイント消費は実施していない。
+- 実アカウント確認はログイン済み分岐。新規ゲスト空カートはUnit/匿名HTTPのtoken安定化検査で確認し、ゲスト注文の実決済は行っていない。認証ブラウザーが変わる等でproofを照合できない場合は、既存の再認証案内へ停止する。
