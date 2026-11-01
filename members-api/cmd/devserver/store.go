@@ -88,10 +88,10 @@ func defaultDB() dbData {
 				Active:         true,
 				SortOrder:      2,
 			},
-			"side_dish": {
+			"750_side_dish": {
 				Title:          "おかずチケット",
-				RequiredPoints: 750,
-				Description:    "店舗スタッフにこの画面をご提示ください。",
+				RequiredPoints: 700,
+				Description:    "780円以下のおかずカテゴリの商品1点無料",
 				Active:         true,
 				SortOrder:      3,
 			},
