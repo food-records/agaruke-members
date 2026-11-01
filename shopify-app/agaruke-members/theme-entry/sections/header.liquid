@@ -461,15 +461,15 @@
       "logo": {{ settings.logo | image_url: width: 500 | prepend: "https:" | json }},
     {% endif %}
     "sameAs": [
-      {{ settings.social_twitter_link | json }},
-      {{ settings.social_facebook_link | json }},
-      {{ settings.social_pinterest_link | json }},
-      {{ settings.social_instagram_link | json }},
-      {{ settings.social_tiktok_link | json }},
-      {{ settings.social_tumblr_link | json }},
-      {{ settings.social_snapchat_link | json }},
-      {{ settings.social_youtube_link | json }},
-      {{ settings.social_vimeo_link | json }}
+      {%- assign ag_social_keys = 'social_twitter_link,social_facebook_link,social_pinterest_link,social_instagram_link,social_tiktok_link,social_tumblr_link,social_snapchat_link,social_youtube_link,social_vimeo_link' | split: ',' -%}
+      {%- assign ag_social_has_item = false -%}
+      {%- for ag_social_key in ag_social_keys -%}
+        {%- if settings[ag_social_key] != blank -%}
+          {%- if ag_social_has_item -%},{%- endif -%}
+          {{- settings[ag_social_key] | json -}}
+          {%- assign ag_social_has_item = true -%}
+        {%- endif -%}
+      {%- endfor -%}
     ],
     "url": {{ request.origin | append: page.url | json }}
   }
