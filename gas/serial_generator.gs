@@ -10,6 +10,8 @@ var PROJECT_ID = PropertiesService.getScriptProperties().getProperty('FIREBASE_P
 var LIFF_ID    = PropertiesService.getScriptProperties().getProperty('LIFF_ID');
 var FIRESTORE_BASE = 'https://firestore.googleapis.com/v1/projects/' + PROJECT_ID + '/databases/(default)/documents';
 var FIRESTORE_DOC_PATH = 'projects/' + PROJECT_ID + '/databases/(default)/documents';
+var ORGANIZATION_UUID = PropertiesService.getScriptProperties().getProperty('ORGANIZATION_UUID');
+var SERIALS_PATH = (ORGANIZATION_UUID ? '/organizations/' + ORGANIZATION_UUID : '') + '/serials/';
 
 // QRコード中央に表示するアイコン画像URL（不要な場合は空文字に）
 var QR_CENTER_IMAGE_URL = 'https://members.agaruke.com/images/agaruke_icon.png';
@@ -24,6 +26,8 @@ var QR_CENTER_IMAGE_URL = 'https://members.agaruke.com/images/agaruke_icon.png';
 //   D列: accumulate（TRUE/FALSE、省略時は TRUE）
 //         TRUE  = total_earned_point に加算（来店・通常用途）
 //         FALSE = point のみ加算（アンケート・クチコミなど累積対象外）
+//   E列: campaign_id（任意。同じ配布を1会員1回に制限）
+//   F列: expires_at（任意。RFC3339形式の受取期限）
 //
 // 例:
 //   count | point | type      | accumulate
@@ -51,11 +55,17 @@ function generateSerials() {
     if (type_ !== 'recurring') type_ = 'once';
     var accumVal = sheet.getRange(i, 4).getValue();
     var accumulate = (accumVal === '' || accumVal === null || accumVal === true || String(accumVal).toUpperCase() === 'TRUE');
+    var campaignId = sheet.getRange(i, 5).getValue().toString().trim();
+    var expiresAt = sheet.getRange(i, 6).getValue().toString().trim();
 
-    if (isNaN(count) || isNaN(point) || count <= 0) continue;
+    if (isNaN(count) || count <= 0) continue;
+    if (count > 400) throw new Error('行' + i + ': 一度の発行は400枚以下にしてください');
+    if (isNaN(point) || point <= 0 || point > 100000) throw new Error('行' + i + ': point は1〜100000で指定してください');
+    if (campaignId && !/^[a-z0-9][a-z0-9-]{2,80}$/.test(campaignId)) throw new Error('行' + i + ': campaign_id の形式が不正です');
+    if (expiresAt && (isNaN(Date.parse(expiresAt)) || !/^\d{4}-\d{2}-\d{2}T/.test(expiresAt))) throw new Error('行' + i + ': expires_at はRFC3339形式で指定してください');
 
     var codes = generateUniqueCodes(count);
-    batchWrite(codes, point, type_, accumulate, token);
+    batchWrite(codes, point, type_, accumulate, campaignId, expiresAt, token);
     writeResultsToSheet(codes, point, type_, accumulate);
 
     results.push('行' + i + ': ' + count + '枚 (' + point + 'pt, ' + type_ + ', accumulate=' + accumulate + ') 生成完了');
@@ -82,8 +92,10 @@ function generateUniqueCodes(count) {
 function generateCode() {
   var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   var code = 'FR';
+  // UUID全体をハッシュし、従来のFR+8文字形式に写像する。
+  var digest = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, Utilities.getUuid() + ':' + Utilities.getUuid());
   for (var i = 0; i < 8; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
+    code += chars.charAt((digest[i] + 256) % chars.length);
   }
   return code;
 }
@@ -140,8 +152,8 @@ function writeResultsToSheet(codes, point, type_, accumulate) {
 // Firestore バッチ書き込み（最大500件/リクエスト）
 // ============================================================
 
-function batchWrite(codes, point, type_, accumulate, token) {
-  var chunkSize = 500;
+function batchWrite(codes, point, type_, accumulate, campaignId, expiresAt, token) {
+  var chunkSize = 400;
   for (var i = 0; i < codes.length; i += chunkSize) {
     var chunk = codes.slice(i, i + chunkSize);
     var writes = chunk.map(function(code) {
@@ -153,16 +165,19 @@ function batchWrite(codes, point, type_, accumulate, token) {
       if (type_ === 'once') {
         fields.used    = { booleanValue: false };
         fields.used_id = { stringValue: '' };
+        if (campaignId) fields.campaign_id = { stringValue: campaignId };
+        if (expiresAt) fields.expires_at = { timestampValue: new Date(expiresAt).toISOString() };
       }
       return {
         update: {
-          name: FIRESTORE_DOC_PATH + '/serials/' + code,
+          name: FIRESTORE_DOC_PATH + SERIALS_PATH + code,
           fields: fields
-        }
+        },
+        currentDocument: { exists: false }
       };
     });
 
-    var response = UrlFetchApp.fetch(FIRESTORE_BASE + ':batchWrite', {
+    var response = UrlFetchApp.fetch(FIRESTORE_BASE + ':commit', {
       method: 'POST',
       contentType: 'application/json',
       headers: { Authorization: 'Bearer ' + token },
@@ -171,7 +186,7 @@ function batchWrite(codes, point, type_, accumulate, token) {
     });
 
     if (response.getResponseCode() !== 200) {
-      throw new Error('Firestore batchWrite 失敗: ' + response.getContentText());
+      throw new Error('Firestore commit 失敗。コード重複や権限を確認してください: ' + response.getContentText());
     }
   }
 }
