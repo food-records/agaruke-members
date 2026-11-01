@@ -24,3 +24,8 @@ vendor/
 .gitconfig
 dump.sql
 members-api/devserver
+
+# Local Gmail sender state
+.venv/
+*.sqlite3
+*.sqlite3-*

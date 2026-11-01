@@ -265,3 +265,7 @@ agaruke-members/
 2026-11-01: LINE連携を引き継ぐチケット使用リンク/リッチメニュー入口とUTM保持を実装。Node49件等検査済み、公開準備中。[仕様・入口URL](docs/LINE_SHOP_ENTRY_20261101.md)。
 
 2026-11-01公開完了: チケット使用リンクとリッチメニュー入口でLINE購入連携とUTMを引継ぎ。source895942b/Node100%、実会員の両導線・200円適用を確認しカート未選択へ復元。Node49件等成功。Go/料金/ポイント条件は保持。[入口URL・公開記録](docs/LINE_SHOP_ENTRY_20261101.md)。
+
+## AGARUKEメール個別送信（Gmail API）
+
+確認済みGoogleグループの送信元`agaruke@food-records.com`を、`sakuma@food-records.com`のGmailから使う手動CLIを`tools/gmail_sender/`に追加した。`gmail.send`のみを要求し、既定は検証だけ。個別本文・リンクはGit管理外の権限制限付きマニフェストに置き、送信状態をローカルSQLite台帳へ先に記録する。送信結果が不明な場合は自動再送しない。手順は[個別メール送信](tools/gmail_sender/README.md)を参照。OAuthクライアント・トークンの準備と実送信は未実施。
