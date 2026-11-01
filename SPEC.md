@@ -226,6 +226,8 @@ Square割引コードの事前プール。`reward_catalog` の `pricing_rule_id`
 
 > **テストコード**: `FR1234567890` も本番APIでは通常の一度限りのシリアルとして扱う。繰り返し付与する例外は廃止。
 
+一度限りの配布は既存の`FR`シリアルを使い、UIDをコードに固定しない。`serials/{code}`の`point`・`type=once`・`used=false`に加え、任意の`accumulate`・`campaign_id`・`expires_at`を保存する。未設定の`accumulate`は従来互換で`true`と扱う。会員登録と規約同意後、LINE認証済み会員が`POST /qrcode`で引き換える。シリアルの使用済み化、会員残高、ポイント履歴は単一のFirestore Transactionで確定し、同時引換でも1回だけ付与する。`campaign_id`がある場合は同一会員の同一キャンペーン受取履歴も照合し、期限切れは拒否する。コードを知る人が先着で使用できるため、配布先との対応表・リンクは非公開で管理する。運用手順と今回の配布設定は[`docs/POINT_VOUCHERS.md`](docs/POINT_VOUCHERS.md)を参照。
+
 ### 6.2 チェックインQR（店舗タブレット表示）
 
 - コード形式: `DL_{12桁HEXトークン}`
@@ -583,6 +585,9 @@ QRコードのLIFF URLは `?code=FRXXXXXXXX` を含む。`liff.state` 経由で�
 | A | 生成枚数 | `50` |
 | B | 付与ポイント | `100` |
 | C | タイプ | `once` または `recurring` |
+| D | ランク累積対象 | `TRUE` / `FALSE`。空欄は従来互換で対象 |
+| E | キャンペーンID（任意） | 同一会員の同一特典の再受取防止 |
+| F | 受取期限（任意） | ISO 8601日時 |
 
 生成結果は「生成結果」シートに出力（シリアルナンバー・ポイント・タイプ・生成日時・QRコード画像）。
 
