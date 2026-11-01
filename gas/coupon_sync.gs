@@ -53,6 +53,9 @@ function syncRewardCatalog() {
       skipped++;
       continue;
     }
+    if (id === '750_side_dish' && description !== '780円以下のおかずカテゴリの商品1点無料') {
+      throw new Error('おかずチケットの説明文を本番定義に更新してから同期してください。');
+    }
 
     writes.push({
       update: {
@@ -67,7 +70,9 @@ function syncRewardCatalog() {
           pricing_rule_id: { stringValue: pricingRuleId },
           square_item_id:  { stringValue: squareItemId }
         }
-      }
+      },
+      // シートで管理しない価格上限・対象カテゴリ等を消さない。
+      updateMask: { fieldPaths: ['title', 'required_points', 'description', 'active', 'image_url', 'sort_order', 'pricing_rule_id', 'square_item_id'] }
     });
   }
 
@@ -187,7 +192,7 @@ function createRewardCatalogSheet() {
   var sample = [
     ['topping_basic',   '基本トッピングチケット', 200,  '店舗スタッフにこの画面をご提示ください。', true,  '', 1, '', ''],
     ['topping_deluxe',  '豪華トッピングチケット', 400,  '店舗スタッフにこの画面をご提示ください。', true,  '', 2, '', ''],
-    ['side_dish',       'おかずチケット',         750,  '店舗スタッフにこの画面をご提示ください。', true,  '', 3, '', ''],
+    ['750_side_dish',   'おかずチケット',         700,  '780円以下のおかずカテゴリの商品1点無料', true,  '', 3, '', ''],
     ['bento',           'お弁当チケット',          1200, '店舗スタッフにこの画面をご提示ください。', true,  '', 4, '', '']
   ];
   sheet.getRange(2, 1, sample.length, 9).setValues(sample);
