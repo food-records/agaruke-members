@@ -1,5 +1,7 @@
 # members-site
 
+使い切りポイント引換券の個別URL `https://liff.line.me/2000938587-06YmdyJ5/?voucher=PV_...` とそのQRに対応する。コードの原文は公開コードに含めない。
+
 2026-10-27: LIFF SDKのCDN固定パスを2.31.2へ変更。モバイルオーダーの`@line/liff`と版を統一した。公開後はLINE内ブラウザ・外部ブラウザでカード表示とログインを確認する。
 
 FOOD RECORDS メンバーズの LIFF フロントエンド。

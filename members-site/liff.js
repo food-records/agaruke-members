@@ -79,11 +79,12 @@ function initializeLiff(liffId) {
                     showRewards(accessToken);
                     var code = getParam('code');
                     var surveyReward = getParam('survey_reward');
+                    var voucher = getParam('voucher');
                     var shopifyLink = getParam('shopify_link');
                     var shopifyPurchase = getParam('shopify_purchase');
                     var kioskToken = getParam('kiosk_token');
                     // LIFF によっては ?code=xxx が liff.state に格納される場合があるためフォールバック
-                    if (!code || !kioskToken || !surveyReward || !shopifyLink || !shopifyPurchase) {
+                    if (!code || !kioskToken || !surveyReward || !voucher || !shopifyLink || !shopifyPurchase) {
                         var liffState = getParam('liff.state');
                         if (liffState) {
                             try {
@@ -91,6 +92,7 @@ function initializeLiff(liffId) {
                                 if (!code) code = getParam('code', decodedState);
                                 if (!kioskToken) kioskToken = getParam('kiosk_token', decodedState);
                                 if (!surveyReward) surveyReward = getParam('survey_reward', decodedState);
+                                if (!voucher) voucher = getParam('voucher', decodedState);
                                 if (!shopifyLink) shopifyLink = getParam('shopify_link', decodedState);
                                 if (!shopifyPurchase) shopifyPurchase = getParam('shopify_purchase', decodedState);
                             } catch (e) {}
@@ -105,6 +107,7 @@ function initializeLiff(liffId) {
                         if (shopifyPurchase) authorizeShopifyPurchase(accessToken, shopifyPurchase);
                         else if (shopifyLink) proposeShopifyLink(accessToken, shopifyLink);
                         else if (kioskToken && !wasKioskTokenLinked(kioskToken)) linkKioskCheckout(kioskToken);
+                        else if (voucher) claimPointVoucher(accessToken, voucher);
                         else if (surveyReward === 'agaruke-2026-survey-500') claimSurveyReward(accessToken);
                         else if (code) checkCode(accessToken, code);
                     });
@@ -128,6 +131,11 @@ function scanQR() {
             var kioskToken = getParam('kiosk_token', value);
             if (kioskToken) {
                 linkKioskCheckout(kioskToken);
+                return;
+            }
+            var voucher = getParam('voucher', value);
+            if (voucher) {
+                claimPointVoucher(liff.getAccessToken(), voucher);
                 return;
             }
             // URL に埋め込まれた ?code=xxx を取り出す。
@@ -352,6 +360,41 @@ function checkCode(token, code) {
         error: function (jqXHR) {
             var msg = jqXHR.responseJSON && jqXHR.responseJSON.message || jqXHR.statusText || 'network error (status=' + jqXHR.status + ')';
             console.error('[API] /qrcode error:', jqXHR.status, msg);
+            showAlert(msg);
+        }
+    });
+}
+
+function claimPointVoucher(token, code) {
+    return $.ajax({
+        beforeSend: function (request) {
+            request.setRequestHeader('Authorization', 'Bearer ' + token);
+        },
+        contentType: 'application/json',
+        dataType: 'json',
+        url: window.APP_CONFIG.apiUrl + '/members/point-vouchers/claim',
+        type: 'POST',
+        data: JSON.stringify({ code: code }),
+        success: function (data) {
+            if (!data.data) return;
+            _currentPoint = data.data.point;
+            $('#point-card-balance span').text(data.data.point);
+            $('#point-card-get').text(data.data.awarded + ' point get!').show();
+            showPointToast(data.data.awarded);
+            var cleanUrl = new URL(window.location.href);
+            cleanUrl.searchParams.delete('voucher');
+            cleanUrl.searchParams.delete('liff.state');
+            history.replaceState(null, '', cleanUrl.toString());
+        },
+        error: function (jqXHR) {
+            var msg = jqXHR.responseJSON && jqXHR.responseJSON.message || 'ポイントを受け取れませんでした。';
+            if (msg === 'MEMBER_REGISTRATION_REQUIRED' || msg === 'CAMPAIGN_CONSENT_REQUIRED') {
+                openRegistrationDialog(token, function () { claimPointVoucher(token, code); });
+                return;
+            }
+            if (msg === 'POINT_VOUCHER_USED') msg = 'この引換コードは使用済みです。';
+            if (msg === 'POINT_VOUCHER_ALREADY_CLAIMED') msg = 'この配布のポイントは受け取り済みです。';
+            if (msg === 'POINT_VOUCHER_INVALID') msg = '引換コードが無効、または受取期限外です。';
             showAlert(msg);
         }
     });
