@@ -51,21 +51,24 @@
         </div>
 
         <div class="coupon-tabs" id="coupon-tabs">
-            <div class="ticket-channel-tabs" role="tablist" aria-label="チケットの利用先">
-                <button id="channel-store" role="tab" aria-selected="true" onclick="switchTicketChannel('store')">店舗・モバイルオーダー</button>
-                <button id="channel-shopify" role="tab" aria-selected="false" onclick="switchTicketChannel('shopify')">AGARUKE通販</button>
+            <div class="coupon-tab-header" role="tablist" aria-label="特典の操作">
+                <button class="coupon-tab-btn is-active" id="tab-acquired" role="tab" aria-selected="true" aria-controls="tab-panel-acquired" onclick="switchTab('acquired')">獲得済みの特典</button>
+                <button class="coupon-tab-btn" id="tab-exchange" role="tab" aria-selected="false" aria-controls="tab-panel-exchange" tabindex="-1" onclick="switchTab('exchange')">ポイントを使う</button>
             </div>
-            <p id="ticket-channel-help" class="ticket-channel-help">店舗・モバイルオーダーで使えるチケットです。</p>
-            <div class="coupon-tab-header">
-                <button class="coupon-tab-btn is-active" id="tab-acquired" onclick="switchTab('acquired')">獲得済みの特典</button>
-                <button class="coupon-tab-btn" id="tab-exchange" onclick="switchTab('exchange')">ポイントを使う</button>
+            <div class="ticket-channel-filter" role="group" aria-label="利用先で絞り込み">
+                <span class="ticket-filter-label">利用先</span>
+                <div class="ticket-filter-options">
+                    <button id="channel-store" type="button" aria-pressed="true" onclick="switchTicketChannel('store')">店頭・モバイルオーダー</button>
+                    <button id="channel-shopify" type="button" aria-pressed="false" onclick="switchTicketChannel('shopify')">AGARUKE EC</button>
+                </div>
             </div>
-            <div id="tab-panel-acquired">
+            <p id="ticket-channel-help" class="ticket-channel-help">店頭・モバイルオーダーで使えるチケットです。</p>
+            <div id="tab-panel-acquired" role="tabpanel" aria-labelledby="tab-acquired">
                 <div id="coupon-list">
                     <p class="coupon-empty">読み込み中...</p>
                 </div>
             </div>
-            <div id="tab-panel-exchange" style="display:none">
+            <div id="tab-panel-exchange" role="tabpanel" aria-labelledby="tab-exchange" style="display:none">
                 <div id="reward-list">
                     <p class="coupon-empty">読み込み中...</p>
                 </div>

@@ -1343,9 +1343,14 @@ main {
     border-color: #388e3c;
 }
 
-/* チケットの利用先は、所持/交換の両画面で共通。 */
-.ticket-channel-tabs {display:flex;gap:8px;padding:12px 0 4px;}
-.ticket-channel-tabs button {flex:1;min-height:48px;padding:10px 8px;border:1px solid #cbd3ca;border-radius:10px;background:#fff;color:#364638;font:inherit;font-size:13px;cursor:pointer;}
-.ticket-channel-tabs button[aria-selected="true"] {background:#364638;color:white;border-color:#364638;font-weight:bold;}
-.ticket-channel-tabs button:focus-visible {outline:3px solid #789580;outline-offset:2px;}
-.ticket-channel-help {font-size:12px;line-height:1.7;color:#646d65;margin:8px 0 16px;}
+/* 操作が主タブ、利用先はその配下の補助フィルター。 */
+.coupon-tab-header {margin-bottom:18px;}
+.coupon-tab-btn {min-height:48px;font-size:14px;}
+.coupon-tab-btn.is-active {color:#304a35;}
+.ticket-channel-filter {display:flex;flex-direction:column;gap:8px;}
+.ticket-filter-label {font-size:11px;color:#778077;}
+.ticket-filter-options {display:flex;flex-wrap:wrap;gap:8px;}
+.ticket-filter-options button {min-height:40px;padding:8px 12px;border:1px solid #dbe1d9;border-radius:24px;background:transparent;color:#707970;font:inherit;font-size:12px;cursor:pointer;}
+.ticket-filter-options button[aria-pressed="true"] {background:#eaf0e7;color:#36503b;border-color:#93aa92;font-weight:bold;}
+.ticket-filter-options button:focus-visible,.coupon-tab-btn:focus-visible {outline:3px solid #789580;outline-offset:2px;}
+.ticket-channel-help {font-size:12px;line-height:1.7;color:#646d65;margin:10px 0 16px;}

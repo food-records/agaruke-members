@@ -16,6 +16,12 @@ var RANK_ORDER = { green: 0, bronze: 1, silver: 2, gold: 3, secret: 4 };
 
 $(document).ready(function () {
     initializeLiff(window.APP_CONFIG.liffId);
+    $('.coupon-tab-header [role="tab"]').on('keydown', function (event) {
+        if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
+        event.preventDefault();
+        var next = event.key === 'Home' ? 'acquired' : event.key === 'End' ? 'exchange' : this.id === 'tab-acquired' ? 'exchange' : 'acquired';
+        switchTab(next); $('#tab-' + next).trigger('focus');
+    });
 
     $('#modal-overlay, #modal-close-btn').on('click', closeCouponModal);
     $('#modal-store-btn').on('click', scanKioskQRFromCoupon);
@@ -905,6 +911,9 @@ function showCouponToast(title) {
 // ── タブ ─────────────────────────────────
 
 function switchTab(tab) {
+    var acquired = tab === 'acquired';
+    $('#tab-acquired').attr('aria-selected', acquired ? 'true' : 'false').attr('tabindex', acquired ? '0' : '-1');
+    $('#tab-exchange').attr('aria-selected', acquired ? 'false' : 'true').attr('tabindex', acquired ? '-1' : '0');
     if (tab === 'acquired') {
         $('#tab-acquired').addClass('is-active');
         $('#tab-exchange').removeClass('is-active');
@@ -1094,9 +1103,9 @@ function renderTicketChannel() {
 }
 function switchTicketChannel(channel) {
     ticketChannel = channel === 'shopify' ? 'shopify' : 'store';
-    $('#channel-store').attr('aria-selected',ticketChannel === 'store' ? 'true' : 'false');
-    $('#channel-shopify').attr('aria-selected',ticketChannel === 'shopify' ? 'true' : 'false');
-    $('#ticket-channel-help').text(ticketChannel === 'shopify' ? 'AGARUKE通販専用です。店舗・モバイルオーダーでは使えません。送料は利用条件に含まれません。' : '店舗・モバイルオーダーで使えるチケットです。');
+    $('#channel-store').attr('aria-pressed',ticketChannel === 'store' ? 'true' : 'false');
+    $('#channel-shopify').attr('aria-pressed',ticketChannel === 'shopify' ? 'true' : 'false');
+    $('#ticket-channel-help').text(ticketChannel === 'shopify' ? 'AGARUKE EC専用です。店頭・モバイルオーダーでは使えません。送料は利用条件に含まれません。' : '店頭・モバイルオーダーで使えるチケットです。');
     renderTicketChannel();
     if (ticketChannel === 'shopify') showShopifyTickets();
 }
