@@ -2,11 +2,11 @@
 
 2026-11-01、本番公開・実アカウントの両導線確認まで完了。既存のLIFF/Shopify購入連携を再利用し、新しいLIFF ID/権限/Go API変更は不要。
 
-## リッチメニューの外部ブラウザー問題（修正実装済み・公開承認待ち）
+## リッチメニューの外部ブラウザー問題（修正実装済み・公開承認済み）
 
 2026-11-01、利用者から旧URLで外部ブラウザーが開きLINE再ログインを求められるとの報告。旧URLはLIFF URLではなくShopifyへの直接URLであり、LIFFブラウザーを起動する保証がなかった。既存検証はログイン済みWebブラウザーであり、実LINEリッチメニューからの起動確認を代替していなかった。
 
-修正後に設定するURL（**まだ本番未反映**）:
+修正後に設定するURL（**公開結果は末尾を参照**）:
 
 https://liff.line.me/2000938587-06YmdyJ5/?shopify_entry=rich_menu&utm_source=line&utm_medium=social&utm_campaign=agaruke_ec&utm_content=rich_menu_shop
 
@@ -14,7 +14,7 @@ https://liff.line.me/2000938587-06YmdyJ5/?shopify_entry=rich_menu&utm_source=lin
 
 Node53件（既存49＋入口4）・JS構文・差分検査成功。LINE実機からの起動、ショップ→本人同意→ショップ復帰のWebView維持と再入力なし、既存カート保持は公開後に要確認。初回のLINE権限同意や、外部ブラウザーから意図的に開いた場合のLINEログインは省略しない。Shopifyアカウントの自動ログインを行うものではない。
 
-本番公開は今回の明示承認待ち。masterへのmembers-site変更pushは自動公開を起動するため、feature branchにのみ保存する。リッチメニュー設定・配信も変更していない。
+ユーザーが今回の本番公開を明示承認。masterへの統合・pushでPagesを公開する。リッチメニュー設定・配信も変更していない。
 
 ## 旧入口URL（Shopify直接アクセス）
 

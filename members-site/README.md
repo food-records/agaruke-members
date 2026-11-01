@@ -61,4 +61,4 @@ monorepoの`master`ブランチへ`members-site/**`の変更をpushすると、G
 
 2026-11-01: LIFF通販チケットの利用先タブ・本人LINE認証によるEC券取得/交換/発行再開を実装。本番未反映。[仕様](../docs/LIFF_SHOPIFY_TICKETS_20261101.md)。
 
-2026-11-01: `?shopify_entry=rich_menu`をLIFF認証後に固定Shopify入口へ送る導線を追加。通常カード/シリアル/購入認証は維持。実装・53件回帰済み、公開承認待ち。[仕様](../docs/LINE_SHOP_ENTRY_20261101.md)。
+2026-11-01: `?shopify_entry=rich_menu`をLIFF認証後に固定Shopify入口へ送る導線を追加。通常カード/シリアル/購入認証は維持。実装・53件回帰済み、ユーザーが本番公開を承認。公開結果は下記仕様の公開記録を参照。[仕様](../docs/LINE_SHOP_ENTRY_20261101.md)。
