@@ -2,9 +2,9 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {liffCall,liffCoupon,liffTiers,provisionLIFF} from '../app/liff.server.ts';
 const coupon={id:'synthetic',code:'TESTCODE',cost:200,minimum:3800,status:'available',expires_at:'2027-01-01T00:00:00Z'};
-test('three tiers and native Shopify link keep top redirect and UTM; used/expired never get use link',()=>{
+test('three tiers and LINE handoff link keeps ticket identity and UTM; used/expired never get use link',()=>{
  assert.deepEqual(liffTiers.map(r=>[r.required_points,r.minimum]),[[200,3800],[500,7000],[1000,12000]]);
- const c=liffCoupon(coupon,'https://shop.agaruke.com');const u=new URL(c.use_url);assert.equal(u.pathname,'/discount/TESTCODE');assert.equal(new URL(u.searchParams.get('redirect'),u.origin).pathname,'/');assert.match(u.searchParams.get('redirect'),/utm_source=line/);
+ const c=liffCoupon(coupon,'https://shop.agaruke.com');const u=new URL(c.use_url);assert.equal(u.pathname,'/apps/members');assert.equal(u.searchParams.get('entry'),'ticket');assert.equal(u.searchParams.get('coupon'),coupon.id);assert.equal(u.searchParams.get('utm_source'),'line');assert.ok(!u.href.includes(coupon.code));
  assert.equal(liffCoupon({...coupon,status:'used'},u.origin).use_url,undefined);
  assert.equal(liffCoupon({...coupon,expires_at:'2020-01-01'},u.origin).use_url,undefined);
  assert.match(liffCoupon({...coupon,login_required:true},u.origin).description,/ログイン/);

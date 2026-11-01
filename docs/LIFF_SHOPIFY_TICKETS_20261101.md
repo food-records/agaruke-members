@@ -67,3 +67,5 @@ Go全tests/vet/隔離Emulator、Node43 tests（キャッシュ回帰2件含む�
 ### 公開時に検出したキャッシュ混在の補正
 
 旧Service Workerが新HTMLと旧liff.jsを同時に返し、switchTicketChannelが未定義となる実画面を確認。キャッシュ名更新だけでは古いHTTP/CDN応答を新cacheへ格納し得るため、install時はrelease付きURLをreload取得して通常keyに保存。主要HTML/JS/CSS/configはnetwork優先・再検証、失敗時だけ現行cacheへfallbackする。OAuth code/シリアル等のquery付きnavigationはcache保存しない。画像は現行cache内で優先し、API/LINE通信は対象外。回帰テストと実会員で補正後の動作を確認。旧画面を開き続けている場合は閉じて開き直すか再読み込みする。
+
+2026-11-01追記: チケットの使用リンクをLINE購入連携の引継ぎ入口へ差替する。[最新の入口仕様とリッチメニューURL](LINE_SHOP_ENTRY_20261101.md)。公開状態は同資料を参照。

@@ -1,3 +1,4 @@
+import {shopEntryUrl} from './shop-entry.server.ts';
 import {provision, type Coupon} from './members.server.ts';
 
 export async function liffCall(token:string, action:string, fields:Record<string,unknown>={}) {
@@ -15,9 +16,8 @@ export function liffCoupon(c:Coupon & {login_required?:boolean;retryable?:boolea
  const shop=new URL(origin);
  if(shop.protocol!=='https:' || shop.username || shop.password)throw Error('STORE_NOT_CONFIGURED');
  const available=c.status==='available' && new Date(c.expires_at).getTime()>Date.now();
- const redirect='/?utm_source=line&utm_medium=pointcard&utm_campaign=point_exchange';
- const use=new URL(`/discount/${encodeURIComponent(c.code)}`,shop.origin);use.searchParams.set('redirect',redirect);
- return {id:c.id,channel:'shopify',title:`AGARUKE ${c.cost.toLocaleString('ja-JP')}円OFF`,discount_label:`${c.cost.toLocaleString('ja-JP')}円OFF`,description:`AGARUKE通販専用。商品合計税込${c.minimum.toLocaleString('ja-JP')}円以上、送料別・他クーポン併用不可。${c.login_required?'発行時のShopifyアカウントでログインしてください。':''}`,expires_at:c.expires_at,status:c.status,used:c.status==='used',retryable:!!c.retryable,use_url:available?use.href:undefined};
+ const use=shopEntryUrl(shop.origin,c);
+ return {id:c.id,channel:'shopify',title:`AGARUKE ${c.cost.toLocaleString('ja-JP')}円OFF`,discount_label:`${c.cost.toLocaleString('ja-JP')}円OFF`,description:`AGARUKE通販専用。商品合計税込${c.minimum.toLocaleString('ja-JP')}円以上、送料別・他クーポン併用不可。${c.login_required?'発行時のShopifyアカウントでログインしてください。':''}`,expires_at:c.expires_at,status:c.status,used:c.status==='used',retryable:!!c.retryable,use_url:available?use:undefined};
 }
 export async function provisionLIFF(c:Coupon,token:string,graphql:Parameters<typeof provision>[2]) {
  await provision(c,'',graphql,(code,id)=>liffCall(token,'activate',{code,discount_id:id}));

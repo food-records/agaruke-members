@@ -6,6 +6,7 @@ import {storefrontPresentation} from '../storefront.server';
 import {couponExchangeEnabled} from '../runtime-mode';
 import {isTestCoupon} from '../test-coupon';
 import client from '../purchase-client.js?raw';
+import entryClient from '../shop-entry-client.js?raw';
 import {launchCouponStatus} from '../public-coupon.server';
 
 const headers = {'Cache-Control':'no-store', 'Referrer-Policy':'no-referrer', 'X-Content-Type-Options':'nosniff'};
@@ -23,7 +24,7 @@ export async function loader({request}: LoaderFunctionArgs) {
   const path = url.searchParams.get('path_prefix') || '/apps/members';
   if (!/^\/(apps|a|tools|community)\/[a-z0-9_-]+$/.test(path)) return new Response(null,{status:400});
   const config = JSON.stringify({path,customer_authenticated:!!proxyCustomer(url)}).replace(/</g,'\\u003c');
-  return new Response(`<section id="members-purchase" class="members-coupons-page"><header class="coupon-page-heading"><p class="coupon-eyebrow">AGARUKE MEMBERS</p><h1>クーポンを選ぶ</h1><p>お持ちのクーポンを、このお買い物に使えます。</p></header><p id="members-message" class="coupon-feedback" role="status" aria-live="polite">確認しています…</p><div id="members-actions"></div></section><script id="members-purchase-config" type="application/json">${config}</script><script>{% raw %}${client}{% endraw %}</script>`,{headers:{...headers,'Content-Type':'application/liquid'}});
+  return new Response(`<section id="members-purchase" class="members-coupons-page"><header class="coupon-page-heading"><p class="coupon-eyebrow">AGARUKE MEMBERS</p><h1>クーポンを選ぶ</h1><p>お持ちのクーポンを、このお買い物に使えます。</p></header><p id="members-message" class="coupon-feedback" role="status" aria-live="polite">確認しています…</p><div id="members-actions"></div></section><script id="members-purchase-config" type="application/json">${config}</script><script>{% raw %}${entryClient}\n${client}{% endraw %}</script>`,{headers:{...headers,'Content-Type':'application/liquid'}});
 }
 export async function action({request}: ActionFunctionArgs) {
   const url = await context(request);

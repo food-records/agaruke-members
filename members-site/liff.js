@@ -1058,7 +1058,7 @@ function proposeShopifyLink(accessToken, token) {
 
 function authorizeShopifyPurchase(accessToken, token) {
     if (!/^[a-f0-9]{64}$/.test(token)) { showAlert('購入認証リンクが正しくありません。ショップからやり直してください。'); return; }
-    showConfirm('AGARUKEの今回のお買い物で、このポイントカードを使います。Shopifyにログインして購入する場合はアカウントも連携します。ご自身でショップから始めた場合だけ同意してください。', function () {
+    showConfirm('AGARUKEの今回のお買い物で、このポイントカードを使います。Shopifyにログインして購入する場合はアカウントも連携します。ご自身でショップ、チケットの使用、またはリッチメニューから始めた場合だけ同意してください。', function () {
         $.ajax({
             url: window.APP_CONFIG.apiUrl + '/shopify/purchase/authorize',
             type: 'POST', dataType: 'json', contentType: 'application/json',
