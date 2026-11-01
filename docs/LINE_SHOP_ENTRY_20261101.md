@@ -2,7 +2,7 @@
 
 2026-11-01、本番公開・実アカウントの両導線確認まで完了。既存のLIFF/Shopify購入連携を再利用し、新しいLIFF ID/権限/Go API変更は不要。
 
-## リッチメニューの外部ブラウザー問題（修正実装済み・公開承認済み）
+## リッチメニューの外部ブラウザー問題（修正公開済み・LINE実機確認待ち）
 
 2026-11-01、利用者から旧URLで外部ブラウザーが開きLINE再ログインを求められるとの報告。旧URLはLIFF URLではなくShopifyへの直接URLであり、LIFFブラウザーを起動する保証がなかった。既存検証はログイン済みWebブラウザーであり、実LINEリッチメニューからの起動確認を代替していなかった。
 
@@ -52,3 +52,11 @@ Node49 tests: 既存機能43件＋入口/同一ブラウザーproof/認証前の
 - 実LINEとShopifyが既に継続連携済みのアカウントで、リッチメニューURL→LINE同意→トップへのUTM復元、4商品/5,120円/クーポン未選択を維持して購入100pt案内を確認。
 - 実ポイントカードの既存200円券「使用する」→LINE同意→本人券照合→トップで適用中を確認。最終URLは`/?utm_source=line&utm_medium=social&utm_campaign=point_exchange&utm_content=pointcard_ticket_200`。カート4商品/4,920円/100pt案内を確認後、選択を解除し4商品/5,120円/未選択へ復元。LINE連携は保持。新規交換・発券・実注文・決済・ポイント消費は実施していない。
 - 実アカウント確認はログイン済み分岐。新規ゲスト空カートはUnit/匿名HTTPのtoken安定化検査で確認し、ゲスト注文の実決済は行っていない。認証ブラウザーが変わる等でproofを照合できない場合は、既存の再認証案内へ停止する。
+
+## LIFF先行入口の修正公開結果
+
+ユーザーの「公開してください」に基づき、2026-11-01にmasterへ統合しPages公開。配信元 `392a268028dcae4c5879258411a364a41b8f9e64`、Actions run `41299100437` はsuccess。直前Pages source `895942b`と最新remote master `813a595`の包含、clean source、push直後のlocal/remote SHA一致を機械検査。公開後も配信元SHA一致を確認した。
+
+Node53件成功。公開index.html/index.css/index.js/config.js/liff.js/sw.jsを配信元とbytes照合し全一致。swのcache名は `agaruke-v392a268`。Go API・Node backend・テーマ・LINEリッチメニュー実設定・配信は変更していない。新規交換・注文・ポイント消費なし。新しい入口URLは上記 `https://liff.line.me/2000938587-06YmdyJ5/?shopify_entry=rich_menu...`。
+
+LINE実機でリッチメニューURLを差し替えて起動し、LINEログイン情報の再入力なし（初回同意は別）、ショップへの遷移、購入連携同意後の復帰、カート保持・UTMを確認する。今回の環境ではこの実機検証は行っていない。
