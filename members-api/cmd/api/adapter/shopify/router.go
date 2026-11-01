@@ -33,6 +33,7 @@ func NewRouter() http.Handler {
 	r.Group(func(internal chi.Router) {
 		internal.Use(h.serviceAuth)
 		internal.Post("/customer/action", h.CustomerAction)
+		internal.Post("/liff/action", h.LIFFAction)
 		internal.Post("/purchase/action", h.PurchaseAction)
 		internal.Post("/orders/reverse", h.ReverseOrder)
 		internal.Post("/app-sessions", h.SessionStorage)

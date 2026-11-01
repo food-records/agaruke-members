@@ -48,7 +48,7 @@ export async function provisionCoupon(coupon: Coupon, customer: string, graphql:
 export async function provisionPurchaseCoupon(coupon: Coupon, fields: {token:string;cart:string}, graphql: GraphQL) {
  return provision(coupon,"",graphql,(code,id)=>purchaseCall("activate",{...fields,code,discount_id:id}));
 }
-async function provision(coupon: Coupon, customer: string, graphql: GraphQL, activate: (code:string,id:string)=>Promise<unknown>) {
+export async function provision(coupon: Coupon, customer: string, graphql: GraphQL, activate: (code:string,id:string)=>Promise<unknown>) {
   if (coupon.status !== "pending") return;
   const lookup = async () => {
     const body = await (await graphql(findDiscount, {variables: {code: coupon.code}})).json();
