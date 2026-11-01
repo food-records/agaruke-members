@@ -7,6 +7,14 @@ func Title(stored, target string, limit int) string {
 	return stored
 }
 
+// DiscountLabel supplies the short label shown on the coupon card.
+func DiscountLabel(stored, rewardID string, limit int) string {
+	if rewardID == "750_side_dish" && limit > 0 {
+		return fmt.Sprintf("%d円以下のおかず無料", limit)
+	}
+	return stored
+}
+
 // Description supplies the customer-facing coupon rule from the API.
 func Description(stored, target string, limit, quantity int) string {
 	if limit == 200 && target != "option" {

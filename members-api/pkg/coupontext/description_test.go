@@ -19,3 +19,12 @@ func TestDescription(t *testing.T) {
 		t.Fatalf("option description: %q", got)
 	}
 }
+
+func TestDiscountLabel(t *testing.T) {
+	if got := DiscountLabel("", "750_side_dish", 780); got != "780円以下のおかず無料" {
+		t.Fatalf("side dish label: %q", got)
+	}
+	if got := DiscountLabel("元の表示", "other", 780); got != "元の表示" {
+		t.Fatalf("other reward label: %q", got)
+	}
+}

@@ -114,7 +114,7 @@ func (h handler) Get(w http.ResponseWriter, r *http.Request) {
 			Title:          coupontext.Title(c.Title, c.TargetType, couponLimit(c.MaxUnitPrice, c.DiscountAmount)),
 			Description:    coupontext.Description(c.Description, c.TargetType, couponLimit(c.MaxUnitPrice, c.DiscountAmount), c.FreeQuantity),
 			DiscountAmount: c.DiscountAmount,
-			DiscountLabel:  c.DiscountLabel,
+			DiscountLabel:  coupontext.DiscountLabel(c.DiscountLabel, c.RewardID, couponLimit(c.MaxUnitPrice, c.DiscountAmount)),
 			PointMilestone: c.PointMilestone,
 			RewardID:       c.RewardID,
 			PointCost:      c.PointCost,
