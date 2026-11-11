@@ -282,5 +282,6 @@
 
 - [x] Staffの会員/付与情報表示、予定数変更・付与後差分調整、会計/限定の一時QR、CRM追加/減算・履歴を実装。
 - [x] ローカル/隔離Emulator・ブラウザ模擬・型/build・権限/再送/返金/限定通算非反映を検査。
-- [ ] 実Kiosk/LINE QR/決済の受入確認と次回配信承認。Rules・Members/Kiosk/Admin API・Admin/Staffは未配信。
+- [x] 2026-11-11承認済み本番配信：Rules・Members/API全8系統100%・Admin/Staff。SHA/digest/設定/認証/CORS/公開ファイル・ERROR0確認。
+- [ ] 実Kiosk/LINE QR/実ポイント操作/決済の受入確認。端末通信V2は無効を維持。
 - [ ] 古い削除済みテーブル会計への参照の補完が必要なら、対象を照合して別途判断する（自動backfillしない）。

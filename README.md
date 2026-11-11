@@ -278,8 +278,8 @@ agaruke-members/
 
 2026-11-01: リッチメニュー向けLIFF先行入口をsource `392a268`で本番公開（Pages run `41299100437` success）。公開主要6ファイル一致、Node53件成功。リッチメニュー設定差替・LINE実機でのログイン/往復確認は未実施。[公開記録](docs/LINE_SHOP_ENTRY_20261101.md#liff先行入口の修正公開結果)。
 
-## 2026-11-11 Staff・CRMポイント（実装・未配信）
+## 2026-11-11 Staff・CRMポイント（本番反映済み）
 
-会員/付与ポイントの表示と変更、一時QR（会計/限定の排他選択）、CRM追加/減算・履歴を実装。0ptと未設定の区別、同時再送の冪等性、注文単位の重複取得防止とMobile全額返金時の実効額取消を含む。本番API/Rules/画面・実ポイントは変更していない。実Kiosk/LINE受取は未検証。
+会員/付与ポイントの表示と変更、一時QR（会計/限定の排他選択）、CRM追加/減算・履歴を実装。0ptと未設定の区別、同時再送の冪等性、注文単位の重複取得防止とMobile全額返金時の実効額取消を含む。2026-11-11、ユーザー承認により本番反映済み。API `3d8e392`（対象7系統）、Members `f16e1f8`、Staff `978b2db` / Hosting `8a7848952bedd8ed`、Admin `4391bd6` / App Engine `staff-points-4391bd6`を配信。Cloud Run全8系統100%、Rules配信元一致、認証/CORS・実行設定・公開画面を照合した。Staffは`VITE_STAFF_POINTS=true`、`VITE_STAFF_TERMINAL_V2=false`。実Kiosk通信・LINE QR受取・実ポイント変更・実決済は未検証。
 
 現行仕様は[Staffポイント](docs/STAFF_POINTS.md)。

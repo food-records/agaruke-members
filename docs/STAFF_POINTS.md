@@ -1,8 +1,8 @@
-# Staff・CRMのポイント操作（2026-11-11、実装済み・未配信）
+# Staff・CRMのポイント操作（2026-11-11、本番反映済み）
 
 ## 対象と本番状態
 
-ユーザーの追加指示「3,4も実装」に対応。モバイル会計送信の新版は前段の実装を保持し、実機検証待ち・既定無効のまま。今回は会員カード連携/付与ポイントの常時表示、予定付与数の変更、付与済み数の差分調整、一時QR、Admin CRMの追加/減算と履歴を実装した。API/Members/Rules/Staff/Admin/iPadの本番反映・実データ変更は行っていない。
+ユーザーの追加指示「3,4も実装」に対応。モバイル会計送信の新版は前段の実装を保持し、実機検証待ち・既定無効のまま。今回は会員カード連携/付与ポイントの常時表示、予定付与数の変更、付与済み数の差分調整、一時QR、Admin CRMの追加/減算と履歴を実装した。2026-11-11、ユーザー承認により本番反映済み。API `3d8e392`（対象7系統）、Members `f16e1f8`、Staff `978b2db` / Hosting `8a7848952bedd8ed`、Admin `4391bd6` / App Engine `staff-points-4391bd6`を配信。Cloud Run全8系統100%、Rules配信元一致、認証/CORS・実行設定・公開画面を照合した。Staffは`VITE_STAFF_POINTS=true`、`VITE_STAFF_TERMINAL_V2=false`。実Kiosk通信・LINE QR受取・実ポイント変更・実決済は未検証。
 
 ## Staff
 
@@ -41,10 +41,16 @@ Rulesはstaff_point_vouchersの店舗限定readだけを許可。会員残高、
 
 API/MembersのGo全体・vet、Emulatorの付与/変更/返金/同時再送/別店舗組織/QR二重取得/期限/明示0と欠落の区別、Rules9件、Staff15単体/型/build、StaffとCRM実componentの390px模擬ブラウザ、Admin check51 tests/buildを検査する。実Kiosk/LINE QR/実決済/実データ更新は未実施。
 
-配信は別途承認・source照合のうえ、Rules→Members/Kiosk/Admin API→Admin/Staffの順に行う。Kiosk APIへMEMBERS_LIFF_URL（https://liff.line.me/...の会員カードURL）を設定し、MembersのFirestore project/organization layoutが同一組織に向くことを確認する。StaffはVITE_STAFF_POINTS=trueで有効化する（既定false）。端末通信のVITE_STAFF_TERMINAL_V2は独立して既定false。既存の購入/返金/独立POS・Online取込の回帰を維持し、次回実機検証と配信承認まで有効化しない。
+ユーザー承認後、Rules→Members/API→Staff/Adminの順で反映済み。KioskのMEMBERS_LIFF_URLとMembersのFirestore project/organization layout・共有認証の一致を確認。StaffはVITE_STAFF_POINTS=true、VITE_STAFF_TERMINAL_V2=false。実機確認まで端末連携新版は有効化しない。
 
-定期Job、presence周期、定期GET、min instancesは追加しない。本日は新機能未配信・検証はローカルで追加課金なし。ポイント操作/QR/対象画面の明示的な取得だけが増える構成。大量利用で大幅増が見込まれる場合は、有効化前に実量から見積もり・確認する。
+定期Job、presence周期、定期GET、min instancesは追加しない。本番でも既存のCPU/memory/scaling/IAMを維持。ポイント操作/QR/対象画面の明示的な取得だけが増える構成。大量利用で大幅増が見込まれる場合は、有効化前に実量から見積もり・確認する。
 
 ### 支払確定との競合の保護
 
 通常Kioskの支払済み判定には、支払/注文保存成功後にRecordPointSaleで作るserver-only参照、またはサービス認証済みMembers予約のused状態を使う。クライアントのCOMPLETED表示だけでは会計QRを発行しない。既に付与済みの予約は画面の完了反映を待たず実ログの差分調整へ進め、未確定の処理中会計の変更は待機させる。QR受取済み会員は共通の会計claimから解決できる。旧会計でこの証拠がない場合は自動補完せず、確認待ちとして会計QRを拒否する。
+
+## 配信結果
+
+2026-11-11、ユーザー承認により本番反映済み。API `3d8e392`（対象7系統）、Members `f16e1f8`、Staff `978b2db` / Hosting `8a7848952bedd8ed`、Admin `4391bd6` / App Engine `staff-points-4391bd6`を配信。Cloud Run全8系統100%、Rules配信元一致、認証/CORS・実行設定・公開画面を照合した。Staffは`VITE_STAFF_POINTS=true`、`VITE_STAFF_TERMINAL_V2=false`。実Kiosk通信・LINE QR受取・実ポイント変更・実決済は未検証。
+
+全Go/vet・隔離Emulator/race・Rules9件・Staff15単体/ブラウザ・Manager51件/check/build成功。全8候補/本番の起動・権限・CORS検査、公開assetの一致、Cloud Run/Admin ERROR0。初回候補の実行権限不足は0755で再梱包し解消、一般trafficへの失敗版配信なし。
