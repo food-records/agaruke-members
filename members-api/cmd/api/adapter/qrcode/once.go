@@ -2,6 +2,7 @@ package qrcode
 
 import (
 	"context"
+	"crypto/sha256"
 	"errors"
 	"fmt"
 	"regexp"
@@ -88,6 +89,28 @@ func redeemOnceSerial(ctx context.Context, fs *firestore.Client, code, uid strin
 				return errSerialDuplicate
 			}
 		}
+		var purchaseClaim *firestore.DocumentRef
+		if s.TargetMemberID != "" && s.TargetMemberID != uid {
+			return errSerialInvalid
+		}
+		if s.PurchaseOrderID != "" {
+			if !serialAccumulate(s) {
+				return errSerialInvalid
+			}
+			key := fmt.Sprintf("purchase_order_%x", sha256.Sum256([]byte(s.PurchaseOrderID)))
+			purchaseClaim = config.DataCollection(fs, "purchase_point_claims").Doc(key)
+			if _, e := tx.Get(purchaseClaim); e == nil {
+				return errSerialDuplicate
+			} else if status.Code(e) != codes.NotFound {
+				return e
+			}
+			log = member.Collection("point_logs").Doc(key)
+			if _, e := tx.Get(log); e == nil {
+				return errSerialDuplicate
+			} else if status.Code(e) != codes.NotFound {
+				return e
+			}
+		}
 		accumulate := serialAccumulate(s)
 		newTotal := m.TotalEarnedPoint
 		if _, exists := memberSnap.Data()["total_earned_point"]; !exists {
@@ -110,7 +133,19 @@ func redeemOnceSerial(ctx context.Context, fs *firestore.Client, code, uid strin
 		if err := tx.Update(serial, []firestore.Update{{Path: "used", Value: true}, {Path: "used_id", Value: fmt.Sprintf("%06d", m.Number)}, {Path: "used_at", Value: now}, {Path: "used_uid", Value: uid}}); err != nil {
 			return err
 		}
-		if err := tx.Create(log, pointLogDoc{Amount: s.Point, Source: "serial_once", Accumulate: accumulate, AcquiredAt: now, ExpiresAt: now.AddDate(1, 0, 0), SerialCode: code}); err != nil {
+		if s.StaffVoucherID != "" {
+			if err := tx.Update(fs.Collection("staff_point_vouchers").Doc(s.StaffVoucherID), []firestore.Update{{Path: "used", Value: true}, {Path: "used_at", Value: now}}); err != nil {
+				return err
+			}
+		}
+		if purchaseClaim != nil {
+			if err := tx.Create(purchaseClaim, map[string]interface{}{"member_id": uid, "amount": s.Point, "order_uuid": s.PurchaseOrderID, "source": "staff_qr"}); err != nil {
+				return err
+			}
+			if err := tx.Create(log, map[string]interface{}{"amount": s.Point, "source": "staff_qr_purchase", "accumulate": true, "acquired_at": now, "created_at": now, "expires_at": now.AddDate(1, 0, 0), "order_uuid": s.PurchaseOrderID, "location_uuid": s.LocationUUID, "actor": s.IssuedBy, "reason": s.Reason}); err != nil {
+				return err
+			}
+		} else if err := tx.Create(log, pointLogDoc{Amount: s.Point, Source: "serial_once", Accumulate: accumulate, AcquiredAt: now, ExpiresAt: now.AddDate(1, 0, 0), SerialCode: code}); err != nil {
 			return err
 		}
 		ri := rank.Calc(newTotal)

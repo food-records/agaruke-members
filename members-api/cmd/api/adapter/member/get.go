@@ -130,8 +130,9 @@ func (h handler) Get(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		resetAccumulated := !m.LastAccumulatedAt.IsZero() && time.Since(m.LastAccumulatedAt) >= twoYears
 		// 最終累積加算から2年以上経過していた場合は total_earned_point をリセット
-		if !m.LastAccumulatedAt.IsZero() && time.Since(m.LastAccumulatedAt) >= twoYears {
+		if resetAccumulated {
 			if _, err := memberRef.Update(ctx, []firestore.Update{
 				{Path: "total_earned_point", Value: 0},
 			}); err != nil {
@@ -140,7 +141,8 @@ func (h handler) Get(w http.ResponseWriter, r *http.Request) {
 			m.TotalEarnedPoint = 0
 		}
 
-		totalEarned := effectiveTotalEarned(m)
+		_, hasTotal := doc.Data()["total_earned_point"]
+		totalEarned := effectiveTotalEarned(m, hasTotal || resetAccumulated)
 		resp.Number = fmt.Sprintf("FR%06d", m.Number)
 		resp.Name = m.Name
 		resp.Point = m.Point
@@ -281,7 +283,10 @@ func (h handler) Get(w http.ResponseWriter, r *http.Request) {
 
 // effectiveTotalEarned は total_earned_point を返す。
 // フィールド未設定の旧メンバーは point の値をフォールバックとして使用する。
-func effectiveTotalEarned(m memberDoc) int {
+func effectiveTotalEarned(m memberDoc, explicit ...bool) int {
+	if len(explicit) > 0 && explicit[0] {
+		return m.TotalEarnedPoint
+	}
 	if m.TotalEarnedPoint == 0 && m.Point > 0 {
 		return m.Point
 	}

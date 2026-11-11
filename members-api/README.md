@@ -16,7 +16,7 @@ FOOD RECORDS メンバーズの Go API サーバー。Cloud Run で稼働する�
 
 ## API エンドポイント
 
-Kiosk購入ポイントはクーポン値引前500円以上を対象に100ポイントを付与する。会員ごとの`daily_purchase_YYYY-MM-DD`履歴を日本時間で作成し、モバイルオーダーと横断して購入日1日1回に制限する。クーポン確定とポイント判定は同一Firestore Transactionで行う。
+Kiosk購入ポイントはクーポン値引前500円以上を対象に100ポイントを付与する。実装上は注文別`purchase_order_<sha256>`と組織の会計claimで一回だけ付与し、同日別注文を制限しない（2026-11-11実装、今回未配信）。旧日別ログは同じ注文が記録された場合だけ維持する。クーポン確定とポイント判定は同一Firestore Transactionで行う。
 
 ### GET /members
 

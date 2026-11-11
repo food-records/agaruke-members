@@ -90,3 +90,61 @@ func TestOnceSerialEmulator(t *testing.T) {
 		t.Fatalf("expired: %v", err)
 	}
 }
+
+func TestStaffVoucherPurchaseAndLimitedEmulator(t *testing.T) {
+	if os.Getenv("FIRESTORE_EMULATOR_HOST") == "" {
+		t.Skip("isolated emulator required")
+	}
+	t.Setenv("MEMBERS_DATA_LAYOUT", "organization")
+	t.Setenv("ORGANIZATION_UUID", "staff-vouchers")
+	ctx := context.Background()
+	fs, e := firestore.NewClient(ctx, "demo-staff-qr")
+	if e != nil {
+		t.Fatal(e)
+	}
+	defer fs.Close()
+	now := time.Now()
+	org := config.OrganizationRef(fs)
+	put := func(ref *firestore.DocumentRef, v interface{}) {
+		t.Helper()
+		if _, e := ref.Set(ctx, v); e != nil {
+			t.Fatal(e)
+		}
+	}
+	for _, uid := range []string{"one", "two"} {
+		put(org.Collection("members").Doc(uid), map[string]interface{}{"point": 0, "total_earned_point": 0, "number": int64(42), "consented_at": now})
+	}
+	issue := func(code, id, order string, accumulate bool) {
+		put(org.Collection("serials").Doc(code), map[string]interface{}{"point": 200, "type": "once", "used": false, "accumulate": accumulate, "expires_at": now.Add(5 * time.Minute), "staff_voucher_id": id, "purchase_order_id": order})
+		put(fs.Collection("staff_point_vouchers").Doc(id), map[string]interface{}{"used": false, "location_uuid": "loc"})
+	}
+	issue("FRlimited", "limited", "", false)
+	result, e := redeemOnceSerial(ctx, fs, "FRlimited", "one", now)
+	if e != nil || result.Point != 200 || result.TotalEarnedPoint != 0 {
+		t.Fatal(result, e)
+	}
+	if _, e = redeemOnceSerial(ctx, fs, "FRlimited", "two", now); e == nil {
+		t.Fatal("voucher reused")
+	}
+	issue("FRpurchase1", "purchase1", "order", true)
+	issue("FRpurchase2", "purchase2", "order", true)
+	result, e = redeemOnceSerial(ctx, fs, "FRpurchase1", "one", now)
+	if e != nil || result.Point != 400 || result.TotalEarnedPoint != 200 {
+		t.Fatal(result, e)
+	}
+	if _, e = redeemOnceSerial(ctx, fs, "FRpurchase2", "two", now); e == nil {
+		t.Fatal("same purchase claimed by another member")
+	}
+	claim, e := org.Collection("purchase_point_claims").Documents(ctx).GetAll()
+	if e != nil || len(claim) != 1 {
+		t.Fatal(claim, e)
+	}
+	display, e := fs.Collection("staff_point_vouchers").Doc("purchase1").Get(ctx)
+	if e != nil || display.Data()["used"] != true {
+		t.Fatal(display, e)
+	}
+	issue("FRexpired", "expired", "", false)
+	if _, e = redeemOnceSerial(ctx, fs, "FRexpired", "one", now.Add(6*time.Minute)); e == nil {
+		t.Fatal("expired voucher accepted")
+	}
+}

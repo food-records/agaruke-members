@@ -49,13 +49,19 @@ type memberDoc struct {
 }
 
 type serialDoc struct {
-	Point      int        `firestore:"point"`
-	Used       bool       `firestore:"used"`
-	UsedID     string     `firestore:"used_id"`
-	Type       string     `firestore:"type"`       // "once" (default) or "recurring"
-	Accumulate *bool      `firestore:"accumulate"` // nil = true (backward compat)
-	CampaignID string     `firestore:"campaign_id,omitempty"`
-	ExpiresAt  *time.Time `firestore:"expires_at,omitempty"`
+	StaffVoucherID  string     `firestore:"staff_voucher_id"`
+	PurchaseOrderID string     `firestore:"purchase_order_id"`
+	TargetMemberID  string     `firestore:"target_member_id"`
+	LocationUUID    string     `firestore:"location_uuid"`
+	IssuedBy        string     `firestore:"issued_by"`
+	Reason          string     `firestore:"reason"`
+	Point           int        `firestore:"point"`
+	Used            bool       `firestore:"used"`
+	UsedID          string     `firestore:"used_id"`
+	Type            string     `firestore:"type"`       // "once" (default) or "recurring"
+	Accumulate      *bool      `firestore:"accumulate"` // nil = true (backward compat)
+	CampaignID      string     `firestore:"campaign_id,omitempty"`
+	ExpiresAt       *time.Time `firestore:"expires_at,omitempty"`
 }
 
 type userScanDoc struct {
@@ -282,7 +288,8 @@ func (h handler) postDailyCheckin(ctx context.Context, w http.ResponseWriter, pr
 		}
 		memberNumber = m.Number
 		newPoint = m.Point + dailyCheckinPoint
-		currentTotal := effectiveTotalEarned(m)
+		_, hasTotal := memberSnap.Data()["total_earned_point"]
+		currentTotal := effectiveTotalEarned(m, hasTotal)
 		if shouldReset(m) {
 			currentTotal = 0
 		}
@@ -384,7 +391,8 @@ func (h handler) postRecurringSerial(ctx context.Context, w http.ResponseWriter,
 		}
 		memberNumber = m.Number
 		newPoint = m.Point + point
-		currentTotal := effectiveTotalEarned(m)
+		_, hasTotal := memberSnap.Data()["total_earned_point"]
+		currentTotal := effectiveTotalEarned(m, hasTotal)
 		if shouldReset(m) {
 			currentTotal = 0
 		}
@@ -459,7 +467,10 @@ func (h handler) postRecurringSerial(ctx context.Context, w http.ResponseWriter,
 
 // effectiveTotalEarned は total_earned_point を返す。
 // フィールド未設定の旧メンバーは point の値をフォールバックとして使用する。
-func effectiveTotalEarned(m memberDoc) int {
+func effectiveTotalEarned(m memberDoc, explicit ...bool) int {
+	if len(explicit) > 0 && explicit[0] {
+		return m.TotalEarnedPoint
+	}
 	if m.TotalEarnedPoint == 0 && m.Point > 0 {
 		return m.Point
 	}

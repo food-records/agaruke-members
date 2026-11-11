@@ -72,11 +72,21 @@ func activeMember(tx *firestore.Transaction, ref *firestore.DocumentRef) (member
 	var m memberDoc
 	s, e := tx.Get(ref)
 	if e != nil {
+		if e == nil {
+			if _, exists := s.Data()["total_earned_point"]; !exists && m.Point > 0 {
+				m.TotalEarnedPoint = m.Point
+			}
+		}
 		return m, e
 	}
 	e = s.DataTo(&m)
 	if e == nil && m.DeletedAt != nil {
 		e = errMemberNotActive
+	}
+	if e == nil {
+		if _, exists := s.Data()["total_earned_point"]; !exists && m.Point > 0 {
+			m.TotalEarnedPoint = m.Point
+		}
 	}
 	return m, e
 }

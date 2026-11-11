@@ -260,9 +260,7 @@ func (h handler) applyPaidOrder(ctx context.Context, order paidOrder, customer s
 			return errors.New("MULTIPLE_MEMBERS_COUPONS")
 		}
 		total := m.TotalEarnedPoint
-		if total == 0 && m.Point > 0 {
-			total = m.Point
-		}
+
 		if e = tx.Update(memberRef, []firestore.Update{{Path: "point", Value: m.Point + basePurchasePoints}, {Path: "total_earned_point", Value: total + basePurchasePoints}, {Path: "last_accumulated_at", Value: now}}); e != nil {
 			return e
 		}
