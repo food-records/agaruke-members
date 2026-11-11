@@ -44,3 +44,7 @@ API/MembersのGo全体・vet、Emulatorの付与/変更/返金/同時再送/別�
 配信は別途承認・source照合のうえ、Rules→Members/Kiosk/Admin API→Admin/Staffの順に行う。Kiosk APIへMEMBERS_LIFF_URL（https://liff.line.me/...の会員カードURL）を設定し、MembersのFirestore project/organization layoutが同一組織に向くことを確認する。StaffはVITE_STAFF_POINTS=trueで有効化する（既定false）。端末通信のVITE_STAFF_TERMINAL_V2は独立して既定false。既存の購入/返金/独立POS・Online取込の回帰を維持し、次回実機検証と配信承認まで有効化しない。
 
 定期Job、presence周期、定期GET、min instancesは追加しない。本日は新機能未配信・検証はローカルで追加課金なし。ポイント操作/QR/対象画面の明示的な取得だけが増える構成。大量利用で大幅増が見込まれる場合は、有効化前に実量から見積もり・確認する。
+
+### 支払確定との競合の保護
+
+通常Kioskの支払済み判定には、支払/注文保存成功後にRecordPointSaleで作るserver-only参照、またはサービス認証済みMembers予約のused状態を使う。クライアントのCOMPLETED表示だけでは会計QRを発行しない。既に付与済みの予約は画面の完了反映を待たず実ログの差分調整へ進め、未確定の処理中会計の変更は待機させる。QR受取済み会員は共通の会計claimから解決できる。旧会計でこの証拠がない場合は自動補完せず、確認待ちとして会計QRを拒否する。
